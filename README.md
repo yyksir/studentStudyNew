@@ -18,5 +18,9 @@ $ npm run start
 # generate static project
 $ npm run generate
 ```
-
+## 缩进
+```
+缩进 全部使用空格, 2 个空格缩进
+字符串 全部使用单引号
+```
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).

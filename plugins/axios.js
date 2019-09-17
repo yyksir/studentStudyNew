@@ -1,10 +1,13 @@
 import axios from 'axios' //引用axios
 import Cookies from 'js-cookie'
- 
+
 // axios 配置
 axios.defaults.timeout = 20000;
-axios.defaults.baseURL = 'https://test-usercenter.tojoycloud.com:40001/dubbo-customer-admin-api'; //这是调用数据接口
-//axios.defaults.baseURL = 'http://192.168.31.136:8610';  
+
+// axios.defaults.baseURL = 'https://test-usercenter.tojoycloud.com:40001/dubbo-customer-admin-api'; //这是调用数据接口
+//axios.defaults.baseURL = 'http://192.168.31.136:8610';
+axios.defaults.baseURL = 'http://121.40.138.216:8080/engEdu'
+
 // http request 拦截器，通过这个，我们就可以把Cookie传到后台
 axios.interceptors.request.use(
   config => {
@@ -12,9 +15,9 @@ axios.interceptors.request.use(
     config.data = JSON.stringify(config.data);
     config.headers = {
       'Content-Type':'application/json', //设置跨域头部
-      //"userId":Cookies.get("userId"),
-      //"token":Cookies.get("token")
-     
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+      // 'userId':Cookies.get("userId"),
+      'token': 'EDU_TOKEN_STU_5b69b9cb83065d403869739ae7f0995e'
     };
     if (token) {
       config.params = {'token': token} //后台接收的参数，后面我们将说明后台如何接收
@@ -25,8 +28,8 @@ axios.interceptors.request.use(
     return Promise.reject(err);
   }
 );
- 
- 
+
+
 // http response 拦截器
 axios.interceptors.response.use(
   response => {
@@ -40,9 +43,9 @@ axios.interceptors.response.use(
     //window.location.href = '/404'
     return Promise.reject(error)
   });
- 
+
 export default axios;
- 
+
 /**
  * fetch 请求方法
  * @param url
@@ -62,7 +65,7 @@ export function get(url, params = {}) {
     })
   })
 }
- 
+
 /**
  * post 请求方法
  * @param url
@@ -79,7 +82,7 @@ export function post(url, data = {}) {
       })
   })
 }
- 
+
 /**
  * patch 方法封装
  * @param url
@@ -96,7 +99,7 @@ export function patch(url, data = {}) {
       })
   })
 }
- 
+
 /**
  * put 方法封装
  * @param url
