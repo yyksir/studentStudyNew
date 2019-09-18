@@ -21,7 +21,11 @@ axios.interceptors.request.use(
       //'token': 'EDU_TOKEN_STU_5b69b9cb83065d403869739ae7f0995e'
     };
     if (token) {
-      config.params = {'token': token} //后台接收的参数，后面我们将说明后台如何接收
+      config.data = {'token': token} //后台接收的参数，后面我们将说明后台如何接收
+    }else{
+      config.data = Object.assign({},config.data,{
+        token: 'EDU_TOKEN_STU_5b69b9cb83065d403869739ae7f0995e'//后台接收的参数，后面我们将说明后台如何接收
+      } )
     }
     if(config.method === 'post'){
     //将请求参数进行转换，这里是全局配置post请求参数
