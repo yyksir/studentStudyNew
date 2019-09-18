@@ -61,12 +61,12 @@ export default {
     };
   },
   mounted() {
-    this.$API.POST('/course/getMyCourse', {
+    this.$API.POST('/course/getMyCourse',{
       courseName: '小学',
       curPagerNo: 1,
-      pageSize: 10
-    })
-    .then((res) => {
+      pageSize: 10,
+      token: 'EDU_TOKEN_STU_5b69b9cb83065d403869739ae7f0995e'
+    }).then((res) => {
       console.log(res, 'res')
     })
     .catch((err) => {

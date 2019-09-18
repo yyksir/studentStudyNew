@@ -1,5 +1,6 @@
 import axios from 'axios' //引用axios
 import Cookies from 'js-cookie'
+import qs from 'qs'
 
 // axios 配置
 axios.defaults.timeout = 20000;
@@ -12,15 +13,19 @@ axios.defaults.baseURL = 'http://121.40.138.216:8080/engEdu'
 axios.interceptors.request.use(
   config => {
     const token = Cookies.get('session'); //获取Cookie
-    config.data = JSON.stringify(config.data);
+    //config.data = JSON.stringify(config.data);
     config.headers = {
-      'Content-Type':'application/json', //设置跨域头部
-      // 'Content-Type': 'application/x-www-form-urlencoded',
+      //'Content-Type':'application/json', //设置跨域头部
+       'Content-Type': 'application/x-www-form-urlencoded',
       // 'userId':Cookies.get("userId"),
-      'token': 'EDU_TOKEN_STU_5b69b9cb83065d403869739ae7f0995e'
+      //'token': 'EDU_TOKEN_STU_5b69b9cb83065d403869739ae7f0995e'
     };
     if (token) {
       config.params = {'token': token} //后台接收的参数，后面我们将说明后台如何接收
+    }
+    if(config.method === 'post'){
+    //将请求参数进行转换，这里是全局配置post请求参数
+      config.data = qs.stringify(config.data)
     }
     return config;
   },
