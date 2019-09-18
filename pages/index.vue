@@ -8,19 +8,19 @@
     <div class="caozuo">
       <div class="title">快捷操作</div>
       <div class="list">
-        <div>
+        <div @click="handlQuickOperation('1')">
           <img src="../assets/img/kecheng.png" alt />
         </div>
-        <div>
+        <div @click="handlQuickOperation('2')">
           <img src="../assets/img/ciliang.png" alt />
         </div>
-        <div>
+        <div @click="handlQuickOperation('3')">
           <img src="../assets/img/ceshi.png" alt />
         </div>
-        <div>
+        <div @click="handlQuickOperation('4')">
           <img src="../assets/img/shengcheng.png" alt />
         </div>
-        <div>
+        <div @click="handlQuickOperation('5')">
           <img src="../assets/img/cidian.png" alt />
         </div>
       </div>
@@ -28,13 +28,13 @@
     <div class="already">
       <div class="title">已学课程</div>
       <div class="list">
-        <div class="item">
+        <div class="item" v-for="item of haveStudied" :key="item.id">
           <div class="head">
             <div class="little-title">认读课程</div>
-            <div class="title">新概念英语一</div>
+            <div class="title">{{item.courseName}}</div>
           </div>
           <div class="foot">
-            <div class="txt">已学进度：45%</div>
+            <div class="txt">已学进度：{{item.isStart}}%</div>
             <div class="btn">开始学习</div>
           </div>
         </div>
@@ -45,9 +45,18 @@
       <div class="toolbar">
         <div class="week">按周统计</div>
         <div class="week">按月统计</div>
-        <div></div>
+        <div class="timeSelect">
+          <a-range-picker @change="onChange" />
+        </div>
       </div>
-      <div class="example"></div>
+      <div class="example">
+        <div >
+
+        </div>
+        <div>
+
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -57,21 +66,92 @@ export default {
   layout: 'index',
   data() {
     return {
-      name: "刘亚男"
+      name: "刘亚男",
+      haveStudied:[],
     };
   },
   mounted() {
-    this.$API.POST('/course/getMyCourse',{
-      courseName: '小学',
-      curPagerNo: 1,
-      pageSize: 10,
-   
-    }).then((res) => {
-      console.log(res, 'res')
-    })
-    .catch((err) => {
-      console.log(err, 'err')
-    })
+    this.getHasStudyCourse();
+    this.getLearningLocabulary();
+    this.getLearningTime();
+  },
+  methods:{
+    getHasStudyCourse() {
+      this.$nuxt.$loading.start()
+       this.$API.POST('/course/getMyCourse',{
+          courseName: '小学',
+          curPagerNo: 1,
+          pageSize: 10,
+        }).then((res) => {
+          if (res && res.data && res.data.list && res.data.list.length>0 ) {
+            this.haveStudied = res.data.list;
+          }else{
+            this.haveStudied = [];
+          }
+          this.$nuxt.$loading.finish()
+        })
+        .catch((err) => {
+          this.$message.warning('获取已学课程失败');
+          console.log(err, 'err')
+        })
+    },
+    getLearningLocabulary() {
+       this.$API.POST('/course/getMyCourse',{
+          courseName: '小学',
+          curPagerNo: 1,
+          pageSize: 10,
+        }).then((res) => {
+          if (res && res.data && res.data.list && res.data.list.length>0 ) {
+            this.haveStudied = res.data.list;
+          }else{
+            this.haveStudied = [];
+          }
+        })
+        .catch((err) => {
+          this.$message.warning('获取已学课程失败');
+          console.log(err, 'err')
+        })
+    },
+    getLearningTime() {
+       this.$API.POST('/census/censusTime',{
+          censusType: 1,
+          startTimeStr: 1,
+          endTimeStr: 10,
+        }).then((res) => {
+          if (res && res.data && res.data.list && res.data.list.length>0 ) {
+            this.haveStudied = res.data.list;
+          }else{
+            this.haveStudied = [];
+          }
+        })
+        .catch((err) => {
+          this.$message.warning('获取已学课程失败');
+          console.log(err, 'err')
+        })
+    },
+    onChange(date, dateString) {
+      console.log(date, dateString);
+    },
+    handlQuickOperation(index) {
+      let getIndex = index;
+      switch(getIndex) {
+        case "1":
+          this.$router.push('/test/courseTest/');
+          break;
+        case "2":
+        this.$router.push('/test/vocabulary/');
+          break;
+        case "3":
+        this.$router.push('/test/testScore/');
+          break;
+        case "4":
+        this.$router.push('/test/generateTestPaper/');
+          break;
+        case "5":
+        this.$router.push('/myService/dictionary/');
+          break;
+      }
+    }
   }
 }
 </script>
@@ -111,6 +191,7 @@ export default {
 
         div {
           margin-right: 30px;
+          margin-bottom:20px;
           float: left;
         }
       }
@@ -133,6 +214,7 @@ export default {
         .item {
           float: left;
           margin-right: 24px;
+          margin-bottom:24px;
           width: 244px;
           height: 182px;
           .head {
@@ -176,6 +258,7 @@ export default {
     }
     .chart {
       padding-left: 40px;
+      padding-right 40px;
       .title {
         height: 22px;
         margin-top: 32px;
@@ -194,6 +277,9 @@ export default {
           float: left;
           font-size: 14px;
           background: white;
+        }
+        .timeSelect{
+          float:right;
         }
       }
     }
