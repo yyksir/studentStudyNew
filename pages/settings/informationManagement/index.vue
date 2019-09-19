@@ -158,7 +158,6 @@ export default {
       return current && current >= moment().endOf('day');
     },
     setData (data) {
-      console.log(data, 'data 158')
       this.userName = data.userName || ''
       this.trueName = data.trueName || ''
       this.userSex = data.userSex === 1 ? '男' : (data.userSex === 0 ? '女' : '')
