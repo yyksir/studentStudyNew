@@ -31,6 +31,7 @@ module.exports = {
   plugins: [
     '@/plugins/antd-ui',
     '~plugins/api',
+    '~plugins/echarts',
   ],
   /*
   ** Nuxt.js dev-modules

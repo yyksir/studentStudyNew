@@ -43,18 +43,22 @@
     <div class="chart">
       <div class="title">学习统计</div>
       <div class="toolbar">
-        <div class="week">按周统计</div>
-        <div class="week">按月统计</div>
+        <div class="weekend week">按周统计</div>
+        <div class="mounth week">按月统计</div>
         <div class="timeSelect">
           <a-range-picker @change="onChange" />
         </div>
       </div>
       <div class="example">
-        <div >
+        <div id="censusWord">
+          <div id="censusWordBox">
 
+          </div>
         </div>
-        <div>
+        <div id="censusTime">
+          <div id="censusTimeBox">
 
+          </div>
         </div>
       </div>
     </div>
@@ -68,16 +72,19 @@ export default {
     return {
       name: "刘亚男",
       haveStudied:[],
+      learningTime:[],
+      locabulary:[],
     };
   },
   mounted() {
     this.getHasStudyCourse();
     this.getLearningLocabulary();
     this.getLearningTime();
+    this.echartsInit();
+    this.initcensusWordBoxechart()
   },
   methods:{
     getHasStudyCourse() {
-      this.$nuxt.$loading.start()
        this.$API.POST('/course/getMyCourse',{
           courseName: '小学',
           curPagerNo: 1,
@@ -88,7 +95,6 @@ export default {
           }else{
             this.haveStudied = [];
           }
-          this.$nuxt.$loading.finish()
         })
         .catch((err) => {
           this.$message.warning('获取已学课程失败');
@@ -96,11 +102,12 @@ export default {
         })
     },
     getLearningLocabulary() {
-       this.$API.POST('/course/getMyCourse',{
-          courseName: '小学',
-          curPagerNo: 1,
-          pageSize: 10,
+       this.$API.POST('/census/censusWord',{
+          censusType: 1,
+          // startTimeStr: '2019-08-01',
+          // endTimeStr: '2019-10-01',
         }).then((res) => {
+          console.log(res)
           if (res && res.data && res.data.list && res.data.list.length>0 ) {
             this.haveStudied = res.data.list;
           }else{
@@ -115,13 +122,15 @@ export default {
     getLearningTime() {
        this.$API.POST('/census/censusTime',{
           censusType: 1,
-          startTimeStr: 1,
-          endTimeStr: 10,
+          // startTimeStr: '2019-08-01',
+          // endTimeStr: '2019-10-01',
         }).then((res) => {
+          //date 是时间 data是值
+          console.log(res)
           if (res && res.data && res.data.list && res.data.list.length>0 ) {
-            this.haveStudied = res.data.list;
+            this.learningTime = res.data.list;
           }else{
-            this.haveStudied = [];
+            this.learningTime = [];
           }
         })
         .catch((err) => {
@@ -151,6 +160,100 @@ export default {
         this.$router.push('/myService/dictionary/');
           break;
       }
+    },
+    echartsInit () {
+      // 找到容器
+      let myChart = this.$echarts.init(document.getElementById('censusTimeBox'))
+      // 开始渲染
+      myChart.setOption({
+        title: {text: '本周学习时长'},
+        tooltip: {},
+        xAxis: {
+          data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+        },
+        yAxis: {},
+        series: [{
+          name: '销量',
+          type: 'bar',
+          data: [5, 20, 36, 10, 10, 20]
+        }]
+      })
+    },
+    initcensusWordBoxechart() {
+      let myChart = this.$echarts.init(document.getElementById('censusWordBox'))
+      // 开始渲染
+      myChart.setOption({
+          title: {
+              text: '未来一周气温变化',
+              subtext: '纯属虚构'
+          },
+          tooltip: {
+              trigger: 'axis'
+          },
+          legend: {
+              data:['最高气温','最低气温1']
+          },
+          xAxis:  {
+              type: 'category',
+              boundaryGap: false,
+              data: ['周一','周二','周三','周四','周五','周六','周日']
+          },
+          yAxis: {
+              type: 'value',
+              axisLabel: {
+                  formatter: '{value} °C'
+              }
+          },
+          series: [
+              {
+                  name:'最高气温',
+                  type:'line',
+                  data:[11, 11, 15, 13, 12, 13, 10],
+                  markPoint: {
+                      data: [
+                          {type: 'max', name: '最大值'},
+                          {type: 'min', name: '最小值'}
+                      ]
+                  },
+                  markLine: {
+                      data: [
+                          {type: 'average', name: '平均值'}
+                      ]
+                  }
+              },
+              {
+                  name:'最低气温',
+                  type:'line',
+                  data:[1, -2, 2, 5, 3, 2, 0],
+                  markPoint: {
+                      data: [
+                          {name: '周最低', value: -2, xAxis: 1, yAxis: -1.5}
+                      ]
+                  },
+                  markLine: {
+                      data: [
+                          {type: 'average', name: '平均值'},
+                          [{
+                              symbol: 'none',
+                              x: '90%',
+                              yAxis: 'max'
+                          }, {
+                              symbol: 'circle',
+                              label: {
+                                  normal: {
+                                      position: 'start',
+                                      formatter: '最大值'
+                                  }
+                              },
+                              type: 'max',
+                              name: '最高点'
+                          }]
+                      ]
+                  }
+              }
+          ]
+      })
+
     }
   }
 }
@@ -268,6 +371,7 @@ export default {
       }
       .toolbar {
         overflow: hidden;
+        margin-bottom 20px
         .week {
           width: 106px;
           height: 38px;
@@ -280,6 +384,26 @@ export default {
         }
         .timeSelect{
           float:right;
+        }
+      }
+      .example{
+        #censusWord{
+          float:left;
+          height:300px;
+          width 50%;
+          #censusWordBox{
+            margin-right 10px
+            height 100%
+          }
+        }
+        #censusTime{
+          float :left;
+          height:300px;
+          width 50%;
+          #censusTimeBox{
+            margin-left 10px
+            height 100%
+          }
         }
       }
     }
