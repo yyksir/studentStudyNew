@@ -1,8 +1,6 @@
 <!-- 信息管理 -->
 <template>
   <div class="containerSetting">
-    <div>
-    </div>
     <a-form-item class="formItem"
       label="账号"
       :label-col="{ span: 5 }"
@@ -185,6 +183,10 @@ export default {
       }
       if (this.userSex === '') {
         this.$message.warning('请选择性别')
+        return false
+      }
+      if (!this.userBirth) {
+        this.$message.warning('出生年月不能为空')
         return false
       }
       if (!this.userAddress) {
