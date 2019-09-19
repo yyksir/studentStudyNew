@@ -10,6 +10,8 @@
         :defaultSelectedKeys="['1']"
         :defaultOpenKeys="['sub1']"
         :inlineCollapsed="collapsed"
+        :openKeys="openKeys"
+        @openChange="onOpenChange"
       >
           <a-menu-item key="19"><nuxt-link to="/">
             <img class="icon" src="../assets/img/guanli.png">管理首页</nuxt-link>
@@ -68,27 +70,36 @@
 export default {
   data () {
     return {
-      collapsed: false
+      collapsed: false,
+      rootSubmenuKeys: ['sub6', 'sub5', 'sub2', 'sub3', 'sub4'],
+      openKeys: ['']
     }
   },
   methods: {
     toggleCollapsed () {
       this.collapsed = !this.collapsed
+    },
+    onOpenChange (openKeys) {
+      const latestOpenKey = openKeys.find(key => this.openKeys.indexOf(key) === -1)
+      if (this.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
+        this.openKeys = openKeys
+      } else {
+        this.openKeys = latestOpenKey ? [latestOpenKey] : []
+      }
     }
   }
 }
 </script>
 
 <style lang="stylus">
-#__nuxt{
+  #__nuxt {
     width 100%
     height 100%
-
-}
- #__layout{
-        width 100%
-        height 100%
-    }
+  }
+  #__layout {
+    width 100%
+    height 100%
+  }
 </style>
 <style lang="stylus" scoped>
   .app{
