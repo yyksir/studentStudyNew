@@ -35,9 +35,9 @@
       :wrapper-col="{ span: 12 }"
     >
       <a-input disabled v-show="!isEdit" v-model="userBirth"/>
+        <!-- :locale="locale" -->
       <a-date-picker style="width: 100%;" v-show="isEdit"
         :disabled="!isEdit"
-        :locale="locale"
         format="YYYY-MM-DD"
         :disabledDate="disabledDate"
         @change="onChange"
@@ -97,26 +97,12 @@
 </template>
 
 <script>
-// import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN';
-import moment from 'moment';
-import 'moment/locale/zh-cn';
-moment.locale('zh-cn');
+import moment from 'moment'
 
 export default {
   layout: 'index',
   data () {
     return {
-      mode1: 'time',
-      locale:{
-        'lang': {
-          "placeholder": "请选择日期",
-          "today": "今天",
-          "yearFormat": "YYYY",
-          "dateFormat": "MM/DD/YYYY",
-          "dayFormat": "DD",
-          "monthFormat": "MM"
-        }
-      },
       isEdit: false,
       // isEdit: true,
       // form: {},

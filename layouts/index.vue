@@ -61,18 +61,23 @@
       </a-menu>
     </div>
     <div class="right-menu">
-      <nuxt />
+      <a-locale-provider :locale="locale">
+        <nuxt />
+      </a-locale-provider>
     </div>
   </div>
 </template>
 
 <script>
+import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN'
+
 export default {
   data () {
     return {
       collapsed: false,
       rootSubmenuKeys: ['sub6', 'sub5', 'sub2', 'sub3', 'sub4'],
-      openKeys: ['']
+      openKeys: [''],
+      locale: zhCN,
     }
   },
   methods: {
