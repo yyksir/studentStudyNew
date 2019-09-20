@@ -2,7 +2,7 @@
   <div class="app">
     <div class="left-menu">
       <div class="logo">
-        <img src="../assets/img/logo.png" alt="">
+        <img @click="handleGoToHomePage" src="../assets/img/logo.png" title="点击去首页" alt="logo" style="cursor: pointer;">
       </div>
       <a-menu
         mode="inline"
@@ -91,6 +91,9 @@ export default {
       } else {
         this.openKeys = latestOpenKey ? [latestOpenKey] : []
       }
+    },
+    handleGoToHomePage () {
+      this.$router.push({path: '/'})
     }
   }
 }
