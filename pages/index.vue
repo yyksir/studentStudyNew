@@ -110,7 +110,6 @@ export default {
     
   },
   mounted() {
-    console.log(111, '网吧测试')
     this.getHasStudyCourse();
    // this.echartsInit();
     this.echartsData();
