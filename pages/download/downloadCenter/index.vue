@@ -13,7 +13,16 @@
       </div>
     </header>
     <div class="choose">
-      <div class="item"></div>
+
+      <div class="item" v-for="(item,index) of course" :key="index">
+        <div class="itemContent" :class="{chooseItem:currentIndex==index}" @click="handleChooseCourse(item,index)">
+          <img src="../../../assets/img/guanli.png" alt="">
+          <span>
+            {{item.name}}
+          </span>
+        </div>
+        
+      </div>
     </div>
     <div class="content">
        <div class="list">
@@ -49,7 +58,30 @@ export default {
   layout: 'index',
   data () {
     return {
-      visible:false
+      visible:false,
+      currentIndex:0,
+      course:[
+        {
+          name:"全部课程"
+        },
+        {
+          name:"免费课程"
+        },
+        {
+          name:"通用课程"
+        },
+        {
+          name:"小学课程"
+        },
+        {
+          name:"初中课程"
+        },
+        {
+          name:"高中课程"
+        },
+      ]
+
+
     }
   },
   methods:{
@@ -60,7 +92,12 @@ export default {
     hideModal () {
         this.visible = false
     },
-    cancle () {}
+    cancle () {
+
+    },
+    handleChooseCourse(item,index) {
+      this.currentIndex = index;
+    }
   }
 }
 </script>
@@ -92,6 +129,16 @@ export default {
       background white
       border-radius 6px
       margin-right 16px
+      float left
+      line-height 66px
+      cursor pointer
+      .itemContent{
+        padding-left 30px
+      }
+      .chooseItem{
+        background-color #e7355c
+        color #ffffff
+      } 
     }
   }
   .content{
@@ -147,6 +194,7 @@ export default {
             background #e7355c
             color white
             border-radius 6px
+            cursor pointer
           }
         }
       }

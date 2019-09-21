@@ -2,7 +2,7 @@
   <div class="app">
     <div class="left-menu">
       <div class="logo">
-        <img src="../assets/img/logo.png" alt="">
+        <img @click="handleGoToHomePage" src="../assets/img/logo.png" title="点击去首页" alt="logo" style="cursor: pointer;">
       </div>
       <a-menu
         mode="inline"
@@ -61,18 +61,23 @@
       </a-menu>
     </div>
     <div class="right-menu">
-      <nuxt />
+      <a-locale-provider :locale="locale">
+        <nuxt />
+      </a-locale-provider>
     </div>
   </div>
 </template>
 
 <script>
+import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN'
+
 export default {
   data () {
     return {
       collapsed: false,
       rootSubmenuKeys: ['sub6', 'sub5', 'sub2', 'sub3', 'sub4'],
-      openKeys: ['']
+      openKeys: [''],
+      locale: zhCN,
     }
   },
   methods: {
@@ -86,6 +91,9 @@ export default {
       } else {
         this.openKeys = latestOpenKey ? [latestOpenKey] : []
       }
+    },
+    handleGoToHomePage () {
+      this.$router.push({path: '/'})
     }
   }
 }
@@ -124,6 +132,7 @@ export default {
     .right-menu{
       background #f0f4f5
       flex 1
+      overflow: scroll;
       header{
           background white
           height 58px
