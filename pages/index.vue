@@ -28,14 +28,22 @@
     <div class="already">
       <div class="title">已学课程</div>
       <div class="list">
-        <div class="item" v-for="item of haveStudied" :key="item.id">
-          <div class="head">
-            <div class="little-title">认读课程</div>
+        <div class="item" v-for="item of haveStudied" :key="item.id" @click="handleStartStudy(item)">
+          <div class="head" :class="{'recognize':'1'==item.type,'spell':'2'==item.type,'dialect':'3'==item.type}">
+            <!-- 1 认读2 拼写3 辨音
+            .recognize
+            .spell
+            .dialect 
+          -->
+            <div class="little-title">{{item.type=='1'?"认读":item.type=='2'?"拼写":"辨音"}}课程</div>
             <div class="title">{{item.courseName}}</div>
           </div>
           <div class="foot">
-            <div class="txt">已学进度：{{item.isStart}}%</div>
-            <div class="btn">开始学习</div>
+            <div class="txt">已学进度：0%</div>
+            <!--  0 开始学习 1  继续学习 2 重新学习 -->
+            <div class="btn" :class="{'start':'0'==item.isStart,'go':'1'==item.isStart,'restart':'2'==item.isStart}">
+              {{item.isStart=='0'?"开始学习":(item.isStart=='1'?"继续学习":"重新学习")}}
+            </div>
           </div>
         </div>
       </div>
@@ -43,20 +51,20 @@
     <div class="chart">
       <div class="title">学习统计</div>
       <div class="toolbar">
-        <div class="weekend week">按周统计</div>
-        <div class="mounth week">按月统计</div>
+        
+        <div class="week" :class="{weekend:curentIndex==index}" v-for="(item,index) of tab" :key="index" @click="handleseletced(index)">按周统计</div>
         <div class="timeSelect">
           <a-range-picker @change="onChange" />
         </div>
       </div>
       <div class="example">
         <div id="censusWord">
-          <div id="censusWordBox">
+          <div id="censusWordBox" ref="censusWordBox">
 
           </div>
         </div>
         <div id="censusTime">
-          <div id="censusTimeBox">
+          <div id="censusTimeBox" ref="censusTimeBox">
 
           </div>
         </div>
@@ -70,18 +78,41 @@ export default {
   layout: 'index',
   data() {
     return {
-      name: "刘亚男",
+      name: "您",
+      tab:[
+        {
+          name:'按周统计',
+        },
+        {
+          name:'按月统计'
+        }
+
+      ],
+      curentIndex:0,
+      parames:{
+          censusType: 1,
+          startTimeStr: '',//2019-08-01
+          endTimeStr: '',//2019-10-01
+      },
       haveStudied:[],
-      learningTime:[],
-      locabulary:[],
+      learningTime:{
+        data:[],
+        date:[],
+      },
+      locabulary:{
+        data:[],
+        legend:[],
+        series:[],
+      },
     };
+  },
+  created() {
+    
   },
   mounted() {
     this.getHasStudyCourse();
-    this.getLearningLocabulary();
-    this.getLearningTime();
-    this.echartsInit();
-    this.initcensusWordBoxechart()
+   // this.echartsInit();
+    this.echartsData();
   },
   methods:{
     getHasStudyCourse() {
@@ -90,56 +121,81 @@ export default {
           curPagerNo: 1,
           pageSize: 10,
         }).then((res) => {
-          if (res && res.data && res.data.list && res.data.list.length>0 ) {
+          if (res && res.data ) {
             this.haveStudied = res.data.list;
           }else{
             this.haveStudied = [];
           }
         })
         .catch((err) => {
-          this.$message.warning('获取已学课程失败');
+          this.$message.warning('获取数据失败');
           console.log(err, 'err')
         })
     },
+    echartsData() {
+      this.getLearningLocabulary();
+      this.getLearningTime();
+    },
     getLearningLocabulary() {
-       this.$API.POST('/census/censusWord',{
-          censusType: 1,
-          // startTimeStr: '2019-08-01',
-          // endTimeStr: '2019-10-01',
-        }).then((res) => {
-          console.log(res)
-          if (res && res.data && res.data.list && res.data.list.length>0 ) {
-            this.haveStudied = res.data.list;
+       this.$API.POST('/census/censusWord',this.parames).then((res) => {
+          if (res && res.data ) {
+            this.locabulary ={
+                data : res.data.data,
+                legend : res.data.legend,
+                series : res.data.series,
+            }
           }else{
-            this.haveStudied = [];
+            this.locabulary.data = [];
+            this.locabulary.legend = [];
+            this.locabulary.series = [];
           }
+          this.echartsInit1(this.locabulary.legend,this.locabulary.data,this.locabulary.series)
         })
         .catch((err) => {
-          this.$message.warning('获取已学课程失败');
+          this.locabulary.data = [];
+          this.locabulary.legend = [];
+          this.locabulary.series = [];
+          this.echartsInit1(this.locabulary.legend,this.locabulary.data,this.locabulary.series)
+          this.$message.warning('获取数据失败');
           console.log(err, 'err')
         })
     },
     getLearningTime() {
-       this.$API.POST('/census/censusTime',{
-          censusType: 1,
-          // startTimeStr: '2019-08-01',
-          // endTimeStr: '2019-10-01',
-        }).then((res) => {
+       this.$API.POST('/census/censusTime',this.parames).then((res) => {
           //date 是时间 data是值
-          console.log(res)
-          if (res && res.data && res.data.list && res.data.list.length>0 ) {
-            this.learningTime = res.data.list;
+          if (res && res.data ) {
+            this.learningTime.data = res.data.data;
+            this.learningTime.date = res.data.date;
           }else{
-            this.learningTime = [];
+            this.learningTime.data = [];
+            this.learningTime.date = [];
           }
+          console.log(this.learningTime)
+          this.echartsInit(this.learningTime.date,this.learningTime.data )
         })
         .catch((err) => {
-          this.$message.warning('获取已学课程失败');
+          this.learningTime.data = [];
+          this.learningTime.date = [];
+          console.log(this.learningTime)
+          this.echartsInit(this.learningTime.date,this.learningTime.data )
+          this.$message.warning('获取数据失败');
           console.log(err, 'err')
         })
     },
     onChange(date, dateString) {
-      console.log(date, dateString);
+      if(dateString[0]!='') {
+        this.parames.censusType = 3;
+      }
+      this.parames.startTimeStr = dateString[0];
+      this.parames.endTimeStr =dateString[1];
+      this.echartsData();
+    },
+    handleseletced(index) {
+      this.curentIndex = index;
+      this.parames.censusType = index +1;
+      this.parames.startTimeStr = '';
+      this.parames.endTimeStr ='';
+      this.echartsData();
     },
     handlQuickOperation(index) {
       let getIndex = index;
@@ -161,99 +217,57 @@ export default {
           break;
       }
     },
-    echartsInit () {
-      // 找到容器
-      let myChart = this.$echarts.init(document.getElementById('censusTimeBox'))
+    echartsInit (date,data) {
+      // 找到容器date 是时间 data是值
+      let myChartTime = this.$echarts.init(this.$refs.censusTimeBox);
       // 开始渲染
-      myChart.setOption({
+      myChartTime.setOption(
+        {
         title: {text: '本周学习时长'},
-        tooltip: {},
+        tooltip: {
+          trigger: 'axis'
+        },
         xAxis: {
-          data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+            type: 'category',
+            data: date
         },
         yAxis: {},
-        series: [{
-          name: '销量',
-          type: 'bar',
-          data: [5, 20, 36, 10, 10, 20]
-        }]
-      })
+        series:[{
+          data: data,
+          type: 'bar'
+          }],
+      });
+      
     },
-    initcensusWordBoxechart() {
-      let myChart = this.$echarts.init(document.getElementById('censusWordBox'))
-      // 开始渲染
-      myChart.setOption({
+    echartsInit1(legend,data,series) {
+      let myChartWord = this.$echarts.init(this.$refs.censusWordBox);
+      myChartWord.setOption({
           title: {
-              text: '未来一周气温变化',
-              subtext: '纯属虚构'
+              text: '本周学习单词量',
+              // subtext: '纯属虚构'
           },
           tooltip: {
               trigger: 'axis'
           },
           legend: {
-              data:['最高气温','最低气温1']
+               data:legend //legend
           },
           xAxis:  {
               type: 'category',
               boundaryGap: false,
-              data: ['周一','周二','周三','周四','周五','周六','周日']
+              data: data//横坐标data
           },
           yAxis: {
               type: 'value',
               axisLabel: {
-                  formatter: '{value} °C'
+                  formatter: '{value} 个'
               }
           },
-          series: [
-              {
-                  name:'最高气温',
-                  type:'line',
-                  data:[11, 11, 15, 13, 12, 13, 10],
-                  markPoint: {
-                      data: [
-                          {type: 'max', name: '最大值'},
-                          {type: 'min', name: '最小值'}
-                      ]
-                  },
-                  markLine: {
-                      data: [
-                          {type: 'average', name: '平均值'}
-                      ]
-                  }
-              },
-              {
-                  name:'最低气温',
-                  type:'line',
-                  data:[1, -2, 2, 5, 3, 2, 0],
-                  markPoint: {
-                      data: [
-                          {name: '周最低', value: -2, xAxis: 1, yAxis: -1.5}
-                      ]
-                  },
-                  markLine: {
-                      data: [
-                          {type: 'average', name: '平均值'},
-                          [{
-                              symbol: 'none',
-                              x: '90%',
-                              yAxis: 'max'
-                          }, {
-                              symbol: 'circle',
-                              label: {
-                                  normal: {
-                                      position: 'start',
-                                      formatter: '最大值'
-                                  }
-                              },
-                              type: 'max',
-                              name: '最高点'
-                          }]
-                      ]
-                  }
-              }
-          ]
-      })
-
+          series:  series
+      });
+    },
+    handleStartStudy(course) {
+      console.log(course)
     }
   }
 }
@@ -291,11 +305,12 @@ export default {
       }
       .list {
         overflow: hidden;
-
+        min-height:180px;
         div {
           margin-right: 30px;
           margin-bottom:20px;
           float: left;
+          cursor pointer
         }
       }
     }
@@ -324,7 +339,7 @@ export default {
             height: 148px;
             overflow: hidden;
             width: 100%;
-            background: url('../static/bj1.png') no-repeat;
+           
             background-size: 100% 100%;
             .little-title {
               height: 16px;
@@ -336,6 +351,15 @@ export default {
             .title {
               text-align: center;
             }
+          }
+          .recognize{
+             background: url('../static/bj1.png') no-repeat;
+          }
+          .spell{
+            background: url('../static/bj2.png') no-repeat;
+          }
+          .dialect{
+            background: url('../static/bj3.png') no-repeat;
           }
           .foot {
             margin-top: 8px;
@@ -351,9 +375,18 @@ export default {
               width: 90px;
               height: 24px;
               line-height: 24px;
-              background: #e7355c;
               color: white;
               border-radius: 6px;
+              cursor pointer
+            }
+            .start{
+              background: #e7355c;
+            }
+            .go{
+              background: #3BBCA3;
+            }
+            .restart{
+              background-color :#23AAEA;
             }
           }
         }
@@ -381,19 +414,28 @@ export default {
           float: left;
           font-size: 14px;
           background: white;
+          cursor pointer
+        }
+        .weekend{
+          background-color #e7355c
+          color #ffffff
         }
         .timeSelect{
           float:right;
         }
       }
       .example{
+        overflow hidden
+        
         #censusWord{
           float:left;
           height:300px;
           width 50%;
           #censusWordBox{
             margin-right 10px
-            height 100%
+            height 100%;
+            background-color #ffffff
+
           }
         }
         #censusTime{
@@ -403,6 +445,7 @@ export default {
           #censusTimeBox{
             margin-left 10px
             height 100%
+            background-color #ffffff
           }
         }
       }

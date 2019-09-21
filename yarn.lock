@@ -2883,8 +2883,8 @@ duplexify@^3.4.2, duplexify@^3.6.0:
 
 echarts@^4.3.0:
   version "4.3.0"
-  resolved "https://registry.yarnpkg.com/echarts/-/echarts-4.3.0.tgz#3728c2b5e8f277898f7299b4fe1cfc537170abd5"
-  integrity sha512-tX2dAyhI9D78eVrlKhqJGdrM7Ku599HHvPxT2Pu6tgb/dBP8tYmkWjn8r1Ea9oABQxAKXr0p2/tG1OzKdzULbw==
+  resolved "http://r.cnpmjs.org/echarts/download/echarts-4.3.0.tgz#3728c2b5e8f277898f7299b4fe1cfc537170abd5"
+  integrity sha1-NyjCtejyd4mPcpm0/hz8U3Fwq9U=
   dependencies:
     zrender "4.1.0"
 

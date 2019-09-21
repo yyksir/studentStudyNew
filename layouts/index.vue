@@ -132,6 +132,7 @@ export default {
     .right-menu{
       background #f0f4f5
       flex 1
+      overflow: scroll;
       header{
           background white
           height 58px
