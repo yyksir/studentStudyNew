@@ -43,7 +43,8 @@
     <div class="chart">
       <div class="title">学习统计</div>
       <div class="toolbar">
-        <div class="weekend week">按周统计</div>
+        
+        <div class="weekend week" >按周统计</div>
         <div class="mounth week">按月统计</div>
         <div class="timeSelect">
           <a-range-picker @change="onChange" />
