@@ -35,7 +35,7 @@
             <div class="txt">
                课程简介
             </div>
-            <div class="btn">
+            <div class="btn" @click="handleclickDownload('11')">
               下载
             </div>
           </div>
@@ -44,7 +44,7 @@
     </div>
     <div class="page">
       <a-pagination
-        :defaultCurrent="2"
+        :defaultCurrent="1"
         :total="500"
         showQuickJumper
         @change="onChange"
@@ -79,13 +79,47 @@ export default {
         {
           name:"高中课程"
         },
-      ]
-
-
+      ],
+      parames:{
+        courseName:"",
+        payType:1,
+        gradeType:1,
+        curPagerNo:1,
+        pageSize:10,
+      },
     }
   },
+  mounted() {
+    this.getCourseList();
+  },
   methods:{
-    onSearch () {},
+    getCourseList() {
+      this.$API.POST('/course/getCourseLis',this.parames).then((res) => {
+          if (res && res.data ) {
+            console.log(res.data)
+          }
+        })
+        .catch((err) => {
+          this.$message.warning('获取数据失败');
+          console.log(err, 'err')
+        })
+    },
+    handleclickDownload(courseId) {
+       this.$API.POST('/course/downCourse',{
+         courseId
+       }).then((res) => {
+         this.$message.warning(res.showMsg);
+        })
+        .catch((err) => {
+          this.$message.warning('获取数据失败');
+          console.log(err, 'err')
+        })
+    },
+    onSearch (value) {
+      console.log(value);
+      this.parames.courseName = value;
+      this.getCourseList();
+    },
     onChange (pageNumber) {
       console.log('Page: ', pageNumber)
     },
