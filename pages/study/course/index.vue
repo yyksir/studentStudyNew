@@ -12,24 +12,31 @@
       </header>
       <div class="content">
         <div class="list">
-          <div class="item">
-            <div class="head">
-              <div class="little-title">认读课程</div>
-              <div class="title">新概念英语一</div>
+        <div class="item" v-for="item of getMyCourse" :key="item.id" @click="handleStartStudy(item)">
+          <div class="head" :class="{'recognize':'1'==item.type,'spell':'2'==item.type,'dialect':'3'==item.type}">
+            <!-- 1 认读2 拼写3 辨音
+            .recognize
+            .spell
+            .dialect 
+          -->
+            <div class="little-title">{{item.type=='1'?"认读":item.type=='2'?"拼写":"辨音"}}课程</div>
+            <div class="title">{{item.courseName}}</div>
+            <div>
+              <a-icon style="color:#fff" type="delete" />
             </div>
-            <div class="foot">
-              <div class="txt">
-              已学进度：45%
-              </div>
-              <div class="btn">
-              开始学习
-              </div>
+          </div>
+          <div class="foot">
+            <div class="txt">已学进度：0%</div>
+            <!--  0 开始学习 1  继续学习 2 重新学习 -->
+            <div class="btn" :class="{'start':'0'==item.isStart,'go':'1'==item.isStart,'restart':'2'==item.isStart}">
+              {{item.isStart=='0'?"开始学习":(item.isStart=='1'?"继续学习":"重新学习")}}
             </div>
           </div>
         </div>
+        </div>
       </div>
       <div class="page">
-        <a-pagination showQuickJumper :defaultCurrent="2" :total="500" @change="onChange" />
+        <a-pagination showQuickJumper :defaultCurrent="1" :total="totalPage" @change="onChange" />
       </div>
       <a-modal title=""
         okText="确认"
@@ -50,10 +57,36 @@ export default {
   layout: 'index',
   data () {
     return {
-      visible:false
+      visible:false,
+      parames:{
+        courseName:'',
+        curPagerNo:1,
+        pageSize:10,
+      },
+      totalPage:1,
+      getMyCourse:[],
     }
   },
+  mounted() {
+    this.getMyCourseData();
+  },
   methods:{
+    getMyCourseData() {
+      this.$API.POST('/course/getMyCourse',this.parames).then((res) => {
+        console.log((res))
+          if (res && res.data&& res.data.list.length>0 ) {
+            this.getMyCourse = res.data.list;
+            
+          }else{
+            this.getMyCourse = [];
+          }
+          this.totalPage = res.data.totalPageNumber
+        })
+        .catch((err) => {
+          this.$message.warning('获取数据失败');
+          console.log(err, 'err')
+        })
+    },
     onSearch () {},
     onChange (pageNumber) {
       console.log('Page: ', pageNumber);
@@ -61,7 +94,7 @@ export default {
     hideModal() {
       this.visible = false
     },
-    cancle () {}
+    cancle () {},
   }
 }
 </script>
@@ -102,7 +135,6 @@ export default {
             height 148px
             overflow hidden
             width 100%
-            background url(../../../static/bj1.png) no-repeat
             background-size 100% 100%
             .little-title{
               height 16px
@@ -120,6 +152,15 @@ export default {
               color: #3a466c;
             }
           }
+          .recognize{
+             background: url('../../../static/bj1.png') no-repeat;
+          }
+          .spell{
+            background: url('../../../static/bj2.png') no-repeat;
+          }
+          .dialect{
+            background: url('../../../static/bj3.png') no-repeat;
+          }
           .foot{
             margin-top 8px
             overflow hidden
@@ -133,9 +174,18 @@ export default {
               width 90px
               height 24px
               line-height 24px
-              background #e7355c
+              cursor pointer
               color white
               border-radius 6px
+            }
+            .start{
+              background: #e7355c;
+            }
+            .go{
+              background: #3BBCA3;
+            }
+            .restart{
+              background-color :#23AAEA;
             }
           }
         }
