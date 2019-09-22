@@ -37,10 +37,10 @@
         >
           <a-select-option
             v-for="course of courseArr"
-            :key="course.id"
-            :value="course.id"
+            :key="course.courseId"
+            :value="course.courseId"
           >
-            {{course.name}}
+            {{course.courseName}}
           </a-select-option>
         </a-select>
       </div>
@@ -68,29 +68,48 @@
       >
          暂无数据
       </div>
-      <drop-select v-else
-        v-for="item of 6"
-        :key="item"
+      <drop-select v-else class="dropSelect"
+        v-for="queryRes of queryResArr"
+        :key="queryRes.id"
       >
         <template v-slot:top>
           <div class="contentTop">
-            <b style="color: green;font-size: 24px;">because</b> 美[brkoz] 4 :conj.因为，由于 prep.因为某人(某事物) nbecause 英[orkoz] 4
+            <img v-if="queryRes.type === 1" src="../../../assets/img/1.png" style="display: block;margin-right: 14px;">
+            <img v-if="queryRes.type === 2" src="../../../assets/img/2.png" style="display: block;margin-right: 14px;">
+            <img v-if="queryRes.type === 3" src="../../../assets/img/3.png" style="display: block;margin-right: 14px;">
+
+            <b style=";min-width: 80px;color: green;font-size: 24px;">{{queryRes.wordName}}</b>
+            <span style="margin-right: 15px;">英&nbsp;&nbsp;&nbsp;{{queryRes.englishPronu}}</span>
+            <img src="../../../assets/img/voicePause.png" style="margin-right: 30px;" @click="handleBtnVoiceEnClick">
+            <audio id="audioDomEn" refs="audioDomEn">
+              <source id="tts_source_en" :src="queryRes.enVoiceSrc" type="audio/mpeg">
+              <embed id="tts_embed_en" height="0" width="0" src="">
+              您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
+            </audio>
+            <span style="margin-right: 15px;">美&nbsp;&nbsp;&nbsp;{{queryRes.americaPronu}}</span>
+            <img src="../../../assets/img/voicePause.png" style="margin-right: 30px;" @click="handleBtnVoiceUSAClick">
+            <audio id="audioDomUsa" refs="audioDomUsa">
+              <source id="tts_source_usa" :src="queryRes.usaVoiceSrc" type="audio/mpeg">
+              <embed id="tts_embed_usa" height="0" width="0" src="">
+              您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
+            </audio>
+            <span>{{queryRes.meaning}}</span>
           </div>
         </template>
         <template v-slot:bottom>
           <div class="contentBottom">
-            【例】 Because only I have the ability. 因为只有我才有那能耐<br>
-            【例】 But because of who I am with you 而是因为我喜欢和你在一起的感觉。<br>
-            【例】 But because of who l am when I am with yqu 而是因为我喜欢与你在一起时的那个我。<br>
-            【辨形】 well并，好，健康；swell膨胀；farewell告别；dwell居住<br>
-            【参考】 well-known adj.著名的；well-read adj.博学的<br>
-            【搭配】 as well也；as well as连同；do well in在某方面做得好
+            <span style="display: block;width: 100%;">【例】{{queryRes.exampleSentence1}}</span>
+            <span style="display: block;width: 100%;">【例】{{queryRes.exampleSentence2}}</span>
+            <span style="display: block;width: 100%;">【例】{{queryRes.exampleSentence3}}</span>
           </div>
         </template>
       </drop-select>
     </main>
+    <div v-show="queryResArr.length > 0 && queryResArr.length % 2 === 0" style="width: 100%;height: 2px;box-sizing: border-box;padding: 0 30px;">
+      <div style="width: 100%;height: 2px;background-color: #fff;"></div>
+    </div>
     <footer class="footerContainer">
-        <!-- :total="rowsCount" -->
+      <!-- :total="rowsCount" -->
       <a-pagination class="pagination"
         ref="paginationssssss"
         :itemRender="itemRender"
@@ -122,7 +141,7 @@ export default {
       ],
       type: 0, // 学习类型
       courseArr: [
-        { id: 0, name: '全部'}
+        { courseId: 0, courseName: '全部'}
       ],
       courseId: 0, // 学习课程
       curPagerNo: 1, // 当前页
@@ -132,14 +151,37 @@ export default {
       queryResObj: {},
       queryResArr: [],
       rowsCount: 0, // 一共有多少条数据
-      totalPageNumber: 0 // 一共有几页
+      totalPageNumber: 0, // 一共有几页
+      urlVoice: 'http://121.40.138.216/'
     }
   },
   components: {
     DropSelect: () => import('../../../components/DropSelect.vue')
   },
+  created () {
+    this.init()
+  },
   methods: {
     moment,
+    init () {
+      this.getCourseArr()
+    },
+    getCourseArr () {
+      this.$API.POST('/course/getServerMyCourse', {})
+        .then((res) => {
+          if (res && res.data && res.data&& res.data.length > 0) {
+            this.courseArr = res.data
+          } else {
+            this.courseArr = []
+            this.$message.warning('暂无学习课程下拉框的数据')
+          }
+        })
+        .catch((err) => {
+          this.courseArr = []
+          console.log(err, 'err 查询学习课程下拉框 接口调用失败')
+          this.$message.error('查询学习课程下拉框 接口调用失败, 联系管理员')
+        })
+    },
     // 学习类型改变
     handleStudyTypeChange (val, options) {
       // console.log(val, 'val 学习类型')
@@ -237,8 +279,13 @@ export default {
 
       this.$API.POST('/census/getMyUnknow', params)
         .then((res) => {
-          console.log(res.data, 'res.data')
           if (res && res.data && res.data.list && res.data.list.length > 0) {
+            const list = res.data.list
+            list.forEach((ele) => {
+              // [0 是英式发音, 1 是美式发音]
+              ele['enVoiceSrc'] = this.urlVoice + ele.wordName + 0 + '.mp3'
+              ele['usaVoiceSrc'] = this.urlVoice + ele.wordName + 1 + '.mp3'
+            })
             this.queryResObj = res.data
             this.queryResArr = res.data.list
             this.curPagerNo = res.data.curPagerNo
@@ -261,7 +308,22 @@ export default {
       this.queryResArr = []
       this.curPagerNo = 1
       this.pageSize = 10
+      this.rowsCount = 0
       this.totalPageNumber = 0
+    },
+    // 英式发音
+    handleBtnVoiceEnClick () {
+      // console.log(this.$refs.audioDomEn, 'audioDomEn')
+      const audioDomEn = document.getElementById('audioDomEn')
+      audioDomEn.play()
+      console.log(audioDomEn, 'audioDomEn')
+    },
+    // 美式发音
+    handleBtnVoiceUSAClick () {
+      // console.log(this.$refs.audioDomUsa, 'audioDomUsa')
+      const audioDomUsa = document.getElementById('audioDomUsa')
+      audioDomUsa.play()
+      console.log(audioDomUsa, 'audioDomUsa')
     },
     // 导出单词
     // handleExportWord () {},
@@ -343,12 +405,19 @@ export default {
       max-height 540px
       padding 0 30px
       overflow-y scroll
+      .dropSelect:nth-child(even)
+        background-color transparent
+      .dropSelect:nth-child(odd)
+        background-color #fff
       .contentTop
         width 100%
+        display flex
+        justify-content flex-start
+        align-items center
       .contentBottom
         width 100%
         box-sizing border-box
-        padding 0 46px
+        padding 10px 46px
     .footerContainer
       box-sizing border-box
       display flex

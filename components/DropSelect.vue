@@ -1,8 +1,10 @@
 <template>
   <div class="container">
-    <div class="top" @click="handleClick">
+    <div class="top">
       <slot name="top">按钮</slot>
-      <div class="arrow" :class="{ 'arrowTop' : arrowTop, 'arrowBottom': arrowBottom}"></div>
+      <div class="btn" @click="handleClick">
+        <div class="arrow" :class="{ 'arrowTop' : arrowTop, 'arrowBottom': arrowBottom}"></div>
+      </div>
     </div>
     <transition name="showlist">
       <div v-show="isShow">
@@ -47,13 +49,20 @@ export default {
       justify-content: space-between;
       align-items: center;
     }
-    .arrow {
-      width: 0;
-      height: 0;
-      border-width: 7px;
-      border-style: solid;
-      border-color:#aaa transparent transparent transparent;
-    }
+      .btn {
+        width: 58px;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .arrow {
+        width: 0;
+        height: 0;
+        border-width: 7px;
+        border-style: solid;
+        border-color:#aaa transparent transparent transparent;
+      }
   .showlist-enter-active, .showlist-leave-active {
     transition: all .3s;
     transform: translateY(0);
