@@ -16,7 +16,7 @@
 
       <div class="item" v-for="(item,index) of course" :key="index">
         <div class="itemContent" :class="{chooseItem:currentIndex==index}" @click="handleChooseCourse(item,index)">
-          <img src="../../../assets/img/guanli.png" alt="">
+          <!-- <img src="../../../assets/img/guanli.png" alt=""> -->
           <span>
             {{item.name}}
           </span>
@@ -45,7 +45,7 @@
     <div class="page">
       <a-pagination
         :defaultCurrent="1"
-        :total="500"
+        :total="totalPageNumber"
         showQuickJumper
         @change="onChange"
       />
@@ -62,31 +62,39 @@ export default {
       currentIndex:0,
       course:[
         {
-          name:"全部课程"
+          name:"全部课程",
+          value:''
         },
         {
-          name:"免费课程"
+          name:"免费课程",
+          value:'0'
         },
         {
-          name:"通用课程"
+          name:"通用课程",
+          value:'1'
         },
         {
-          name:"小学课程"
+          name:"小学课程",
+          value:'3'
         },
         {
-          name:"初中课程"
+          name:"初中课程",
+          value:'4'
         },
         {
-          name:"高中课程"
+          name:"高中课程",
+          value:'5'
         },
       ],
       parames:{
         courseName:"",
-        payType:1,
-        gradeType:1,
+        payType:0, //1收费 0免费
+        gradeType:'',
         curPagerNo:1,
         pageSize:10,
       },
+      totalPageNumber:1,
+      getDownloadCenterList:[],
     }
   },
   mounted() {
@@ -96,8 +104,10 @@ export default {
     getCourseList() {
       this.$API.POST('/course/getCourseLis',this.parames).then((res) => {
           if (res && res.data ) {
+            this.getDownloadCenterList = res.data.list; 
             console.log(res.data)
           }
+          this.totalPageNumber = res.data.totalPageNumber;
         })
         .catch((err) => {
           this.$message.warning('获取数据失败');
@@ -116,12 +126,12 @@ export default {
         })
     },
     onSearch (value) {
-      console.log(value);
       this.parames.courseName = value;
       this.getCourseList();
     },
     onChange (pageNumber) {
-      console.log('Page: ', pageNumber)
+      this.parames.curPagerNo = pageNumber;
+      this.getCourseList();
     },
     hideModal () {
         this.visible = false
@@ -131,8 +141,16 @@ export default {
     },
     handleChooseCourse(item,index) {
       this.currentIndex = index;
-    }
+      if(item.name =="免费课程") {
+        this.parames.payType = 0;
+      }else{
+        this.parames.gradeType = item.value;
+      }
+        this.getCourseList();
+    },
+    
   }
+
 }
 </script>
 

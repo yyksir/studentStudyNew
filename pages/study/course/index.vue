@@ -12,7 +12,7 @@
       </header>
       <div class="content">
         <div class="list">
-        <div class="item" v-for="item of getMyCourse" :key="item.id" @click="handleStartStudy(item)">
+        <div class="item" v-for="item of getMyCourse" :key="item.id" >
           <div class="head" :class="{'recognize':'1'==item.type,'spell':'2'==item.type,'dialect':'3'==item.type}">
             <!-- 1 认读2 拼写3 辨音
             .recognize
@@ -21,14 +21,17 @@
           -->
             <div class="little-title">{{item.type=='1'?"认读":item.type=='2'?"拼写":"辨音"}}课程</div>
             <div class="title">{{item.courseName}}</div>
-            <div>
-              <a-icon style="color:#fff" type="delete" />
+            <div class="delteItem">
+              <a-icon style="color:#000" @click="handleDeleteItem(item)" type="delete" />
             </div>
           </div>
           <div class="foot">
             <div class="txt">已学进度：0%</div>
             <!--  0 开始学习 1  继续学习 2 重新学习 -->
-            <div class="btn" :class="{'start':'0'==item.isStart,'go':'1'==item.isStart,'restart':'2'==item.isStart}">
+            <div 
+            class="btn" 
+            @click="handleStartStudy(item)"
+            :class="{'start':'0'==item.isStart,'go':'1'==item.isStart,'restart':'2'==item.isStart}">
               {{item.isStart=='0'?"开始学习":(item.isStart=='1'?"继续学习":"重新学习")}}
             </div>
           </div>
@@ -45,9 +48,9 @@
         @ok="hideModal"
         @cancelText='cancle'
       >
-        <p>Bla bla ...</p>
-        <p>Bla bla ...</p>
-        <p>Bla bla ...</p>
+      <div>
+        你确实想删除此课程吗?(删除后可重新下载)
+      </div>
       </a-modal>
     </div>
 </template>
@@ -87,14 +90,34 @@ export default {
           console.log(err, 'err')
         })
     },
-    onSearch () {},
+    onSearch (value) {
+      console.log(value)
+    },
     onChange (pageNumber) {
+      this.parames.curPagerNo = pageNumber;
+      this.getMyCourseData();
       console.log('Page: ', pageNumber);
     },
     hideModal() {
       this.visible = false
     },
     cancle () {},
+    handleDeleteItem(item) {
+        this.$API.POST('/course/delMyCourse',{
+          id:item.id
+        }).then((res) => {
+        console.log((res))
+          this.$message.success(res.data);
+          this.getMyCourseData()
+        })
+        .catch((err) => {
+          this.$message.warning('获取数据失败');
+          console.log(err, 'err')
+        })
+    },
+    handleStartStudy(item) {
+      console.log(item)
+    }
   }
 }
 </script>
@@ -131,11 +154,18 @@ export default {
           margin-right 24px
           width 244px
           height 182px
+          
           .head{
             height 148px
             overflow hidden
             width 100%
             background-size 100% 100%
+            position relative
+            &:hover {
+            .delteItem{
+                display  block;
+              }
+            }
             .little-title{
               height 16px
               font-size 16px
@@ -150,6 +180,15 @@ export default {
               margin-bottom: 22px;
               font-size: 22px;
               color: #3a466c;
+            }
+            .delteItem{
+              background-color: rgba(255,255,255,0.5);
+              position: absolute;
+              bottom: 0;
+              width: 100%;
+              text-align: center;
+              cursor: pointer;
+              display none
             }
           }
           .recognize{
