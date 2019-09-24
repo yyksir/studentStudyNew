@@ -65,7 +65,7 @@ export default {
       course:[
         {
           name:"全部课程",
-          value:''
+          value:'-1'
         },
         {
           name:"免费课程",
@@ -74,6 +74,10 @@ export default {
         {
           name:"通用课程",
           value:'1'
+        },
+        {
+          name:"幼儿课程",
+          value:'2'
         },
         {
           name:"小学课程",
@@ -87,11 +91,18 @@ export default {
           name:"高中课程",
           value:'5'
         },
+        {
+          name:"大学课程",
+          value:'6'
+        },
+        {
+          name:"出国课程",
+          value:'5'
+        },
       ],
       parames:{
         courseName:"",
-        payType:0, //1收费 0免费
-        gradeType:'',
+        type:"-1",
         curPagerNo:1,
         pageSize:10,
       },
@@ -148,12 +159,8 @@ export default {
     },
     handleChooseCourse(item,index) {
       this.currentIndex = index;
-      if(item.name =="免费课程") {
-        this.parames.payType = 0;
-      }else{
-        this.parames.gradeType = item.value;
-      }
-        this.getCourseList();
+      this.parames.type = item.value;
+      this.getCourseList();
     },
     
   }
@@ -191,6 +198,7 @@ export default {
       float left
       line-height 66px
       cursor pointer
+      margin-bottom 20px
       .itemContent{
         padding-left 30px
       }

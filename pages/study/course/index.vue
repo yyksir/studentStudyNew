@@ -21,8 +21,8 @@
           -->
             <div class="little-title">{{item.type=='1'?"认读":item.type=='2'?"拼写":"辨音"}}课程</div>
             <div class="title">{{item.courseName}}</div>
-            <div class="delteItem">
-              <a-icon style="color:#000" @click="handleDeleteItem(item)" type="delete" />
+            <div class="delteItem" @click="handleDeleteItem(item)">
+              <a-icon style="color:#000"  type="delete" />
             </div>
           </div>
           <div class="foot">
@@ -41,16 +41,24 @@
       <div class="page">
         <a-pagination showQuickJumper :defaultCurrent="1" :total="totalPage" @change="onChange" />
       </div>
-      <a-modal title=""
-        okText="确认"
-        cancelText="取消"
+      
+      <a-modal 
+        title="提示"
         v-model="visible"
-        @ok="hideModal"
-        @cancelText='cancle'
+        @cancel="handleCancel"
+        :footer="null"
       >
-      <div>
-        你确实想删除此课程吗?(删除后可重新下载)
-      </div>
+        <div style="position:relative;overflow: hidden;">
+            <a-button type="primary" style="float:left"   @click="handlePageTest">
+              章节学前测试
+            </a-button>
+            <a-button  type="primary" style="position: absolute;top: 50%;left: 50%;transform:translate(-50%,-50%);"   @click="handleActionStusy">
+              开始学习
+            </a-button>
+            <a-button type="primary" style="float:right"  @click="handleTotal">
+              学前总测试
+            </a-button>
+        </div>
       </a-modal>
     </div>
 </template>
@@ -91,31 +99,49 @@ export default {
         })
     },
     onSearch (value) {
-      console.log(value)
+      this.parames.courseName = value;
+      this.getMyCourseData();
     },
     onChange (pageNumber) {
       this.parames.curPagerNo = pageNumber;
       this.getMyCourseData();
-      console.log('Page: ', pageNumber);
     },
-    hideModal() {
+    handleCancel() {
       this.visible = false
     },
-    cancle () {},
+    handlePageTest () {//章节测试
+      console.log("cancel")
+    },
+    handleActionStusy() {//开始学习
+
+    },
+    handleTotal() { //总测试
+
+    },
     handleDeleteItem(item) {
-        this.$API.POST('/course/delMyCourse',{
-          id:item.id
-        }).then((res) => {
-        console.log((res))
-          this.$message.success(res.data);
-          this.getMyCourseData()
-        })
-        .catch((err) => {
-          this.$message.warning('获取数据失败');
-          console.log(err, 'err')
-        })
+      this.$confirm({
+        title: '提示',
+        content: '你确实想删除此课程吗?(删除后可重新下载)',
+        okText: '确认',
+        cancelText: '取消',
+        onOk() {
+          this.$API.POST('/course/delMyCourse',{
+            id:item.id
+          }).then((res) => {
+          console.log((res))
+            this.$message.success(res.data);
+            this.getMyCourseData()
+          })
+          .catch((err) => {
+            this.$message.warning('获取数据失败');
+            console.log(err, 'err')
+          })
+        },
+      });
+
     },
     handleStartStudy(item) {
+      this.visible = true;
       console.log(item)
     }
   }
