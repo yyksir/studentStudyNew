@@ -25,8 +25,8 @@
       </div>
     </div>
     <div class="content">
-       <div class="list">
-        <div class="item">
+       <div class="list" v-if="getDownloadCenterList.length>0">
+        <div class="item" v-for="item in getDownloadCenterList" :key="item.id">
           <div class="head">
               <div class="little-title">认读课程</div>
               <div class="title">新概念英语一</div>
@@ -35,11 +35,13 @@
             <div class="txt">
                课程简介
             </div>
-            <div class="btn" @click="handleclickDownload('11')">
-              下载
+            <div class="btn" :class="{'download':item.isDown=='1', 'hasDownLoad':item.isDown=='0'}" @click="handleclickDownload(item)" v-text="item.isDown=='1'?'已下载':'下载'">
             </div>
           </div>
         </div>
+      </div>
+      <div v-else style="text-align: center;">
+        暂无数据
       </div>
     </div>
     <div class="page">
@@ -114,11 +116,16 @@ export default {
           console.log(err, 'err')
         })
     },
-    handleclickDownload(courseId) {
+    handleclickDownload(item) {
+      if(item.isDown=='1') {
+        this.$message.warning('该课程已经下载,请到我的课程查看');
+        return;
+      }
        this.$API.POST('/course/downCourse',{
-         courseId
+         courseId:item.id,
        }).then((res) => {
          this.$message.warning(res.showMsg);
+         this.getCourseList();
         })
         .catch((err) => {
           this.$message.warning('获取数据失败');
@@ -243,10 +250,16 @@ export default {
             width 90px
             height 24px
             line-height 24px
-            background #e7355c
+            
             color white
             border-radius 6px
             cursor pointer
+          }
+          .download{
+            background-color #F6AB00
+          }
+          .hasDownLoad{
+           background-color  #e7355c
           }
         }
       }
