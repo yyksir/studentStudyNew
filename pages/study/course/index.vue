@@ -141,7 +141,7 @@ export default {
       }else{
         this.$router.push({path: '/study/dialect/',
         query: {
-          parames:this.selectItem
+          res:JSON.stringify(this.selectItem)
           } 
         })
       }
