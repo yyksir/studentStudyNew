@@ -1,11 +1,12 @@
 <template>
     <div>
-
+        认读
     </div>
 </template>
 
 <script>
 export default {
+    layout: 'index',
     
 
 }

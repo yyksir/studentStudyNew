@@ -44,7 +44,7 @@
           <a-radio-group @change="onChange" v-model="course">
             <a-radio :style="radioStyle" :value="0">全部</a-radio>
             <a-radio :style="radioStyle"
-              v-for="(info, index) of radioArr"
+              v-for="(info) of radioArr"
               :key="info.id"
               :value="info.id"
             >

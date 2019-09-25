@@ -32,7 +32,7 @@
             class="btn" 
             @click="handleStartStudy(item)"
             :class="{'start':'0'==item.isStart,'go':'1'==item.isStart,'restart':'2'==item.isStart}">
-              {{item.isStart=='0'?"开始学习":(item.isStart=='1'?"继续学习":"重新学习")}}
+              {{item.isStart=='1'?"继续学习":(item.isStart=='2'?"重新学习":"开始学习")}}
             </div>
           </div>
         </div>
@@ -49,6 +49,7 @@
         :footer="null"
       >
         <div style="position:relative;overflow: hidden;">
+          <div v-if="selectItem.isStart=='0'">
             <a-button type="primary" style="float:left"   @click="handlePageTest">
               章节学前测试
             </a-button>
@@ -57,7 +58,17 @@
             </a-button>
             <a-button type="primary" style="float:right"  @click="handleTotal">
               学前总测试
-            </a-button>
+            </a-button> 
+        </div>
+        <div v-else-if="selectItem.isStart=='1'">
+          <a-button type="primary" style="float:left"   @click="handlePageTest">
+            继续学习
+          </a-button>
+          <a-button type="primary" style="float:right"  @click="handleDeleteStudyRecord">
+            删除学习记录
+          </a-button> 
+
+        </div>
         </div>
       </a-modal>
     </div>
@@ -76,6 +87,7 @@ export default {
       },
       totalPage:1,
       getMyCourse:[],
+      selectItem:{},
     }
   },
   mounted() {
@@ -113,7 +125,26 @@ export default {
       console.log("cancel")
     },
     handleActionStusy() {//开始学习
-
+    //item.type=='1'?"认读":item.type=='2'?"拼写":"辨音"
+      if(this.selectItem.type=='1') {
+        this.$router.push({path: '/study/recognize/',
+        query: {
+          parames: JSON.stringify(this.selectItem) 
+          } 
+        })
+      }else if(this.selectItem.type=='2'){
+        this.$router.push({path: '/study/spell/',
+        query: {
+          parames:JSON.stringify(this.selectItem) 
+          } 
+        })
+      }else{
+        this.$router.push({path: '/study/dialect/',
+        query: {
+          parames:this.selectItem
+          } 
+        })
+      }
     },
     handleTotal() { //总测试
 
@@ -138,11 +169,23 @@ export default {
           })
         },
       });
-
     },
     handleStartStudy(item) {
       this.visible = true;
+      this.selectItem = item;
       console.log(item)
+    },
+    handleuptCourseIsStarted() {
+      this.$API.POST('/course/uptCourseIsStarted',{
+        id:this.selectItem.id,
+      }).then((res) => {
+        console.log(res.data)
+      }).catch((err) => {
+        console.log(err, 'err')
+      })
+    },
+    handleDeleteStudyRecord() {
+
     }
   }
 }
