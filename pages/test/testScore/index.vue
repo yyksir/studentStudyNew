@@ -1,15 +1,218 @@
 <!-- 测试成绩 -->
 <template>
-  <div>
-    测试成绩
+  <div class="container">
+    <header class="header">
+      <span class="title">测试成绩</span>
+    </header>
+    <main class="mainContainer">
+      <a-table class="tableElem" style="width: 100%;height: 100%;"
+        :dataSource="tableData"
+        :columns="tableColumns"
+        :scroll="{ x: 1500, y: 300 }"
+        :pagination="false"
+        :loading="loading"
+      >
+        <div class="btnContainer" slot="action" slot-scope="text">
+          <span class="icon iconfont icon-chakan" @click="handleBtnDetailClick(text)">查看</span>
+          <a-popconfirm title="确定要删除此条信息吗 ？" placement="left" okText="确定" cancelText="取消"
+            @confirm="handleConfirm(text)"
+          >
+            <span class="icon iconfont icon-shanchu"><span>删除</span></span>
+          </a-popconfirm>
+        </div>
+      </a-table>
+      <div class="paginationContainer">
+        <a-pagination class="pagination"
+          :itemRender="itemRender"
+          :total="rowsCount"
+          v-model="curPagerNo"
+          :defaultPageSize="pageSize"
+          showQuickJumper
+          @change="handlePageSizeChange"
+        >
+        </a-pagination>
+        <a-button @click="handleBtnConfirmClick">确定</a-button>
+      </div>
+    </main>
   </div>
 </template>
 
 <script>
+import moment from 'moment'
+const columns = [
+  { title: '测试内容', width: 150, dataIndex: 'courseName', key: '0',fixed: 'left'},
+  { title: '测试时间', width: 150, dataIndex: 'createTime', key: '1' },
+  { title: '测试词汇', width: 150, dataIndex: 'testType', key: '2' },
+  { title: '测试总览', width: 150, dataIndex: 'totalNum', key: '3' },
+  { title: '测试时长', width: 150, dataIndex: 'continueTime', key: '4' },
+  { title: '测试成绩', width: 100, dataIndex: 'score', key: '5' },
+  {
+    title: '操作',
+    key: 'operation',
+    width: 60,
+    scopedSlots: { customRender: 'action' }
+  }
+]
 export default {
-  layout: 'index'
+  layout: 'index',
+  data () {
+    return {
+      tableData: [],
+      tableColumns: columns,
+      loading: false,
+      rowsCount: 0, // 一共有多少条数据
+      curPagerNo: 1,
+      pageSize: 10,
+      totalPageNumber: 0, // 一共有几页
+      queryResArr: []
+    }
+  },
+  created () {
+    console.log(this, 'this')
+    this.init()
+  },
+  methods: {
+    init () {
+      this.queryInfo()
+    },
+    queryInfo () {
+      this.loading = true
+      this.$API.POST('/census/getTestRrecord', {
+        curPagerNo: this.curPagerNo,
+        pageSize: this.pageSize
+      })
+        .then((res) => {
+          this.loading = false
+          if (res && res.data && res.data.list && res.data.list.length < 1) {
+            this.$message.warning('暂无数据')
+          } else if (res && res.data && res.data.list && res.data.list.length > 0) {
+            this.setData(res.data)
+          } else {
+            console.log(res, 'res error')
+            this.$message.warning('查询学习成绩列表接口调用失败, 请联系管理员')
+          }
+        })
+        .catch((err) => {
+          this.loading = false
+          console.log(err, 'err 查询学习成绩列表接口调用失败')
+          this.setData({})
+          this.$message.error('查询学习成绩列表接口调用失败, 联系管理员')
+        })
+    },
+    setData (data) {
+      console.log(data, 'res')
+      this.rowsCount = data.rowsCount || 0
+      this.curPagerNo = data.curPagerNo || 0
+      this.pageSize = data.pageSize || 10
+      this.totalPageNumber = data.totalPageNumber || 0
+      if (!data.list) {
+        this.tableData = []
+        return
+      }
+      let resArr = data.list
+      resArr.forEach((ele, index) => {
+        resArr[index].createTime = moment(resArr[index].createTime).format('YYYY-MM-DD')
+        resArr[index].testType = resArr[index].testType === 0 ? '学前测' : (resArr[index].testType === 1 ? '学后测' : '学前总测试')
+        resArr[index]['key'] = resArr[index].id
+        resArr[index].score = resArr[index].score + '分'
+      })
+      this.tableData = resArr
+    },
+    // 自定义页码的结构
+    itemRender(current, type, originalElement) {
+      if (type === 'prev') {
+        return <a href="javascript:;">上一页</a>
+      } else if (type === 'next') {
+        return <a href="javascript:;">下一页</a>
+      }
+      return originalElement
+    },
+    // 页码改变
+    handlePageSizeChange (page, pageSize) {
+      if (this.queryResArr.length < 1) { return }
+      this.curPagerNo = page
+      this.pageSize = pageSize
+      this.queryInfo()
+    },
+    // 分页的确定按钮
+    handleBtnConfirmClick () {
+      if (!this.totalPageNumber) {
+        this.$message.warning('暂无数据, 请点击查询按钮')
+        return
+      }
+        // 第一种方法
+      const dom = document.getElementsByClassName('ant-pagination-options-quick-jumper')
+      const pageValue = dom[0].children[0].value
+      if (pageValue > this.totalPageNumber) {
+        this.$message.warning('页码超出查询范围')
+        return
+      }
+      this.curPagerNo = pageValue * 1
+      this.queryInfo()
+    },
+    // 查看
+    handleBtnDetailClick (text) {
+      console.log(text, 'text 查看')
+      this.$message.warning(text.id)
+    },
+    // 删除
+    handleConfirm (text) {
+      this.$message.warning(text.id)
+      console.log(text, 'text 删除')
+    },
+  }
 }
 </script>
 
 <style lang="stylus" scoped>
+  .container
+    display flex
+    flex-direction column
+    justify-content flex-start
+    align-items center
+    width 100%
+    height 100%
+    .header
+      box-sizing border-box
+      width 100%
+      height 56px
+      padding 0 30px
+      background-color #fff
+      .title
+        line-height 56px
+        font-size 20px
+        font-weight 600
+    .mainContainer
+      box-sizing border-box
+      width 100%
+      height auto
+      padding 40px
+      .tableElem
+        width 100%
+        height 100%
+        .btnContainer
+          height 100%
+          display flex
+          flex-direction column
+          justify-content center
+          align-items center
+          .icon
+            cursor pointer
+          .icon::before
+            margin-right 10px
+      .paginationContainer
+        box-sizing border-box
+        display flex
+        justify-content center
+        align-items center
+        width 100%
+        height 100px
+        padding 0 30px
+        .pagination
+          margin-right 20px
+          & /deep/ .ant-pagination-item-active
+            background-color #f5222d
+            border-color #f5222d
+          & /deep/ .ant-pagination-item-active a
+            color #fff
 </style>
