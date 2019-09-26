@@ -211,4 +211,5 @@ export default {
           border-radius 8px
           background-color #ff4d4f
           color #fff
+          cursor pointer
 </style>
