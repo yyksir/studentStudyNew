@@ -61,7 +61,7 @@
             </a-button> 
         </div>
         <div v-else-if="selectItem.isStart=='1'">
-          <a-button type="primary" style="float:left"   @click="handlePageTest">
+          <a-button type="primary" style="float:left"   @click="handleActionStusy">
             继续学习
           </a-button>
           <a-button type="primary" style="float:right"  @click="handleDeleteStudyRecord">

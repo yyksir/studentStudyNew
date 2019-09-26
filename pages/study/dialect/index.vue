@@ -5,12 +5,12 @@
                 <a-icon type="down" />
             </div>
             <div class="itemBox">
-                <div class="item">
+                <div class="item" v-for="(item,index) of leftgetMyUnit" :class="{'selectTab':currentIndex==index}"  :key="item.id" @click="handleInitUnit(item,index)">
                     <h3 class="itemTitle">
-                        ti
+                        {{item.unitName}}
                     </h3>
                     <div class="itemConte">
-                        con
+                        词条{{item.learnCount}}--已学{{item.learnCount}}|错误{{item.learnCount}}
                     </div>
                 </div>
             </div>
@@ -21,6 +21,8 @@
         <div class="boxright">
 22
         </div>
+
+        
     </div>
 </template>
 
@@ -31,18 +33,84 @@ export default {
         return {
              query:JSON.parse(this.$route.query.res),
              leftgetMyUnit:[],
+             currentIndex:0,
         }
     },
     mounted() {
-        this.initData();
+        this.initData('1');
+        this.currentIndex = 0;
     },
     methods:{
-        initData() {
+        initData(flag) {
             this.$API.POST('/course/getMyUnit',{
                 id:this.query.id,
             }).then((res) => {
+                if(res&&res.data) {
+                    this.leftgetMyUnit =  res.data;
+                    if(flag==='1') {
+                        this.handleInitUnit(this.leftgetMyUnit[0],0)
+                    }
+                }
                 console.log(res.data)
             }).catch((err) => {
+                console.log(err, 'err')
+            })
+        },
+        handleInitUnit(unit,index) {
+            let _that = this;
+            _that.currentIndex = index;
+            let localUnit = unit;
+            if(localUnit.isStart=='1') {
+                this.getLearningWord(localUnit)
+            }else{
+                _that.$confirm({
+                    title: '提示',
+                    content: '是否要进行章节测试',
+                    okText: '是',
+                    cancelText: '否',
+                    onOk() {
+                        console.log('章节测试');
+                    },
+                    onCancel() {
+                        _that.uptCourseUnitIsStarted(localUnit);
+                    }
+                });
+            }
+            console.log(unit)
+        },
+        uptCourseUnitIsStarted(localUnit) {
+            this.$API.POST('/course/uptCourseUnitIsStarted',{
+                id:localUnit.id,
+                isStart:1
+            }).then((res) => {
+                this.resetWordCache(localUnit)
+                this.initData('2')
+            })
+            .catch((err) => {
+                this.$message.warning('获取数据失败');
+                console.log(err, 'err')
+            })
+        },
+        resetWordCache(localUnit) {
+            let _localUnit = localUnit;
+            this.$API.POST('/learn/resetWordCache',{
+                id:_localUnit.id,
+            }).then((res) => {
+                this.getLearningWord(_localUnit)
+            })
+            .catch((err) => {
+                this.$message.warning('获取数据失败');
+                console.log(err, 'err')
+            })
+        },
+        getLearningWord(localUnit) {
+            this.$API.POST('/learn/getLearningWord',{
+                id:localUnit.id,
+            }).then((res) => {
+               console.log(res)
+            })
+            .catch((err) => {
+                this.$message.warning('获取数据失败');
                 console.log(err, 'err')
             })
         }
@@ -85,6 +153,19 @@ export default {
         }
         .itemBox{
             overflow auto
+            .item{
+                color #ffffff
+                padding-bottom 20px
+                cursor pointer
+                text-align center
+                .itemTitle{
+                    color #ffffff
+                    font-size 18px
+                }
+            }
+            .selectTab{
+                background-color #E7355C
+            }
         }
     }
     .boxright{
