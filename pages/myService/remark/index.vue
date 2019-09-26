@@ -64,12 +64,11 @@
     <main class="mainContainer">
       <div style="width: 100%;height: 100%;font-size: 20px;display: flex;justify-content: center;align-items: center;"
         v-if="queryResArr.length < 1"
-        ref="ssssssss"
       >
          暂无数据
       </div>
       <drop-select v-else class="dropSelect"
-        v-for="queryRes of queryResArr"
+        v-for="(queryRes, index) of queryResArr"
         :key="queryRes.id"
       >
         <template v-slot:top>
@@ -80,17 +79,17 @@
 
             <b style=";min-width: 80px;color: green;font-size: 24px;">{{queryRes.wordName}}</b>
             <span style="margin-right: 15px;">英&nbsp;&nbsp;&nbsp;{{queryRes.englishPronu}}</span>
-            <img src="../../../assets/img/voicePause.png" style="margin-right: 30px;" @click="handleBtnVoiceEnClick">
-            <audio id="audioDomEn" refs="audioDomEn">
-              <source id="tts_source_en" :src="queryRes.enVoiceSrc" type="audio/mpeg">
-              <embed id="tts_embed_en" height="0" width="0" src="">
+            <img src="../../../assets/img/voicePause.png" style="margin-right: 30px;" @click="handleBtnVoiceEnClick(index)">
+            <audio class="audioDomEn">
+              <source class="tts_source_en" :src="queryRes.enVoiceSrc" type="audio/mpeg">
+              <embed class="tts_embed_en" height="0" width="0" src="">
               您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
             </audio>
             <span style="margin-right: 15px;">美&nbsp;&nbsp;&nbsp;{{queryRes.americaPronu}}</span>
-            <img src="../../../assets/img/voicePause.png" style="margin-right: 30px;" @click="handleBtnVoiceUSAClick">
-            <audio id="audioDomUsa" refs="audioDomUsa">
-              <source id="tts_source_usa" :src="queryRes.usaVoiceSrc" type="audio/mpeg">
-              <embed id="tts_embed_usa" height="0" width="0" src="">
+            <img src="../../../assets/img/voicePause.png" style="margin-right: 30px;" @click="handleBtnVoiceUSAClick(index)">
+            <audio class="audioDomUsa">
+              <source class="tts_source_usa" :src="queryRes.usaVoiceSrc" type="audio/mpeg">
+              <embed class="tts_embed_usa" height="0" width="0" src="">
               您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
             </audio>
             <span>{{queryRes.meaning}}</span>
@@ -111,7 +110,7 @@
     <footer class="footerContainer">
       <!-- :total="rowsCount" -->
       <a-pagination class="pagination"
-        ref="paginationssssss"
+        ref="paginationElem"
         :itemRender="itemRender"
         :total="rowsCount"
         v-model="curPagerNo"
@@ -312,18 +311,14 @@ export default {
       this.totalPageNumber = 0
     },
     // 英式发音
-    handleBtnVoiceEnClick () {
-      // console.log(this.$refs.audioDomEn, 'audioDomEn')
-      const audioDomEn = document.getElementById('audioDomEn')
-      audioDomEn.play()
-      console.log(audioDomEn, 'audioDomEn')
+    handleBtnVoiceEnClick (index) {
+      const audioDomEn = document.getElementsByClassName('audioDomEn')
+      audioDomEn[index].play()
     },
     // 美式发音
-    handleBtnVoiceUSAClick () {
-      // console.log(this.$refs.audioDomUsa, 'audioDomUsa')
-      const audioDomUsa = document.getElementById('audioDomUsa')
-      audioDomUsa.play()
-      console.log(audioDomUsa, 'audioDomUsa')
+    handleBtnVoiceUSAClick (index) {
+      const audioDomUsa = document.getElementsByClassName('audioDomUsa')
+      audioDomUsa[index].play()
     },
     // 导出单词
     // handleExportWord () {},

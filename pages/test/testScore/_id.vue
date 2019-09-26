@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    详情
+    详情 id 是 {{text}}
   </div>
 </template>
 
@@ -8,9 +8,14 @@
 export default {
   layout: 'index',
   data () {
-    return {}
+    return {
+      text: '加载中...'
+    }
   },
-  created () {},
+  created () {
+    this.text = this.$route.params.id
+    // console.log(this.$route.params)
+  },
   methods: {}
 }
 </script>

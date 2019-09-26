@@ -20,6 +20,11 @@
             <span class="icon iconfont icon-shanchu"><span>删除</span></span>
           </a-popconfirm>
         </div>
+        <div slot="overview" slot-scope="overview">
+          <span style="display: block;">共{{overview.totalNum}}题</span>
+          <span style="display: block;color: #67C23A;">对{{overview.rightNum}}题</span>
+          <span style="display: block;color: #F56C6C">错{{overview.wrongNum}}题</span>
+        </div>
       </a-table>
       <div class="paginationContainer">
         <a-pagination class="pagination"
@@ -40,16 +45,23 @@
 <script>
 import moment from 'moment'
 const columns = [
-  { title: '测试内容', width: 150, dataIndex: 'courseName', key: '0',fixed: 'left'},
-  { title: '测试时间', width: 150, dataIndex: 'createTime', key: '1' },
-  { title: '测试词汇', width: 150, dataIndex: 'testType', key: '2' },
-  { title: '测试总览', width: 150, dataIndex: 'totalNum', key: '3' },
-  { title: '测试时长', width: 150, dataIndex: 'continueTime', key: '4' },
-  { title: '测试成绩', width: 100, dataIndex: 'score', key: '5' },
+  { title: '测试内容', width: '100px', dataIndex: 'courseName', align: 'center', key: '0',fixed: 'left'},
+  { title: '测试时间', width: '100px', dataIndex: 'createTime', align: 'center', key: '1' },
+  { title: '测试词汇', width: '100px', dataIndex: 'testType', align: 'center', key: '2' },
+  {
+    title: '测试总览',
+    width: '100px',
+    dataIndex: 'overview',
+    align: 'center',
+    key: '3',
+    scopedSlots: { customRender: 'overview' },
+  },
+  { title: '测试时长', width: '100px', dataIndex: 'continueTime', align: 'center', key: '4' },
+  { title: '测试成绩', width: '100px', dataIndex: 'score', align: 'center', key: '5' },
   {
     title: '操作',
     key: 'operation',
-    width: 60,
+    width: '60px',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -68,7 +80,6 @@ export default {
     }
   },
   created () {
-    console.log(this, 'this')
     this.init()
   },
   methods: {
@@ -100,7 +111,6 @@ export default {
         })
     },
     setData (data) {
-      console.log(data, 'res')
       this.rowsCount = data.rowsCount || 0
       this.curPagerNo = data.curPagerNo || 0
       this.pageSize = data.pageSize || 10
@@ -115,8 +125,14 @@ export default {
         resArr[index].testType = resArr[index].testType === 0 ? '学前测' : (resArr[index].testType === 1 ? '学后测' : '学前总测试')
         resArr[index]['key'] = resArr[index].id
         resArr[index].score = resArr[index].score + '分'
+        resArr[index]['overview'] = {
+          totalNum: resArr[index].totalNum,
+          rightNum: resArr[index].rightNum,
+          wrongNum: resArr[index].wrongNum
+        }
       })
       this.tableData = resArr
+      console.log(JSON.parse(JSON.stringify(this.tableData)), 'this.tableData')
     },
     // 自定义页码的结构
     itemRender(current, type, originalElement) {
@@ -153,11 +169,14 @@ export default {
     // 查看
     handleBtnDetailClick (text) {
       console.log(text, 'text 查看')
-      this.$message.warning(text.id)
+      this.$message.warning(text.id + '暂无查看功能')
+      this.$router.push({
+        path: '/test/testScore/' + text.id
+      })
     },
     // 删除
     handleConfirm (text) {
-      this.$message.warning(text.id)
+      this.$message.warning(text.id + '暂无删除功能')
       console.log(text, 'text 删除')
     },
   }
