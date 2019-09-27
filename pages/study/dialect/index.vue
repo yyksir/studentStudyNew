@@ -19,13 +19,34 @@
             </div>
         </div>
         <div class="boxright" >
-            <canvas id='canvas' width="800" height="400"></canvas>
-            <audio id="audioDomEn" ref="audioDomEn" controls="controls" >
-              <source id="audio"  type="audio/mpeg">
-              您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
-            </audio>
-            <button @click="handleBtnVoiceEnClick">11111111111111111111111111111111</button>
-            <!-- //<audio id="audio" controls autoplay loop></audio> -->
+            <div>
+                <canvas id='canvas' width="800" height="400"></canvas>
+            </div>
+            <div>
+                <audio id="audioDomEn" ref="audioDomEn" controls="controls" >
+                    <source id="audio"  type="audio/mpeg">
+                    您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
+                </audio>
+            </div>
+            <div class="btnBox">
+                <div v-show="step=='1'" >
+                    <a-button type="primary" @click="handleGotoStepTwo">答案</a-button>
+                    <a-button type="danger" @click="handleBtnVoiceEnClick" >重读</a-button>
+                </div>
+                <div v-show="step=='2'" >
+                    <a-button type="primary" @click="handleKnow('1')">认识</a-button>
+                    <a-button type="primary" @click="handleKnow('0')">不认识</a-button>
+                    <a-button type="danger" @click="handleBtnVoiceEnClick" >重读</a-button>
+                </div>
+                
+            </div>
+            <div class="content" v-show="step=='2'">
+                <p >
+                    {{enVoiceSrc.exampleSentence1}}
+                </p>
+
+            </div>
+          
         </div>
 
         
@@ -54,8 +75,9 @@ export default {
              leftgetMyUnit:[],//单元的开合JSON.parse(this.$route.query.res)
              currentIndex:0,//左侧tab的下标
              pronunciation:1,//the前面是ip   后面就是1和0  1代表美式发音0代表英式发音  
-             enVoiceSrc:'',
+             enVoiceSrc:{},//获取到的翻译返回值
              urlVoice: 'http://121.40.138.216/',
+             step:'1',
         }
     },
     mounted() {
@@ -70,7 +92,7 @@ export default {
                 if(res&&res.data) {
                     this.leftgetMyUnit =  res.data;
                     if(flag==='1') {
-                        this.handleInitUnit(this.leftgetMyUnit[0],0)
+                        this.handleInitUnit(this.leftgetMyUnit[this.currentIndex],0)
                     }
                 }
                 console.log(res.data)
@@ -105,6 +127,7 @@ export default {
                 id:localUnit.id,
                 isStart:1
             }).then((res) => {
+                console.log(res)
                 this.resetWordCache(localUnit)
                 this.initData('2')
             })
@@ -118,6 +141,7 @@ export default {
             this.$API.POST('/learn/resetWordCache',{
                 id:_localUnit.id,
             }).then((res) => {
+                console.log(res)
                 this.getLearningWord(_localUnit)
             })
             .catch((err) => {
@@ -126,54 +150,99 @@ export default {
             })
         },
         getLearningWord(localUnit) {
+            
             let _that  = this;
             _that.$API.POST('/learn/getLearningWord',{
                 id:localUnit.id,
             }).then((res) => {
-
+                _that.enVoiceSrc = res.data
                 console.log(res)
                 // const resdata = res.data
-                window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
+                //window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
 
                     let audioDomEn = this.$refs.audioDomEn;
                         audioDomEn.crossOrigin = "anonymous";
                         audioDomEn.src = _that.urlVoice + res.data.wordName + 0 + '.mp3'; 
-                        audioDomEn.play()
+                        _that.handleBtnVoiceEnClick()
+                       // audioDomEn.play()
+                //     let MEDIA_ELEMENT_NODES = new WeakMap();
+                //     if (ctx == undefined) { 
+                //         ctx = new AudioContext(); 
+                //     } 
+                //    // var ctx = ctx||new AudioContext();
+                //     if (MEDIA_ELEMENT_NODES.has(audioDomEn)) { 
+                //          audioSrc = MEDIA_ELEMENT_NODES.get(audioDomEn); 
+                //     } else { 
+                //         let audioSrc = ctx.createMediaElementSource(audioDomEn); 
+                //         MEDIA_ELEMENT_NODES.set(audioDomEn, ctx); 
+                //     } 
+                //     let analyser = ctx.createAnalyser();
+                //    // let audioSrc = audioSrc|| ctx.createMediaElementSource(audioDomEn);
 
-                        
-                        
-                    var MEDIA_ELEMENT_NODES = new WeakMap();
-                    var ctx = new AudioContext();
-                    var analyser = ctx.createAnalyser();
-                    var audioSrc =  ctx.createMediaElementSource(audioDomEn);
+                //     audioSrc.connect(analyser);
+                //     analyser.connect(ctx.destination);
 
+                //     analyser.fftSize = 512;
+
+
+                //     let canvas = document.getElementById('canvas');
+                //     let ctx = canvas.getContext('2d');
+                    // let cwidth = canvas.width;
+                    // let cheight = canvas.height - 2;
+                    // let meterWidth = 10; //方块的宽度
+                    // let gap = 10; //方块的间距
+                    // let capHeight = 10;
+                    // let meterNum = cwidth / (meterWidth + gap);
+                    // let gradient = ctx.createLinearGradient(0, 0, 0, cheight);
+                    //  gradient.addColorStop(1, '#00ff00');
+                    //  gradient.addColorStop(0.8, '#ffff00');
+                    //  gradient.addColorStop(0, '#ff0000');
+                    //  ctx.fillStyle = gradient;//填充
+
+                    let AudioContext = window.AudioContext || window.webkitAudioContext;
+                    let audioContext = new AudioContext();
+                    let analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 256;
+                    analyser = audioContext.createAnalyser();
+
+                    // let audio = document.getElementById('audio');
+                    let audioSrc = audioContext.createMediaElementSource(audioDomEn);
                     audioSrc.connect(analyser);
-                    analyser.connect(ctx.destination);
+                    analyser.connect(audioContext.destination);
+                    let canvas = document.getElementById('canvas');
 
-                    analyser.fftSize = 512;
+                    let ctx = canvas.getContext('2d');
+                    let cwidth = canvas.width;
+                    let cheight = canvas.height - 2;
+                    let meterWidth = 10; //方块的宽度
+                    let gap = 10; //方块的间距
+                    let capHeight = 10;
+                    let meterNum = cwidth / (meterWidth + gap);
+                    let gradient = ctx.createLinearGradient(0, 0, 0, cheight);
+                     gradient.addColorStop(1, '#00ff00');
+                     gradient.addColorStop(0.8, '#ffff00');
+                     gradient.addColorStop(0, '#ff0000');
+                     ctx.fillStyle = gradient;//填充
 
+                    // let ctx = canvas.getContext("2d");
+                    // ctx.lineWidth = 2;
+                    // let grd = ctx.createLinearGradient(0, 0, 600, 0);
+                    // grd.addColorStop(0, "#00d0ff");
+                    // grd.addColorStop(1, "#eee");
 
-                    var canvas = document.getElementById('canvas');
-                    var ctx = canvas.getContext('2d');
-                    var cwidth = canvas.width;
-                    var cheight = canvas.height - 2;
-                    var meterWidth = 5; //方块的宽度
-                    var gap = 2; //方块的间距
-                    var capHeight = 2;
-                    var meterNum = cwidth / (meterWidth + gap);
-                    var gradient = ctx.createLinearGradient(0, 0, 0, cheight);
-                    gradient.addColorStop(1, '#00ff00');
-                    gradient.addColorStop(0.8, '#ffff00');
-                    gradient.addColorStop(0, '#ff0000');
-                    ctx.fillStyle = gradient;//填充
+                    // let grd2 = ctx.createLinearGradient(0, 0, 600, 0);
+                    // grd2.addColorStop(0, "#fff");
+                    // grd2.addColorStop(1, "#e720ee");
+                    // let het=0;
+
 
                     function render() {
-                        var array = new Uint8Array(analyser.frequencyBinCount);
+                        let array = new Uint8Array(analyser.frequencyBinCount);
                         analyser.getByteFrequencyData(array);
-                        var step = Math.round(array.length / meterNum);
+                        let step = Math.round(array.length / meterNum);
                         ctx.clearRect(0, 0, cwidth, cheight);
-                        for (var i = 0; i < meterNum; i++) {
-                            var value = array[i * step];
+                        for (let i = 0; i < meterNum; i++) {
+                            let value = array[i * step];
                             ctx.fillRect(i * (meterWidth+gap) , cheight - value + capHeight, meterWidth, cheight||capHeight); 
                         }
                         requestAnimationFrame(render);
@@ -181,13 +250,34 @@ export default {
                     render();
             })
             .catch((err) => {
-                _that.$message.warning('获取数据失败');
+                // _that.$message.warning('获取数据失败');
                 console.log(err, 'err')
             })
         },
         handleBtnVoiceEnClick() {
             let audioDomEn = this.$refs.audioDomEn;
              audioDomEn.play()
+        },
+        handleGotoStepTwo() {
+            this.step  ='2'
+        },
+        handleKnow(isKnow) {
+            this.step = '1'
+            this.$API.POST('/learn/doLearn',{
+                courseId:this.enVoiceSrc.courseId,
+                unitId:this.enVoiceSrc.unitId,
+                wordId:this.enVoiceSrc.id,
+                isKnow:isKnow,
+                type:this.query.type,
+            }).then((res) => {
+                this.getLearningWord(this.leftgetMyUnit[this.currentIndex])
+                console.log(res)
+            })
+            .catch((err) => {
+                this.$message.warning('获取数据失败');
+                console.log(err, 'err')
+            })
+
         }
 
     },
@@ -247,6 +337,9 @@ export default {
         background: #f0f4f5;
         flex: 1;
         overflow: scroll;
+        .btnBox{
+            text-align center
+        }
     } 
 }
 
