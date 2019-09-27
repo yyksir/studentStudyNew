@@ -160,9 +160,7 @@ export default {
                 // const resdata = res.data
                 //window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
 
-                    let audioDomEn = this.$refs.audioDomEn;
-                        audioDomEn.crossOrigin = "anonymous";
-                        audioDomEn.src = _that.urlVoice + res.data.wordName + 0 + '.mp3'; 
+                   
                         _that.handleBtnVoiceEnClick()
                        // audioDomEn.play()
                 //     let MEDIA_ELEMENT_NODES = new WeakMap();
