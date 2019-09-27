@@ -19,11 +19,18 @@
             </div>
         </div>
         <div class="boxright" >
+            <div>
+                <div>111</div>
+            </div>
             <canvas id='canvas' width="800" height="400"></canvas>
             <audio id="audioDomEn" ref="audioDomEn" controls="controls" >
               <source id="audio"  type="audio/mpeg">
               您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
             </audio>
+            <div>
+                <a-button type="primary">正确</a-button>
+                <a-button type="danger">复读</a-button>
+            </div>
             <button @click="handleBtnVoiceEnClick">11111111111111111111111111111111</button>
             <!-- //<audio id="audio" controls autoplay loop></audio> -->
         </div>
@@ -133,26 +140,18 @@ export default {
 
                 console.log(res)
                 // const resdata = res.data
-                window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
+               // window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
 
                     let audioDomEn = this.$refs.audioDomEn;
                         audioDomEn.crossOrigin = "anonymous";
                         audioDomEn.src = _that.urlVoice + res.data.wordName + 0 + '.mp3'; 
-                        audioDomEn.play()
-
-                        
-                        
-                    var MEDIA_ELEMENT_NODES = new WeakMap();
-                    var ctx = new AudioContext();
+                        audioDomEn.play();
+                    var ctx = new (window.AudioContext || window.webkitAudioContext)();;
                     var analyser = ctx.createAnalyser();
                     var audioSrc =  ctx.createMediaElementSource(audioDomEn);
-
                     audioSrc.connect(analyser);
                     analyser.connect(ctx.destination);
-
                     analyser.fftSize = 512;
-
-
                     var canvas = document.getElementById('canvas');
                     var ctx = canvas.getContext('2d');
                     var cwidth = canvas.width;
@@ -181,7 +180,7 @@ export default {
                     render();
             })
             .catch((err) => {
-                _that.$message.warning('获取数据失败');
+                // _that.$message.warning('获取数据失败');
                 console.log(err, 'err')
             })
         },
