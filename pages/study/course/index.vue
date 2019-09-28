@@ -129,13 +129,13 @@ export default {
       if(this.selectItem.type=='1') {
         this.$router.push({path: '/study/recognize/',
         query: {
-          parames: JSON.stringify(this.selectItem) 
+          res: JSON.stringify(this.selectItem) 
           } 
         })
       }else if(this.selectItem.type=='2'){
         this.$router.push({path: '/study/spell/',
         query: {
-          parames:JSON.stringify(this.selectItem) 
+          res:JSON.stringify(this.selectItem) 
           } 
         })
       }else{

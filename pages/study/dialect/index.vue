@@ -163,9 +163,6 @@ export default {
                         audioDomEn.crossOrigin = "anonymous";
                         audioDomEn.src = _that.urlVoice + res.data.wordName + 0 + '.mp3'; 
                         audioDomEn.play()
-                   
-                        // _that.handleBtnVoiceEnClick()
-                       // audioDomEn.play()
                 //     let MEDIA_ELEMENT_NODES = new WeakMap();
                 //     if (ctx == undefined) { 
                 //         ctx = new AudioContext(); 
@@ -279,7 +276,7 @@ export default {
                 console.log(err, 'err')
             })
 
-        }
+        },
 
     },
 

@@ -33,6 +33,7 @@ module.exports = {
     '@/plugins/antd-ui',
     '~plugins/api',
     '~plugins/echarts',
+    {src: '~plugins/lodash.js', ssr: false}
   ],
   /*
   ** Nuxt.js dev-modules
@@ -52,6 +53,6 @@ module.exports = {
     ** You can extend webpack config here
     */
     extend (config, ctx) {
-    }
+    },
   }
 }
