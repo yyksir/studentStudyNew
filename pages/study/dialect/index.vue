@@ -44,6 +44,12 @@
                 <p >
                     {{enVoiceSrc.exampleSentence1}}
                 </p>
+                 <p >
+                    {{enVoiceSrc.exampleSentence2}}
+                </p>
+                 <p >
+                    {{enVoiceSrc.exampleSentence3}}
+                </p>
 
             </div>
           
