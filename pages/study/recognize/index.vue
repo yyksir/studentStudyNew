@@ -194,37 +194,30 @@ export default {
         },
         getLearningWord(localUnit) {
             let _that  = this;
+            _that.enVoiceSrc = {};
             _that.$API.POST('/learn/getLearningWord',{
                 id:localUnit.id,
             }).then((res) => {
                  console.log(res)
                 if(res.code=='0') {
-                _that.enVoiceSrc = res.data;
-                let  backFlag = _.find(this.wordNameArr, (word)=>{
-                    return word.wordName==res.data.wordName;
-                });
-                if(backFlag==undefined) {
-                   this.wordNameArr.unshift(res.data)
-                }
-                this.workldArr[0]={
-                    name:'英',
-                    pronu:res.data.englishPronu||'',
-                    src:_that.urlVoice + res.data.wordName + 0 + '.mp3',
+                    _that.enVoiceSrc = res.data;
+                    let  backFlag = _.find(this.wordNameArr, (word)=>{
+                        return word.wordName==res.data.wordName;
+                    });
+                    if(backFlag==undefined) {
+                        this.wordNameArr.unshift(res.data)
+                    }
+                    this.workldArr[0]={
+                        name:'英',
+                        pronu:res.data.englishPronu||'',
+                        src:_that.urlVoice + res.data.wordName + 0 + '.mp3',
 
-                };
-                 this.workldArr[1]={
-                      name:'美',
-                      pronu:res.data.americaPronu||'',
-                      src: _that.urlVoice + res.data.wordName + 1 + '.mp3',
-                };
-
-                // let englishPronu = this.$refs.englishPronu;
-                // let americaPronu = this.$refs.americaPronu;
-                //     // englishPronu.crossOrigin = "anonymous";
-                //     englishPronu.src = _that.urlVoice + res.data.wordName + 0 + '.mp3'; 
-                
-                //     // americaPronu.crossOrigin = "anonymous";
-                //     americaPronu.src = _that.urlVoice + res.data.wordName + 1 + '.mp3'; 
+                    };
+                    this.workldArr[1]={
+                        name:'美',
+                        pronu:res.data.americaPronu||'',
+                        src: _that.urlVoice + res.data.wordName + 1 + '.mp3',
+                    };
                 }else{
                     _that.enVoiceSrc = {}
                 }
@@ -235,15 +228,12 @@ export default {
         },
         handleBtnVoiceClick(index) {
             if(index=='1') {
-                 const englishPronu1 = document.getElementsByClassName('audioDomEn1')
-                 // this.$refs.englishPronu1;
-                        englishPronu1[0].play();
+                const englishPronu1 = this.$refs.englishPronu1
+                englishPronu1[0].play();
             }else{
-                const englishPronu0 = document.getElementsByClassName('audioDomEn0')
-               // this.$refs.englishPronu0;
+                const englishPronu0 =this.$refs.englishPronu0
                 englishPronu0[0].play();
             }
-            
                // englishPronu.load()
             // let playPromise = englishPronu.play();
             // if (playPromise !== undefined) {    
@@ -268,7 +258,7 @@ export default {
                     wordId:this.enVoiceSrc.id,
                     isKnow:isKnow,
                     type:this.query.type,
-                }).then((res) => {
+                }).then((res) => { 
                     this.getLearningWord(this.leftgetMyUnit[this.currentIndex])
                     console.log(res)
                 })
@@ -350,8 +340,9 @@ export default {
             }
             .highSeletced{
                 border-bottom: 3px solid #e7355c;
-                color: #e7355c;
-                font-weight: 700;
+                color: #e7355c
+                font-weight: 700
+                cursor pointer
             }
         }
         .boxShowContent{
