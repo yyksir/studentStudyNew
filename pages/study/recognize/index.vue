@@ -29,7 +29,7 @@
                 </span>
             </div>
             <div class="boxShowContent">
-                <div v-if="Object.keys(enVoiceSrc)!=0"   class="boxShosContentInner">
+                <div v-if="Object.keys(enVoiceSrc)!=0"   class="boxShosContentInner" v-cloak>
                     <h1>
                         {{enVoiceSrc.wordName}}
                     </h1>
@@ -261,7 +261,9 @@ export default {
                     isKnow:isKnow,
                     type:this.query.type,
                 }).then((res) => { 
-                    this.getLearningWord(this.leftgetMyUnit[this.currentIndex])
+                    if(res.code=='0') {
+                       this.getLearningWord(this.leftgetMyUnit[this.currentIndex]) 
+                    }
                     console.log(res)
                 })
                 .catch((err) => {
@@ -309,6 +311,11 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+[v-cloak] {
+
+     display: none;
+
+}
 .box{
     display flex
     flex-direction row
@@ -363,7 +370,9 @@ export default {
             background-color #ffffff
             padding 0 20px
             line-height 53px
-            margin-bottom: 10px;
+            margin-bottom: 10px
+            white-space: nowrap
+            overflow: hidden
             span {
                 float left
                 overflow auto

@@ -126,25 +126,33 @@ export default {
     },
     handleActionStusy() {//开始学习
     //item.type=='1'?"认读":item.type=='2'?"拼写":"辨音"
-      if(this.selectItem.type=='1') {
-        this.$router.push({path: '/study/recognize/',
-        query: {
-          res: JSON.stringify(this.selectItem) 
-          } 
-        })
-      }else if(this.selectItem.type=='2'){
-        this.$router.push({path: '/study/spell/',
-        query: {
-          res:JSON.stringify(this.selectItem) 
-          } 
-        })
-      }else{
-        this.$router.push({path: '/study/dialect/',
-        query: {
-          res:JSON.stringify(this.selectItem)
-          } 
-        })
-      }
+      this.$API.POST('/course/uptCourseIsStarted',{
+        id:this.selectItem.id,
+      }).then((res) => {
+        if(this.selectItem.type=='1') {
+          this.$router.push({path: '/study/recognize/',
+          query: {
+            res: JSON.stringify(this.selectItem) 
+            } 
+          })
+        }else if(this.selectItem.type=='2'){
+          this.$router.push({path: '/study/spell/',
+          query: {
+            res:JSON.stringify(this.selectItem) 
+            } 
+          })
+        }else{
+          this.$router.push({path: '/study/dialect/',
+          query: {
+            res:JSON.stringify(this.selectItem)
+            } 
+          })
+        }
+      }).catch((err) => {
+        this.$message.warning('进入课程失败');
+        console.log(err, 'err')
+      })
+      
     },
     handleTotal() { //总测试
 
@@ -175,15 +183,15 @@ export default {
       this.selectItem = item;
       console.log(item)
     },
-    handleuptCourseIsStarted() {
-      this.$API.POST('/course/uptCourseIsStarted',{
-        id:this.selectItem.id,
-      }).then((res) => {
-        console.log(res.data)
-      }).catch((err) => {
-        console.log(err, 'err')
-      })
-    },
+    // handleuptCourseIsStarted() {
+    //   this.$API.POST('/course/uptCourseIsStarted',{
+    //     id:this.selectItem.id,
+    //   }).then((res) => {
+    //     console.log(res.data)
+    //   }).catch((err) => {
+    //     console.log(err, 'err')
+    //   })
+    // },
     handleDeleteStudyRecord() {
 
     }
