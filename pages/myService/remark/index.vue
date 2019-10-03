@@ -126,6 +126,9 @@
 
 <script>
 import moment from 'moment'
+import {
+  URL_VOICE
+} from '@/assets/config/index.js'
 
 export default {
   layout: 'index',
@@ -151,7 +154,7 @@ export default {
       queryResArr: [],
       rowsCount: 0, // 一共有多少条数据
       totalPageNumber: 0, // 一共有几页
-      urlVoice: 'http://121.40.138.216/'
+      // urlVoice: 'http://121.40.138.216/'
     }
   },
   components: {
@@ -282,8 +285,10 @@ export default {
             const list = res.data.list
             list.forEach((ele) => {
               // [0 是英式发音, 1 是美式发音]
-              ele['enVoiceSrc'] = this.urlVoice + ele.wordName + 0 + '.mp3'
-              ele['usaVoiceSrc'] = this.urlVoice + ele.wordName + 1 + '.mp3'
+              // ele['enVoiceSrc'] = this.urlVoice + ele.wordName + 0 + '.mp3'
+              // ele['usaVoiceSrc'] = this.urlVoice + ele.wordName + 1 + '.mp3'
+              ele['enVoiceSrc'] = URL_VOICE + ele.wordName + 0 + '.mp3'
+              ele['usaVoiceSrc'] = URL_VOICE + ele.wordName + 1 + '.mp3'
             })
             this.queryResObj = res.data
             this.queryResArr = res.data.list

@@ -176,8 +176,17 @@ export default {
     },
     // 删除
     handleConfirm (text) {
-      this.$message.warning(text.id + '暂无删除功能')
-      console.log(text, 'text 删除')
+      this.$API.POST('/census/delTestRrecord', {
+        id: text.id
+      })
+      .then((res) => {
+        this.$message.success('删除成功')
+        this.queryInfo()
+      })
+      .catch((err) => {
+        this.$message.success('删除失败, 请联系管理员')
+        console.log(err, 'err 删除失败')
+      })
     },
   }
 }

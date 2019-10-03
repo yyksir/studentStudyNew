@@ -76,6 +76,7 @@ export default {
       courseIndex: 0,
       courseId: '',
       courseArr: [],
+      category: '', // 1: '认读', 2: '拼写', 3: '辨音'
       range: 1,
       count: 1,
       course: 0,
@@ -108,6 +109,7 @@ export default {
             })
             this.courseArr = list
             this.courseId = list[0].courseId
+            this.category = list[0].type
             this.getRadioArr()
           } else {
             this.courseArr = []
@@ -143,22 +145,25 @@ export default {
     handleCourseChange (index) {
       this.courseId = this.courseArr[index].courseId
       this.getRadioArr()
+      this.category = this.courseArr[index].type
     },
     onChange (e) {
       console.log(e.target.value, 'radio checked')
     },
     handleBtnStartTestClick () {
-      // const params = {
-      //   usId: 501,
-      //   cId: this.courseId, // 课程 id
-      //   uId: this.course, // 课程
-      //   sId:  this.range, // 测试范围 1 全部, 2 备忘本
-      //   tId: this.count, // 测试题量 1 较少 2 普通
-      // }
-      // const str = spliceParams(params)
-      // const url = URI + API + downloadStr + str
-      // window.open(url)
-      // console.log(url, 'url')
+      if (this.courseArr.length < 1) {
+        this.$message.warning('请先选择课程')
+        return
+      }
+      this.$router.push({
+        path: '/test/courseTest/' + this.category,
+        query: {
+          courseId: this.courseId,
+          testScopeType: this.range,
+          testNum: this.count,
+          unitId: this.course
+        }
+      })
     }
   }
 }
@@ -189,7 +194,8 @@ export default {
       flex-direction column
       justify-content flex-start
       align-items center
-      overflow hidden
+      overflow-x hidden
+      overflow-y auto
       .top
         box-sizing border-box
         width 100%
