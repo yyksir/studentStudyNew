@@ -33,9 +33,20 @@
                     <h1>
                         {{enVoiceSrc.wordName}}
                     </h1>
-                    <div>
-
-
+                    <div class="spellBox">
+                        <div class="spellSelectName">
+                            {{spellWord}}
+                        </div>
+                        <div class="spellListFirst ">
+                            <span class="itemspan spellPublic" v-for="(item,index) of getWordChafen.first" :key="index" @click="handleSpell(item,index)">
+                                {{item}}
+                            </span>
+                        </div>
+                        <div class="spellListSecond ">
+                            <span class="itemspan spellPublic" v-for="(item,index) of getWordChafen.second" :key="index" @click="handleSpell(item,index)">
+                                {{item}}
+                            </span>
+                        </div>
                     </div>
                     <div class="content" >
                         <p>翻译:{{enVoiceSrc.meaning}}</p>
@@ -71,19 +82,6 @@ export default {
     data(){
         return {
             query:JSON.parse(this.$route.query.res),
-            //  {
-            //     courseId: 1,
-            //     createTime: null,
-            //     id: 90,
-            //     isStart: 1,
-            //     learnCount: 0,
-            //     type: 3,
-            //     unitId: 1,
-            //     unitName: "小学单词体验课1",
-            //     unknowCount: 0,
-            //     userId: 501,
-
-            //  }
              leftgetMyUnit:[],//单元的开合JSON.parse(this.$route.query.res)
              currentIndex:0,//左侧tab的下标
              pronunciation:1,//the前面是ip   后面就是1和0  1代表美式发音0代表英式发音  
@@ -91,7 +89,8 @@ export default {
              urlVoice: 'http://121.40.138.216/',
              wordNameArr:[],//度过单词的集合
              currentTitleIndex:0,//显示title的下标
-             getWordChafen:{},
+             getWordChafen:{},//离散数组得到的词
+             spellWord:'',//拼接成的单词
         }
     },
     mounted() {
@@ -231,6 +230,9 @@ export default {
         beforeunloadFn(e) {
             console.log('刷新或关闭')
             // ...
+        },
+        handleSpell(name,index){
+            this.spellWord +=name;
         }
 
     },
@@ -346,6 +348,24 @@ export default {
             padding 50px 100px 0
             .boxShosContentInner{
                 height 100%
+                .spellBox{
+                    text-align center
+                    .spellSelectName{
+                        text-align center
+                        margin-bottom 10px
+                    }
+                    .spellPublic{
+                        display: inline-block;
+                        width: 40px;
+                        height: 40px;
+                        text-align: center;
+                        line-height: 40px;
+                        background-color #fff
+                        margin-left 10px
+                        margin-bottom 10px
+                        cursor pointer
+                    }
+                }
                 .content{
                     margin-top 30px
                 }
