@@ -9,19 +9,19 @@
         <span style="margin-right: 32px;">测试内容 : 章节内容 - 代码写死的一个(未知)</span>
         <span style="margin-right: 32px;">用时 {{min}} 分 {{seconds}} 秒</span>
         <span style="margin-right: 32px;">共{{testPaperArr.length > 0 ? testPaperArr.length : 0}}<span style="color: #ff4d4f;">题</span></span>
-        <a-switch checkedChildren="美" unCheckedChildren="英" v-model="check" @change="handleVoiceCategoryChange" />
+        <a-switch v-if="category === 3" checkedChildren="美" unCheckedChildren="英" v-model="check" @change="handleVoiceCategoryChange" />
       </div>
       <div class="mainPagination">
         <a-tooltip placement="left" :title="pagination.isDisabled ? '这题您已经答过了' : ''" :getPopupContainer="(trigger) => { return trigger.parentElement }"
           v-for="(pagination, paginationIndex) of testPaperArr.length > 0 ? testPaperArr : []"
           :key="paginationIndex"
         >
+            <!-- :disabled="pagination.isDisabled" -->
           <button class="paginationElem"
             v-bind:class="{
-              'active': activeIndex === paginationIndex,
-              'disabled' : pagination.isDisabled
+              'active': activeIndex === paginationIndex
             }"
-            :disabled="pagination.isDisabled"
+            :disabled="false"
             :title="pagination.isDisabled ? '这题您已经答过了' : ''"
             @click="handlePaginationClick(pagination, paginationIndex)"
           >
@@ -32,15 +32,22 @@
       <div class="mainContent">
         <div class="content">
           <div class="contentHeader">
-            <div class="reading" v-if="category === 1"><!-- 认读 -->
+            <div class="contentHeaderReading" v-if="category === 1"><!-- 认读 -->
               {{testPaperArr.length > 0 ? testPaperArr[activeIndex].wordName : ''}}
             </div>
-            <div class="spell" v-if="category === 2"><!-- 拼写 -->
-              {{testPaperArr.length > 0 ? testPaperArr[activeIndex].wordName : ''}}
+            <div class="contentHeaderSpell" v-if="category === 2"><!-- 拼写 -->
+              <div class="meaning">{{testPaperArr.length > 0 ? testPaperArr[activeIndex].meaning : ''}}</div>
+              <div class="result">{{testPaperArr.length > 0 ? testPaperArr[activeIndex].selected : ''}}</div>
+              <!-- <span class="spellElem"
+                v-for="(wordName, wordNameIndex) of right"
+                :key="wordNameIndex"
+              >
+                {{wordName || ''}}
+              </span> -->
             </div>
-            <div class="voice" v-if="category === 3"><!-- 辨音 -->
+            <div class="contentHeaderVoice" v-if="category === 3"><!-- 辨音 -->
               <div class="voiceLeft">
-                <canvas id="canvas"></canvas>
+                <canvas id="myCanvas"></canvas>
                 <audio id="audioDomEn" ref="audioDomEn" controls="controls" controlsList="nodownload">
                   <source id="audio"  type="audio/mpeg">
                   您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
@@ -53,8 +60,8 @@
           </div>
           <div class="contentBody">
             <!-- 认读 -->
-            <div class="reading">
-              <div class="temp" v-if="category === 1 || category === 3">
+            <div class="contentBodyReading" v-if="category === 1 || category === 3">
+              <div class="temp">
                 <span class="chooseElem"
                   v-for="(testPaper, testPaperIndex) of testPaperArr.length > 0 ? testPaperArr[activeIndex].optionArr : []"
                   :key="testPaperIndex"
@@ -70,21 +77,40 @@
                     <span>{{testPaper.option}}</span>
                   </a-tooltip>
                 </span>
-                <span class="mask" title="此题已经答过, 请选择其他试题或者提交试卷"
+                <!-- <span class="mask" title="此题已经答过, 请选择其他试题或者提交试卷"
                   v-show="testPaperArr.length > 0 && testPaperArr[activeIndex].hasOwnProperty('isDisabled') ? testPaperArr[activeIndex].isDisabled : false"
-                ></span>
+                ></span> -->
               </div>
             </div>
             <!-- 拼写 -->
-            <!-- <div class="spell" v-if="category === 2">
-              拼写
-            </div> -->
+            <div class="contentBodySpell" v-if="category === 2">
+              <div class="first">
+                <span class="firstElem"
+                  :class="{
+                    'activeSpell': firstIndex === firstActiveIndex,
+                  }"
+                  v-for="(first, firstIndex) of first"
+                  :key="firstIndex"
+                  @click="handleSpellElemClick(first, firstIndex, 1)"
+                >{{first.val}}</span>
+              </div>
+              <div class="second">
+                <span class="secondElem"
+                  :class="{
+                    'activeSpell': secondIndex === secondActiveIndex,
+                  }"
+                  v-for="(second, secondIndex) of second"
+                  :key="secondIndex"
+                  @click="handleSpellElemClick(second, secondIndex, 2)"
+                >{{second.val}}</span>
+              </div>
+            </div>
             <!-- 辨音 -->
             <!-- <div class="voice" v-if="category === 3">
               辨音
             </div> -->
           </div>
-          <div class="contentFooter"><span v-if="category === 2">快捷键 W 选上; S 选下 A 退格; 空格键 清空重选</span></div>
+          <div class="contentFooter"><span v-if="category === 2">快捷键 backspace 退格; 空格键 清空重选</span></div>
         </div>
       </div>
     </main>
@@ -125,10 +151,16 @@ export default {
       interval: null, // 定时器
       isSelected: false, // 选项是否选中
       isSubmit: false, // 是否可以提交试卷
+      // 拼写专用
+      right: [],
+      first: [],
+      firstActiveIndex: '',
+      second: [],
+      secondActiveIndex: '',
+      result: ''
     }
   },
-  components: {
-  },
+  components: {},
   created () {
     this.init()
   },
@@ -155,6 +187,13 @@ export default {
       // unitId:  this.course, // 测试范围 1 全部, 2 备忘本
       this.$API.POST('/course/getSpecialT', params)
         .then((res) => {
+          window.addEventListener('popstate', (e) => {
+            sessionStorage.removeItem('start')
+            sessionStorage.removeItem('storageTestPaperArr')
+            sessionStorage.removeItem('resDataCopy')
+            this.clearIntervalFn()
+            window.removeEventListener('popstate', function () {})
+          }, false)
           if (!sessionStorage.getItem('start')) {
             sessionStorage.setItem('start', +new Date())
           }
@@ -169,9 +208,17 @@ export default {
               this.setData(res)
             } else {
               this.testPaperArr = JSON.parse(sessionStorage.getItem('storageTestPaperArr'))
-              this.setActiveIndex(true)
-              this.isSubmitFn()
-              this.setVoice(true)
+              if (this.category !== 2) {
+                this.setActiveIndex(true)
+                this.isSubmitFn()
+                this.setVoice(false)
+              }
+              // 拼写 时  获取拆分的单词
+              if (this.category === 2) {
+                this.setActiveIndex(true)
+                this.isSubmitFn()
+                this.getWordChafen(res.data[this.activeIndex].wordName)
+              }
             }
           } else {
             this.$message.warning('暂无数据')
@@ -187,6 +234,7 @@ export default {
     },
     setData (res) {
       let resDataCopy = JSON.parse(JSON.stringify(res.data))
+      sessionStorage.setItem('resDataCopy', JSON.stringify(resDataCopy))
       resDataCopy.forEach((ele, index) => {
         resDataCopy[index]['optionArr'] = [
           {
@@ -210,14 +258,20 @@ export default {
             option: resDataCopy[index].optionD
           }
         ]
-        resDataCopy[index]['selected'] = null
+        // resDataCopy[index]['selected'] = null
+        resDataCopy[index]['selected'] = ''
         resDataCopy[index]['isDisabled'] = false
+        resDataCopy[index]['learntype'] = this.category
       })
       sessionStorage.setItem('storageTestPaperArr', JSON.stringify(resDataCopy))
       this.testPaperArr = resDataCopy
       this.setActiveIndex(true)
       this.isSubmitFn()
       this.setVoice(false)
+      // 拼写 时  获取拆分的单词
+      if (this.category === 2) {
+        this.getWordChafen(resDataCopy[this.activeIndex].wordName)
+      }
     },
     // 获取时间差值, 计算答题用时
     getDifferenceTime () {
@@ -227,9 +281,64 @@ export default {
         this.seconds = new Date(difference).getSeconds()
       }, 1000)
     },
+    // 拼写 时  获取拆分的单词
+    getWordChafen (wordName) {
+      this.$API.POST('/learn/getWordChafen', { wordName: wordName })
+        .then((res) => {
+          if (res && res.hasOwnProperty('code') && res.code === 0) {
+            const resData = res.data
+            let firstArr = []
+            this.right = []
+            let secondtArr = []
+            this.second = []
+            resData.first.forEach((ele) => {
+              firstArr.push({
+                isSelected: false,
+                val: ele
+              })
+            })
+            resData.second.forEach((ele) => {
+              secondtArr.push({
+                isSelected: false,
+                val: ele
+              })
+            })
+            this.right = resData.right
+            this.first = firstArr
+            this.second = secondtArr
+            document.onkeydown = (e) => {
+              let keyCode = e.keyCode
+              if (keyCode === 32) {
+                this.testPaperArr[this.activeIndex].selected = ''
+                this.testPaperArr[this.activeIndex].isDisabled = false
+              }
+              if (keyCode === 8) {
+                this.testPaperArr[this.activeIndex].selected = this.testPaperArr[this.activeIndex].selected.slice(0, this.testPaperArr[this.activeIndex].selected.length - 1)
+                if (this.testPaperArr[this.activeIndex].selected === '') {
+                  this.testPaperArr[this.activeIndex].isDisabled = false
+                }
+              }
+            }
+            // this.setActiveIndex(true)
+            // this.isSubmitFn()
+          }
+        })
+        .catch((err) => {
+          this.right = []
+          this.first = []
+          this.second = []
+          console.log(err, 'err 获取拆分的单词')
+        })
+    },
     // 分页点击事件
     handlePaginationClick (pagination, paginationIndex) {
       this.activeIndex = paginationIndex
+      // 拼写
+      if (this.category === 2) {
+        this.firstActiveIndex = ''
+        this.secondActiveIndex = ''
+        this.getWordChafen(this.testPaperArr[this.activeIndex].wordName)
+      }
     },
     // 选择按钮被点击
     handleBtnChooseClick (testPaper, testPaperIndex, activeIndex) {
@@ -282,6 +391,82 @@ export default {
       // audioDomEn.play()
       this.startCanvas(setSrc)
     },
+    startCanvas (setSrc) {
+      let audioDomEn = this.$refs.audioDomEn
+      if (setSrc) {
+        audioDomEn.src = URL_VOICE + this.testPaperArr[this.activeIndex].wordName + this.categoryVoice + '.mp3'
+        return
+      }
+      audioDomEn.crossOrigin = 'anonymous'
+      audioDomEn.src = URL_VOICE + this.testPaperArr[this.activeIndex].wordName + this.categoryVoice + '.mp3'
+
+      const AudioContext = window.AudioContext || window.webkitAudioContext
+      let audioContext = new AudioContext()
+      let analyser = audioContext.createAnalyser()
+      analyser.fftSize = 256
+      analyser = audioContext.createAnalyser()
+
+      let audioSrc = audioContext.createMediaElementSource(audioDomEn)
+      audioSrc.connect(analyser)
+      analyser.connect(audioContext.destination)
+
+      const canvas = document.getElementById('myCanvas')
+      const cwidth = canvas.width
+      const cheight = canvas.height - 2
+      const meterWidth = 10 // 频谱条宽度
+      const gap = 2 // 频谱条间距
+      const capHeight = 2
+      const capStyle = '#fff'
+      // const meterNum = 800 / (10 + 2) // 频谱条数量
+      const meterNum = cwidth // 频谱条数量
+      const capYPositionArray = []; // 将上一画面各帽头的位置保存到这个数组
+      const ctx = canvas.getContext('2d')
+      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+      gradient.addColorStop(1, '#0f0')
+      gradient.addColorStop(0.5, '#67C23A')
+      gradient.addColorStop(0, '#E4E7ED')
+
+      const drawMeter = function() {
+        var array = new Uint8Array(analyser.frequencyBinCount)
+        analyser.getByteFrequencyData(array)
+        var step = Math.round(array.length / meterNum) // 计算采样步长
+        ctx.clearRect(0, 0, cwidth, cheight)
+        for (var i = 0; i < meterNum; i++) {
+          var value = array[i * step]; // 获取当前能量值
+          if (capYPositionArray.length < Math.round(meterNum)) {
+            capYPositionArray.push(value) // 初始化保存帽头位置的数组，将第一个画面的数据压入其中
+          }
+          ctx.fillStyle = capStyle;
+          // 开始绘制帽头
+          if (value < capYPositionArray[i]) { // 如果当前值小于之前值
+            ctx.fillRect(i *12,cheight-(--capYPositionArray[i]),meterWidth,capHeight) // 则使用前一次保存的值来绘制帽头
+          } else {
+            ctx.fillRect(i * 12, cheight - value, meterWidth, capHeight) // 否则使用当前值直接绘制
+            capYPositionArray[i] = value
+          };
+          // 开始绘制频谱条
+          ctx.fillStyle = gradient
+          ctx.fillRect(i * 12, cheight - value + capHeight, meterWidth, cheight)
+        }
+        requestAnimationFrame(drawMeter)
+      }
+      requestAnimationFrame(drawMeter)
+    },
+    // 拼写 点击事件
+    handleSpellElemClick (res, index, firstOrSecond) {
+      if (firstOrSecond === 1) {
+        this.firstActiveIndex = index
+        this.secondActiveIndex = ''
+      }
+      if (firstOrSecond === 2) {
+        this.secondActiveIndex = index
+        this.firstActiveIndex = ''
+      }
+      res.isSelected = true
+      this.testPaperArr[this.activeIndex].selected += res.val
+      this.testPaperArr[this.activeIndex].isDisabled = true
+      sessionStorage.setItem('storageTestPaperArr', JSON.stringify(this.testPaperArr))
+    },
     // 是否显示提交试卷按钮
     isSubmitFn () {
       if (this.testPaperArr.length < 1) {
@@ -305,77 +490,30 @@ export default {
     handleBtnCancelClick () {
       sessionStorage.removeItem('start')
       sessionStorage.removeItem('storageTestPaperArr')
+      sessionStorage.removeItem('resDataCopy')
       this.clearIntervalFn()
       this.$router.go(-1)
     },
     // 继续
     handleBtnNextClick () {
-      this.setActiveIndex()
+      // 拼写
+      if (this.category === 2) {
+        this.setActiveIndex(true)
+        this.isSubmitFn()
+        this.firstActiveIndex = ''
+        this.secondActiveIndex = ''
+        this.getWordChafen(this.testPaperArr[this.activeIndex].wordName)
+        return
+      }
+      this.setActiveIndex(false)
+      this.isSubmitFn()
+      this.getWordChafen(this.testPaperArr[this.activeIndex].wordName)
     },
     // 提交试卷
     handleBtnSubmitClick () {
       this.$message.warning('提交试卷')
+      console.log(_.cloneDeep(this.testPaperArr), 'this.testPaperArr')
     },
-    startCanvas (setSrc) {
-      let audioDomEn = this.$refs.audioDomEn
-      if (setSrc) {
-        audioDomEn.src = URL_VOICE + this.testPaperArr[this.activeIndex].wordName + this.categoryVoice + '.mp3'
-        return
-      }
-      audioDomEn.crossOrigin = 'anonymous'
-      audioDomEn.src = URL_VOICE + this.testPaperArr[this.activeIndex].wordName + this.categoryVoice + '.mp3'
-
-      const AudioContext = window.AudioContext || window.webkitAudioContext
-      let audioContext = new AudioContext()
-      let analyser = audioContext.createAnalyser()
-      analyser.fftSize = 256
-      analyser = audioContext.createAnalyser()
-
-      let audioSrc = audioContext.createMediaElementSource(audioDomEn)
-      audioSrc.connect(analyser)
-      analyser.connect(audioContext.destination)
-
-      const canvas = document.getElementById('canvas')
-      const cwidth = canvas.width
-      const cheight = canvas.height - 2
-      const meterWidth = 10 //频谱条宽度
-      const gap = 2 //频谱条间距
-      const capHeight = 2
-      const capStyle = '#fff'
-      const meterNum = 800 / (10 + 2) //频谱条数量
-      const capYPositionArray = []; //将上一画面各帽头的位置保存到这个数组
-      const ctx = canvas.getContext('2d')
-      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-      gradient.addColorStop(1, '#0f0')
-      gradient.addColorStop(0.5, '#67C23A')
-      gradient.addColorStop(0, '#E4E7ED')
-
-      const drawMeter = function() {
-        var array = new Uint8Array(analyser.frequencyBinCount)
-        analyser.getByteFrequencyData(array)
-        var step = Math.round(array.length / meterNum) //计算采样步长
-        ctx.clearRect(0, 0, cwidth, cheight)
-        for (var i = 0; i < meterNum; i++) {
-          var value = array[i * step]; //获取当前能量值
-          if (capYPositionArray.length < Math.round(meterNum)) {
-            capYPositionArray.push(value) //初始化保存帽头位置的数组，将第一个画面的数据压入其中
-          }
-          ctx.fillStyle = capStyle;
-          // 开始绘制帽头
-          if (value < capYPositionArray[i]) { //如果当前值小于之前值
-            ctx.fillRect(i *12,cheight-(--capYPositionArray[i]),meterWidth,capHeight) //则使用前一次保存的值来绘制帽头
-          } else {
-            ctx.fillRect(i * 12, cheight - value, meterWidth, capHeight) //否则使用当前值直接绘制
-            capYPositionArray[i] = value
-          };
-          // 开始绘制频谱条
-          ctx.fillStyle = gradient
-          ctx.fillRect(i * 12, cheight - value + capHeight, meterWidth, cheight)
-        }
-        requestAnimationFrame(drawMeter)
-      }
-      requestAnimationFrame(drawMeter)
-    }
     //
   }
 }
@@ -449,28 +587,45 @@ export default {
           color #fff
       .mainContent
         width 100%
-        min-height 360px
+        min-height 300px
         display flex
         justify-content center
         align-items center
         .content
           box-sizing border-box
           width 497px
-          min-height 360px
+          min-height 300px
           display flex
           flex-direction column
           justify-content flex-start
           align-items center
           background-color #fff
           .contentHeader
+            box-sizing border-box
             width 100%
-            height 102px
+            min-height 102px
+            padding 0 33px
+            padding-top 22px
             font-size 40px
             line-height 102px
             text-align center
-            // .reading
-            // .spell
-            .voice
+            // .contentHeaderReading
+            .contentHeaderSpell
+              width 100%
+              .meaning
+                width 100%
+                height 14px
+                line-height 14px
+                text-align left
+                font-size 14px
+              .result
+                width 100%
+                overflow hidden
+                text-overflow ellipsis
+                white-space nowrap
+              .spellElem
+                color red
+            .contentHeaderVoice
               box-sizing border-box
               padding 0 18px
               display flex
@@ -482,7 +637,7 @@ export default {
                 justify-content flex-start
                 align-items center
                 width 50%
-                #canvas
+                #myCanvas
                   width 100%
                   height 60px
                 #audioDomEn
@@ -499,7 +654,7 @@ export default {
             width 100%;
             flex 1
             // 认读
-            .reading
+            .contentBodyReading
               box-sizing border-box
               display flex
               flex-direction column
@@ -547,9 +702,59 @@ export default {
                   top 0
                   cursor not-allowed
                   z-index 999
+            .contentBodySpell
+              box-sizing border-box
+              display flex
+              flex-direction column
+              justify-content flex-start
+              align-items center
+              width 100%
+              height 100%
+              padding 0 18px
+              padding-top 26px
+              font-size 16px
+              line-height 36px
+              .first
+                display flex
+                justify-content center
+                flex-wrap nowrap
+                align-items center
+                width 100%
+                margin-bottom 16px
+                .firstElem
+                  width 44px
+                  height 44px
+                  margin-right 10px
+                  border-radius 8px
+                  text-align center
+                  line-height 44px
+                  background-color #DCDFE6
+                .activeSpell
+                  border 2px solid #67C23A
+                  line-height 40px
+              .second
+                display flex
+                justify-content center
+                align-items center
+                flex-wrap nowrap
+                width 100%
+                .secondElem
+                  width 44px
+                  height 44px
+                  margin-right 10px
+                  border-radius 8px
+                  text-align center
+                  line-height 44px
+                  background-color #DCDFE6
+                .activeSpell
+                  border 2px solid  #67C23A
+                  line-height 40px
           .contentFooter
             width 100%
             height 48px
+            display flex
+            justify-content center
+            align-items center
     .footer
       width 100%
       height 112px
