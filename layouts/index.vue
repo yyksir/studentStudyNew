@@ -59,6 +59,14 @@
             </a-menu-item>
           </a-sub-menu>
       </a-menu>
+      <a-popconfirm title="你确定退出吗?" okText=" 确定" cancelText="取消"
+        @confirm="handleBtnSignOutClick"
+      >
+        <div class="signOutContainer">
+          {{userName}}
+          <img class="" style="display: block;width: 20px;height: 22px;" src="../assets/img/signout.png"></nuxt-link>
+        </div>
+      </a-popconfirm>
     </div>
     <div class="right-menu">
       <a-locale-provider :locale="locale">
@@ -72,18 +80,17 @@
 import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN'
 
 export default {
+  // middleware: 'userAuth', // 是否登录
   data () {
     return {
       collapsed: false,
       rootSubmenuKeys: ['sub6', 'sub5', 'sub2', 'sub3', 'sub4'],
       openKeys: [''],
       locale: zhCN,
+      userName: '用户姓名'
     }
   },
   methods: {
-    toggleCollapsed () {
-      this.collapsed = !this.collapsed
-    },
     onOpenChange (openKeys) {
       const latestOpenKey = openKeys.find(key => this.openKeys.indexOf(key) === -1)
       if (this.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
@@ -94,7 +101,15 @@ export default {
     },
     handleGoToHomePage () {
       this.$router.push({path: '/'})
+    },
+    handleBtnSignOutClick () {
+      console.log('退出')
+      return
+      sessionStorage.removeItem('start')
+      sessionStorage.removeItem('storageTestPaperArr')
+      sessionStorage.removeItem('resDataCopy')
     }
+    //
   }
 }
 </script>
@@ -108,6 +123,9 @@ export default {
     width 100%
     height 100%
   }
+  #__layout > div
+    width 100%
+    height 100%
 </style>
 <style lang="stylus" scoped>
   .app{
@@ -127,6 +145,17 @@ export default {
         width 20px
         height 20px
         margin-right 12px
+      }
+      .signOutContainer {
+        box-sizing border-box
+        width 100%
+        height 68px
+        padding 0 24px 0 33px
+        display flex
+        justify-content space-between
+        align-items center
+        color rgba(255, 255, 255, .65)
+        cursor pointer
       }
     }
     .right-menu{

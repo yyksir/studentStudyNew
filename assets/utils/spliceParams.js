@@ -1,3 +1,4 @@
+// get 方法 拼接参数
 const spliceParams = function spliceParams (data) {
   if (!data) {
     throw new Error('函数 spliceParams 缺失参数')

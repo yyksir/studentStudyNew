@@ -512,6 +512,10 @@ export default {
     // 提交试卷
     handleBtnSubmitClick () {
       this.$message.warning('提交试卷')
+      sessionStorage.removeItem('start')
+      sessionStorage.removeItem('storageTestPaperArr')
+      sessionStorage.removeItem('resDataCopy')
+      this.clearIntervalFn()
       console.log(_.cloneDeep(this.testPaperArr), 'this.testPaperArr')
     },
     //

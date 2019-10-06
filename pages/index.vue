@@ -78,7 +78,7 @@ export default {
   layout: 'index',
   data() {
     return {
-      name: "您",
+      name: "姓名",
       tab:[
         {
           name:'按周统计',
@@ -170,7 +170,7 @@ export default {
             this.learningTime.data = [];
             this.learningTime.date = [];
           }
-          console.log(this.learningTime)
+          // console.log(this.learningTime)
           this.echartsInit(this.learningTime.date,this.learningTime.data )
         })
         .catch((err) => {
