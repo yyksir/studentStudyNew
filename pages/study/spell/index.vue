@@ -37,14 +37,25 @@
                         <div class="spellSelectName">
                             {{spellWord}}
                         </div>
-                        <div class="spellListFirst ">
-                            <span class="itemspan spellPublic" v-for="(item,index) of getWordChafen.first" :key="index" @click="handleSpell(item,index)">
-                                {{item}}
+                        <!-- <div class="spellListSecond ">
+                            <span class="itemspan spellPublic"  v-for="(item,index) of getWordChafen.first" :key="index"  @click="handleSpell(item,index,'1')">
+                                <span class="spellPublic" :class="{'highLight':currentFirstNameIndex==index}">
+                                   {{item}}
+                                </span> 
                             </span>
                         </div>
                         <div class="spellListSecond ">
-                            <span class="itemspan spellPublic" v-for="(item,index) of getWordChafen.second" :key="index" @click="handleSpell(item,index)">
-                                {{item}}
+                            <span class="itemspan "  v-for="(item,index) of getWordChafen.second" :key="index"  @click="handleSpell(item,index,'2')">
+                               <span class="spellPublic" :class="{'highLight':currentSecondNameIndex==index}">
+                                   {{item}}
+                                </span> 
+                            </span>
+                        </div> -->
+                        <div class="spellListSecond ">
+                            <span class="itemspan " v-for="(item,index) of nameArr" :key="index" >
+                                <span class="spellPublic" v-for="(name,nameIndex)  of item" :key="nameIndex"   @click="handleSpell(name,nameIndex)">
+                                     {{name}}
+                                </span>
                             </span>
                         </div>
                     </div>
@@ -91,6 +102,17 @@ export default {
              currentTitleIndex:0,//显示title的下标
              getWordChafen:{},//离散数组得到的词
              spellWord:'',//拼接成的单词
+             nameArr:[
+                 ['c','d'],
+                 ['o','e'],
+                 ['f','n'],
+                 ['d','t'],
+                 ['i','r'],
+                 ['o','t'],
+                 ['t','l'],
+             ],
+             currentFirstNameIndex:-1,
+             currentSecondNameIndex:-1,
         }
     },
     mounted() {
@@ -231,8 +253,18 @@ export default {
             console.log('刷新或关闭')
             // ...
         },
-        handleSpell(name,index){
-            this.spellWord +=name;
+        handleSpell(name,index,row){
+            if(row=='1') {
+                this.currentFirstNameIndex = index;
+            }else{
+                this.currentSecondNameIndex = index
+            }
+            //this.currentNameIndex = index
+            console.log(name,index)
+            if(this.spellWord.length==index){
+                this.spellWord +=name;
+            }
+            
         }
 
     },
@@ -354,16 +386,27 @@ export default {
                         text-align center
                         margin-bottom 10px
                     }
-                    .spellPublic{
-                        display: inline-block;
-                        width: 40px;
-                        height: 40px;
-                        text-align: center;
-                        line-height: 40px;
-                        background-color #fff
-                        margin-left 10px
-                        margin-bottom 10px
-                        cursor pointer
+                    .spellListSecond{
+                        overflow hidden
+                        .itemspan{
+                            display flex
+                            flex-direction column
+                            float left
+                            .spellPublic{
+                                display: inline-block;
+                                width: 40px;
+                                height: 40px;
+                                text-align: center;
+                                line-height: 40px;
+                                background-color #fff
+                                margin-left 10px
+                                margin-bottom 10px
+                                cursor pointer
+                            }
+                            .highLight{
+                                background-color red
+                            }
+                        }
                     }
                 }
                 .content{
