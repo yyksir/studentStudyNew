@@ -33,18 +33,18 @@ module.exports = {
     '@/plugins/antd-ui',
     '~plugins/api',
     '~plugins/echarts',
-    { src: '~plugins/lodash.js', ssr: false }
+    { src: '~plugins/lodash.js', ssr: false },
+    '~plugins/jsCookie.js',
+    '~plugins/moment.js'
   ],
   /*
   ** Nuxt.js dev-modules
   */
-  buildModules: [
-  ],
+  buildModules: [],
   /*
   ** Nuxt.js modules
   */
-  modules: [
-  ],
+  modules: [],
   /*
   ** Build configuration
   */
@@ -52,7 +52,20 @@ module.exports = {
     /*
     ** You can extend webpack config here
     */
-    extend (config, ctx) {
-    },
+    // extend (config, ctx) {},
+    extend (config, { isClient }) {
+      // 为 客户端打包 进行扩展配置
+      if (isClient) {
+        config.devtool = 'cheap-module-eval-source-map'
+      }
+    }
+  },
+  vue: {
+    config: {
+      keyCodes: {
+        backSpace: 8,
+        space: 32
+      }
+    }
   }
 }

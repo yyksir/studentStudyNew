@@ -75,11 +75,13 @@ export default {
     },
     // 查询翻译结果
     queryInfo (tag) {
-      const params = {}
+      let params = {
+        translate: ''
+      }
       if (tag) {
-        params['translate'] = tag
+        params.translate = tag
       } else {
-        params['translate'] = this.translate
+        params.translate = this.translate
       }
       this.$API.POST('/census/translate', params)
         .then((res) => {
@@ -95,9 +97,9 @@ export default {
           }
         })
         .catch((err) => {
-          console.log(err, 'err 查询备忘录接口调用失败')
+          console.log(err, 'err 翻译接口调用失败')
           // this.setEmptyData()
-          this.$message.error('查询备忘录接口调用失败, 联系管理员')
+          this.$message.error('翻译接口调用失败, 联系管理员')
         })
     },
     // 历史记录标签被点击

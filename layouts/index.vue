@@ -80,15 +80,21 @@
 import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN'
 
 export default {
-  // middleware: 'userAuth', // 是否登录
+  middleware: 'userAuth', // 是否登录
   data () {
     return {
       collapsed: false,
       rootSubmenuKeys: ['sub6', 'sub5', 'sub2', 'sub3', 'sub4'],
       openKeys: [''],
       locale: zhCN,
-      userName: '用户姓名'
+      userName: ''
     }
+  },
+  mounted () {
+    setTimeout(() => {
+      let userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
+      this.userName = userInfo.trueName
+    }, 3000)
   },
   methods: {
     onOpenChange (openKeys) {
@@ -103,11 +109,15 @@ export default {
       this.$router.push({path: '/'})
     },
     handleBtnSignOutClick () {
-      console.log('退出')
-      return
-      sessionStorage.removeItem('start')
-      sessionStorage.removeItem('storageTestPaperArr')
+      sessionStorage.removeItem('start') // 计时器
+      sessionStorage.removeItem('storageTestPaperArr') // 试题
+      sessionStorage.removeItem('userInfo')
       sessionStorage.removeItem('resDataCopy')
+      this.$Cookies.remove('session') // token
+      this.$router.push({
+        path: '/sign',
+        redirect: true
+      })
     }
     //
   }

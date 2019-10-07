@@ -1,12 +1,12 @@
 <template>
   <div class="container">
     <header class="header">
-      <span class="title">测试中心{{activeIndex}}-</span>
-      <span class="courseCategory">产品名称 · 课程名称 · {{categoryObj[category]}}</span>
+      <span class="title">测试中心</span>
+      <span class="courseCategory">{{courseName}}产品名称 · 课程名称 · {{categoryObj[category]}}</span>
     </header>
     <main class="mainContainer">
       <div class="mainHeader">
-        <span style="margin-right: 32px;">测试内容 : 章节内容 - 代码写死的一个(未知)</span>
+        <span style="margin-right: 32px;">{{UnitName}}测试内容 : 章节内容 - 代码写死的一个(未知)</span>
         <span style="margin-right: 32px;">用时 {{min}} 分 {{seconds}} 秒</span>
         <span style="margin-right: 32px;">共{{testPaperArr.length > 0 ? testPaperArr.length : 0}}<span style="color: #ff4d4f;">题</span></span>
         <a-switch v-if="category === 3" checkedChildren="美" unCheckedChildren="英" v-model="check" @change="handleVoiceCategoryChange" />
@@ -140,6 +140,8 @@ export default {
     return {
       check: true,
       testPaperArr: [],
+      courseName: '',
+      UnitName: '',
       categoryObj: { 1: '认读', 2: '拼写', 3: '辨音' },
       category: '', // 1: '认读', 2: '拼写', 3: '辨音'
       categoryVoice: 1, // 音频类型 0是英式发音  1 是美式发音
@@ -220,6 +222,7 @@ export default {
                 this.getWordChafen(res.data[this.activeIndex].wordName)
               }
             }
+            this.getTestPaperHeader()
           } else {
             this.$message.warning('暂无数据')
             this.testPaperArr = []
@@ -281,6 +284,20 @@ export default {
         this.seconds = new Date(difference).getSeconds()
       }, 1000)
     },
+    getTestPaperHeader () {
+      return
+      this.$API.POST('/course/getTestPaperHeader', {
+        courseId: this.$route.params.courseId * 1, // 选择的课程id
+        unitId: this.$route.params.unitId * 1, // 0：全部；其他数：对应选择的unitId
+        testType: '', // 0：学前测；1：学后测；2：学前总测试；3：课程测试  （比如：3）
+      })
+      .then((res) => {
+        console.log(res, 'res getTestPaperHeader')
+      })
+      .catch((err) => {
+        console.log(err, 'err getTestPaperHeader')
+      })
+    },
     // 拼写 时  获取拆分的单词
     getWordChafen (wordName) {
       this.$API.POST('/learn/getWordChafen', { wordName: wordName })
@@ -308,10 +325,12 @@ export default {
             this.second = secondtArr
             document.onkeydown = (e) => {
               let keyCode = e.keyCode
+              // 空格键
               if (keyCode === 32) {
                 this.testPaperArr[this.activeIndex].selected = ''
                 this.testPaperArr[this.activeIndex].isDisabled = false
               }
+              // backspace 键
               if (keyCode === 8) {
                 this.testPaperArr[this.activeIndex].selected = this.testPaperArr[this.activeIndex].selected.slice(0, this.testPaperArr[this.activeIndex].selected.length - 1)
                 if (this.testPaperArr[this.activeIndex].selected === '') {

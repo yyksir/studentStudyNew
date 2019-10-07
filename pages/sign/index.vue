@@ -68,22 +68,32 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           this.signIn(values)
-          console.log(values, 'values')
         }
       })
     },
     signIn (values) {
+      const params = {
+        userName: values.userName,
+        userPassword: values.password,
+        userType: 1
+      }
       this.isLoading = true
       // userType ['0 管理员', '1 校长', '2 教师']
-      this.$API.POST('/system/doStLogin', { userType: 0, ...values})
+      this.$API.POST('/system/doStLogin', params)
         .then((res) => {
-          setTimeout(() => {
-            this.isLoading = false
-            console.log(res, 'res 登陆成功')
-          }, 2000)
+          if (res && res.hasOwnProperty('code') && res.code === 0) {
+            const resDataObj = res.data
+            this.$Cookies.set('session', resDataObj.token, 1)
+            sessionStorage.setItem('userInfo', JSON.stringify(resDataObj))
+            setTimeout(() => {
+              this.isLoading = false
+              this.$router.push({ path: '/', redirect: true })
+            }, 2000)
+          }
         })
         .catch((err) => {
           this.isLoading = false
+          this.$message.warning('登录失败');
           console.log(err, 'err 登录失败')
         })
     }

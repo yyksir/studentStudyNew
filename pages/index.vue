@@ -1,9 +1,9 @@
 <template>
   <div class="body">
     <header>
-      <div class="name">欢迎您！{{name}}</div>
-      <div class="endtime">账号截止日期</div>
-      <div class="starttime">上次学习时间</div>
+      <div class="name">欢迎您！{{userName}}</div>
+      <div class="endtime">账号截止日期 {{endTime}}</div>
+      <div class="starttime">上次学习时间 {{lastLoginTime}}</div>
     </header>
     <div class="caozuo">
       <div class="title">快捷操作</div>
@@ -78,7 +78,9 @@ export default {
   layout: 'index',
   data() {
     return {
-      name: "姓名",
+      userName: '',
+      lastLoginTime: '',
+      endTime: '',
       tab:[
         {
           name:'按周统计',
@@ -106,10 +108,15 @@ export default {
       },
     };
   },
-  created() {
-    
-  },
   mounted() {
+    setTimeout(() => {
+      console.log(1111111111111, '1111')
+      let userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
+      this.userName = userInfo.trueName
+      this.lastLoginTime = this.$moment(userInfo.lastLoginTime).format('YYYY-MM-DD HH:mm')
+      this.endTime = this.$moment(userInfo.endTime).format('YYYY-MM-DD HH:mm:ss')
+      console.log(userInfo, 'userInfo')
+    }, 3000)
     this.getHasStudyCourse();
    // this.echartsInit();
     this.echartsData();
