@@ -8,7 +8,7 @@
       <a-table class="tableElem" style="width: 100%;height: 100%;"
         :dataSource="tableData"
         :columns="tableColumns"
-        :scroll="{ x: 1500, y: 300 }"
+        :scroll="{ x: 1500, y: 550 }"
         :pagination="false"
         :loading="loading"
       >
@@ -45,23 +45,23 @@
 <script>
 import moment from 'moment'
 const columns = [
-  { title: '测试内容', width: '100px', dataIndex: 'courseName', align: 'center', key: '0',fixed: 'left'},
-  { title: '测试时间', width: '100px', dataIndex: 'createTime', align: 'center', key: '1' },
-  { title: '测试词汇', width: '100px', dataIndex: 'testType', align: 'center', key: '2' },
+  { title: '测试内容', width: '120px', dataIndex: 'courseName', align: 'center', key: '0'},
+  { title: '测试时间', width: '120px', dataIndex: 'createTime', align: 'center', key: '1' },
+  { title: '测试词汇', width: '120px', dataIndex: 'testType', align: 'center', key: '2' },
   {
     title: '测试总览',
-    width: '100px',
+    width: '120px',
     dataIndex: 'overview',
     align: 'center',
     key: '3',
     scopedSlots: { customRender: 'overview' },
   },
-  { title: '测试时长', width: '100px', dataIndex: 'continueTime', align: 'center', key: '4' },
-  { title: '测试成绩', width: '100px', dataIndex: 'score', align: 'center', key: '5' },
+  { title: '测试时长', width: '120px', dataIndex: 'continueTime', align: 'center', key: '4' },
+  { title: '测试成绩', width: '120px', dataIndex: 'score', align: 'center', key: '5' },
   {
     title: '操作',
     key: 'operation',
-    width: '60px',
+    width: '50px',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -132,7 +132,6 @@ export default {
         }
       })
       this.tableData = resArr
-      console.log(JSON.parse(JSON.stringify(this.tableData)), 'this.tableData')
     },
     // 自定义页码的结构
     itemRender(current, type, originalElement) {
@@ -169,7 +168,10 @@ export default {
     // 查看
     handleBtnDetailClick (text) {
       console.log(text, 'text 查看')
-      this.$message.warning(text.id + '暂无查看功能')
+      if (!text.id) {
+        console.log('缺失 ID')
+        return
+      }
       this.$router.push({
         path: '/test/testScore/' + text.id
       })

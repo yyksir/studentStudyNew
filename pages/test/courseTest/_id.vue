@@ -2,11 +2,11 @@
   <div class="container">
     <header class="header">
       <span class="title">测试中心</span>
-      <span class="courseCategory">{{courseName}}产品名称 · 课程名称 · {{categoryObj[category]}}</span>
+      <span class="courseCategory">{{courseName}} · {{categoryObj[category]}}</span>
     </header>
     <main class="mainContainer">
       <div class="mainHeader">
-        <span style="margin-right: 32px;">{{UnitName}}测试内容 : 章节内容 - 代码写死的一个(未知)</span>
+        <span style="margin-right: 32px;">{{unitName}}</span>
         <span style="margin-right: 32px;">用时 {{min}} 分 {{seconds}} 秒</span>
         <span style="margin-right: 32px;">共{{testPaperArr.length > 0 ? testPaperArr.length : 0}}<span style="color: #ff4d4f;">题</span></span>
         <a-switch v-if="category === 3" checkedChildren="美" unCheckedChildren="英" v-model="check" @change="handleVoiceCategoryChange" />
@@ -141,7 +141,7 @@ export default {
       check: true,
       testPaperArr: [],
       courseName: '',
-      UnitName: '',
+      unitName: '',
       categoryObj: { 1: '认读', 2: '拼写', 3: '辨音' },
       category: '', // 1: '认读', 2: '拼写', 3: '辨音'
       categoryVoice: 1, // 音频类型 0是英式发音  1 是美式发音
@@ -179,14 +179,12 @@ export default {
     clearIntervalFn () {
       clearInterval(this.interval)
       this.interval = null
+      this.min = 0
+      this.seconds = 0
     },
     getTestPaper () {
       const params = this.$route.query
       this.category = this.$route.params.id * 1
-      // courseId: this.courseId,
-      // testScopeType: this.range, // 课程 id
-      // testNum: this.count, // 课程
-      // unitId:  this.course, // 测试范围 1 全部, 2 备忘本
       this.$API.POST('/course/getSpecialT', params)
         .then((res) => {
           window.addEventListener('popstate', (e) => {
@@ -264,7 +262,7 @@ export default {
         // resDataCopy[index]['selected'] = null
         resDataCopy[index]['selected'] = ''
         resDataCopy[index]['isDisabled'] = false
-        resDataCopy[index]['learntype'] = this.category
+        // resDataCopy[index]['learntype'] = this.category
       })
       sessionStorage.setItem('storageTestPaperArr', JSON.stringify(resDataCopy))
       this.testPaperArr = resDataCopy
@@ -285,16 +283,27 @@ export default {
       }, 1000)
     },
     getTestPaperHeader () {
-      return
-      this.$API.POST('/course/getTestPaperHeader', {
-        courseId: this.$route.params.courseId * 1, // 选择的课程id
-        unitId: this.$route.params.unitId * 1, // 0：全部；其他数：对应选择的unitId
-        testType: '', // 0：学前测；1：学后测；2：学前总测试；3：课程测试  （比如：3）
-      })
+      let params = {
+        courseId: this.$route.query.courseId * 1, // 选择的课程id
+        unitId: this.$route.query.unitId * 1, // 0：全部；其他数：对应选择的unitId
+        testType: 3, // 0：学前测；1：学后测；2：学前总测试；3：课程测试  （比如：3）
+      }
+      if (this.$route.params.hasOwnProperty('testType')) {
+        params.testType = this.$route.query.testType * 1
+      }
+      this.$API.POST('/course/getTestPaperHeader', params)
       .then((res) => {
-        console.log(res, 'res getTestPaperHeader')
+        if (res && res.hasOwnProperty('code') && res.code === 0) {
+          this.courseName = res.data.courseName
+          this.unitName = res.data.unitName
+        } else {
+          this.courseName = ''
+          this.unitName = ''
+        }
       })
       .catch((err) => {
+        this.courseName = ''
+        this.unitName = ''
         console.log(err, 'err getTestPaperHeader')
       })
     },
@@ -530,12 +539,38 @@ export default {
     },
     // 提交试卷
     handleBtnSubmitClick () {
-      this.$message.warning('提交试卷')
-      sessionStorage.removeItem('start')
-      sessionStorage.removeItem('storageTestPaperArr')
-      sessionStorage.removeItem('resDataCopy')
-      this.clearIntervalFn()
-      console.log(_.cloneDeep(this.testPaperArr), 'this.testPaperArr')
+      let testPaperArrCopy =  _.cloneDeep(this.testPaperArr)
+      testPaperArrCopy.forEach((ele) => {
+        ele.hasOwnProperty('optionArr') && delete ele.optionArr
+      })
+      let params = {
+        courseId: this.$route.query.courseId * 1, // 选择的课程id
+        unitId: this.$route.query.unitId * 1, // 生成试卷的课程 0：全部；其他数：对应选择的unitId
+        testContent: JSON.stringify(testPaperArrCopy),
+        learnType: this.category, // 1: '认读', 2: '拼写', 3: '辨音'
+        testType: 3, // 0：学前测；1：学后测；2：学前总测试；3：课程测试
+        continueTime: this.min + '分' + this.seconds + '秒'
+      }
+      if (this.$route.params.hasOwnProperty('testType')) {
+        params.testType = this.$route.query.testType * 1
+      }
+      this.$API.POST('/course/commitTestPaper', params)
+        .then((res) => {
+          if (res && res.hasOwnProperty('code') && res.code === 0) {
+            this.$message.success('提交试卷' + res.msg)
+            sessionStorage.removeItem('start')
+            sessionStorage.removeItem('storageTestPaperArr')
+            sessionStorage.removeItem('resDataCopy')
+            this.clearIntervalFn()
+            this.$router.go(-1)
+            return false
+          }
+          this.$message.error('提交试卷失败')
+        })
+        .catch((err) => {
+          this.$message.error('提交试卷失败: ' + err.msg)
+          console.log(err, 'err 提交试卷')
+        })
     },
     //
   }

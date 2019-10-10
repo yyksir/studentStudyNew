@@ -1,5 +1,4 @@
-
-import Cookie from 'js-cookie'
+/*import Cookie from 'js-cookie'
 
 // 获取服务端cookie
 const getcookiesInServer = function getcookiesInServer (req) {
@@ -19,4 +18,4 @@ const getcookiesInClient = function getcookiesInClient (key) {
 export {
   getcookiesInServer,
   getcookiesInClient
-}
+}*/

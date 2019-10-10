@@ -77,8 +77,8 @@ export default {
       courseId: '',
       courseArr: [],
       category: '', // 1: '认读', 2: '拼写', 3: '辨音'
-      range: 1,
-      count: 1,
+      range: 1, // 1 全部 2 备忘本
+      count: 1, // 择测试的题量 1 较少 2 普通
       course: 0,
       radioStyle: {
         display: 'block',
@@ -158,10 +158,10 @@ export default {
       this.$router.push({
         path: '/test/courseTest/' + this.category,
         query: {
-          courseId: this.courseId,
-          testScopeType: this.range,
-          testNum: this.count,
-          unitId: this.course
+          courseId: this.courseId, // 选择的学习课程 id
+          testScopeType: this.range, // 测试的范围 1 全部 2 备忘本
+          testNum: this.count, // 择测试的题量 1 较少 2 普通
+          unitId: this.course // 生成试卷的课程
         }
       })
     }

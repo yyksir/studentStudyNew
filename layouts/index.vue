@@ -59,7 +59,7 @@
             </a-menu-item>
           </a-sub-menu>
       </a-menu>
-      <a-popconfirm title="你确定退出吗?" okText=" 确定" cancelText="取消"
+      <a-popconfirm title="你确定退出吗?" okText=" 确定" cancelText="取消" v-if="userName !== ''"
         @confirm="handleBtnSignOutClick"
       >
         <div class="signOutContainer">
@@ -80,7 +80,7 @@
 import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN'
 
 export default {
-  middleware: 'userAuth', // 是否登录
+  // middleware: 'userAuth', // 是否登录 改为不需要 前端判断， 故 注释掉 middleware
   data () {
     return {
       collapsed: false,

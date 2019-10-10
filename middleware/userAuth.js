@@ -1,4 +1,4 @@
-import {
+/*import {
   getcookiesInServer,
   getcookiesInClient
 } from '../assets/utils/index.js'
@@ -27,4 +27,4 @@ export default function ({route, req, res, redirect}) {
   if (!token) {
     redirect(redirectURL)
   }
-}
+}*/

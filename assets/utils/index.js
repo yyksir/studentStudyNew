@@ -6,14 +6,14 @@ import {
   spliceParams
 } from './spliceParams.js'
 
-import {
+/*import {
   getcookiesInServer,
   getcookiesInClient
-} from './login.js'
+} from './login.js'*/
 
 export {
   debounce,
   spliceParams,
-  getcookiesInServer,
-  getcookiesInClient
+  /*getcookiesInServer,
+  getcookiesInClient*/
 }
