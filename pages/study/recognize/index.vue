@@ -207,19 +207,39 @@ export default {
                         return word.wordName==res.data.wordName;
                     });
                     if(backFlag==undefined) {
-                        this.wordNameArr.unshift(res.data)
+                        _that.wordNameArr.unshift(res.data)
                     }
-                    this.workldArr[0]={
+                    _that.workldArr[0]={
                         name:'英',
                         pronu:res.data.englishPronu||'',
                         src:_that.urlVoice + res.data.wordName + 0 + '.mp3',
 
                     };
-                    this.workldArr[1]={
+                    _that.workldArr[1]={
                         name:'美',
                         pronu:res.data.americaPronu||'',
                         src: _that.urlVoice + res.data.wordName + 1 + '.mp3',
                     };
+                }else if(res.code=='1008') {
+                    _that.$confirm({
+                        title: res.msg,
+                        content: '是否要进行单元测试',
+                        okText: '是',
+                        cancelText: '否',
+                        onOk() {
+                            console.log('章节测试');
+                        },
+                        onCancel() {
+                            
+                            _that.currentIndex ++;
+                            _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],0)
+                            if(_that.currentIndex == _that.leftgetMyUnit.length) {
+                                _that.currentIndex  = 0;
+                            }
+                        }
+                        
+                    })
+
                 }else{
                     _that.enVoiceSrc = {}
                 }
