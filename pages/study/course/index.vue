@@ -126,7 +126,7 @@ export default {
       this.$router.push({
         path:'/test/courseTest/' + item.type,
         query:{
-          courseId:item.id,
+          courseId:item.courseId,
           united:0,
           testType:0,
         }
@@ -167,7 +167,7 @@ export default {
       this.$router.push({
         path:'/test/courseTest/' + item.type,
         query:{
-          courseId:item.id,
+          courseId:item.courseId,
           united:0,
           testType:3,
         }
