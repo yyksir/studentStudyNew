@@ -227,6 +227,14 @@ export default {
                         okText: '是',
                         cancelText: '否',
                         onOk() {
+                             _that.$router.push({
+                                path:'/test/courseTest/' + localUnit.type,
+                                query:{
+                                    courseId:localUnit.courseId,
+                                    united:localUnit.unitedId,
+                                    testType:1,
+                                }
+                            })
                             console.log('章节测试');
                         },
                         onCancel() {

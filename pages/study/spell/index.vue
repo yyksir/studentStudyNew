@@ -151,6 +151,14 @@ export default {
                     okText: '是',
                     cancelText: '否',
                     onOk() {
+                        _that.$router.push({
+                            path:'/test/courseTest/' + localUnit.type,
+                            query:{
+                                courseId:localUnit.courseId,
+                                united:localUnit.unitedId,
+                                testType:0,
+                            }
+                        })
                         console.log('章节测试');
                     },
                     onCancel() {
@@ -205,8 +213,34 @@ export default {
                     if(backFlag==undefined) {
                         this.wordNameArr.unshift(res.data)
                     }
-
+    
                    
+                }else if(res.code=='1008') {
+                    _that.$confirm({
+                        title: res.msg,
+                        content: '是否要进行单元测试',
+                        okText: '是',
+                        cancelText: '否',
+                        onOk() {
+                            _that.$router.push({
+                                path:'/test/courseTest/' + localUnit.type,
+                                query:{
+                                    courseId:localUnit.courseId,
+                                    united:localUnit.unitedId,
+                                    testType:1,
+                                }
+                            })
+                            console.log('章节后测试');
+                        },
+                        onCancel() {
+                            _that.currentIndex ++;
+                            if(_that.currentIndex == _that.leftgetMyUnit.length) {
+                                _that.currentIndex  = 0;
+                            }
+                            _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],0)
+                        }
+                    })
+
                 }else{
                     _that.enVoiceSrc = {}
                 }

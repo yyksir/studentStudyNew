@@ -161,8 +161,9 @@ export default {
             _that.$API.POST('/learn/getLearningWord',{
                 id:localUnit.id,
             }).then((res) => {
-                _that.enVoiceSrc = res.data
-                console.log(res)
+                if(res.code=='0'){
+                     _that.enVoiceSrc = res.data
+                    console.log(res)
                 // const resdata = res.data
                 //window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
                     let audioDomEn = this.$refs.audioDomEn;
@@ -187,8 +188,6 @@ export default {
                 //     analyser.connect(ctx.destination);
 
                 //     analyser.fftSize = 512;
-
-
                 //     let canvas = document.getElementById('canvas');
                 //     let ctx = canvas.getContext('2d');
                     // let cwidth = canvas.width;
@@ -252,6 +251,38 @@ export default {
                         requestAnimationFrame(render);
                     }
                     render();
+
+                }else if(res.code=='1008') {
+                    _that.$confirm({
+                        title: res.msg,
+                        content: '是否要进行单元测试',
+                        okText: '是',
+                        cancelText: '否',
+                        onOk() {
+                             _that.$router.push({
+                                path:'/test/courseTest/' + localUnit.type,
+                                query:{
+                                    courseId:localUnit.courseId,
+                                    united:localUnit.unitedId,
+                                    testType:1,
+                                }
+                            })
+                            console.log('章节测试');
+                        },
+                        onCancel() {
+                            
+                            _that.currentIndex ++;
+                            if(_that.currentIndex == _that.leftgetMyUnit.length) {
+                                _that.currentIndex  = 0;
+                            }
+                            _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],0)
+                            
+                        }
+                        
+                    })
+
+                }
+              
             })
             .catch((err) => {
                 // _that.$message.warning('获取数据失败');

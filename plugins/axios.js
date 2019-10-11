@@ -20,9 +20,10 @@ instance.interceptors.request.use(config => {
   }
   if (token) {
     config.data['token'] = token
-  }/* else {
-    config.data['token'] = 'EDU_TOKEN_STU_5b69b9cb83065d403869739ae7f0995e' // 开发时 写死的
-  }*/
+  }
+  // else {
+  //   config.data['token'] = 'EDU_TOKEN_STU_5b69b9cb83065d403869739ae7f0995e' // 开发时 写死的
+  // }
   if (config.method === 'post') { config.data = qs.stringify(config.data) }
   return config
 }, err => {

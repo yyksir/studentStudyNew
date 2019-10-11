@@ -56,7 +56,7 @@
             <a-button  type="primary" style="position: absolute;top: 50%;left: 50%;transform:translate(-50%,-50%);"   @click="handleActionStusy">
               开始学习
             </a-button>
-            <a-button type="primary" style="float:right"  @click="handleTotal">
+            <a-button type="primary" style="float:right"  @click="handleTotalTest">
               学前总测试
             </a-button> 
         </div>
@@ -121,8 +121,16 @@ export default {
     handleCancel() {
       this.visible = false
     },
-    handlePageTest () {//章节测试
-      console.log("cancel")
+    handlePageTest () {//章节学前测试
+    const item =  this.selectItem;
+      this.$router.push({
+        path:'/test/courseTest/' + item.type,
+        query:{
+          courseId:item.id,
+          united:0,
+          testType:0,
+        }
+      })
     },
     handleActionStusy() {//开始学习
     //item.type=='1'?"认读":item.type=='2'?"拼写":"辨音"
@@ -154,8 +162,16 @@ export default {
       })
       
     },
-    handleTotal() { //总测试
-
+    handleTotalTest() { //总测试
+      const item =  this.selectItem;
+      this.$router.push({
+        path:'/test/courseTest/' + item.type,
+        query:{
+          courseId:item.id,
+          united:0,
+          testType:3,
+        }
+      })
     },
     handleDeleteItem(item) {
       this.$confirm({
@@ -193,7 +209,22 @@ export default {
     //   })
     // },
     handleDeleteStudyRecord() {
-
+      const item =  this.selectItem;
+      this.$API.POST('/learn/clearLearnRecord',{
+        id:item.id
+        }).then((res) => {
+        console.log((res))
+          if (res && res.code=='0' ) {
+            this.$message.success(res.data);
+          }else{
+            this.$message.warning('清除失败');
+          }
+           this.visible = false;
+        })
+        .catch((err) => {
+          this.$message.warning('清除失败');
+          console.log(err, 'err')
+        })
     }
   }
 }
