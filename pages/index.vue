@@ -110,7 +110,6 @@ export default {
   },
   mounted() {
     setTimeout(() => {
-      console.log(1111111111111, '1111')
       let userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
       this.userName = userInfo.trueName
       this.lastLoginTime = this.$moment(userInfo.lastLoginTime).format('YYYY-MM-DD HH:mm')

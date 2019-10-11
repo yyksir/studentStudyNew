@@ -89,11 +89,15 @@ export default {
               this.isLoading = false
               this.$router.push({ path: '/', redirect: true })
             }, 2000)
+            return false
           }
+          console.log(res, 'res 94 sign/index.vue')
+          this.isLoading = false
+          this.$message.warning(res.showMsg)
         })
         .catch((err) => {
           this.isLoading = false
-          this.$message.warning('登录失败');
+          this.$message.warning('登录失败')
           console.log(err, 'err 登录失败')
         })
     }

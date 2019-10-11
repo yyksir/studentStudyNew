@@ -99,7 +99,7 @@ export default {
         .catch((err) => {
           console.log(err, 'err 翻译接口调用失败')
           // this.setEmptyData()
-          this.$message.error('翻译接口调用失败, 联系管理员')
+          this.$message.error(err.message + '翻译接口调用失败, 联系管理员')
         })
     },
     // 历史记录标签被点击

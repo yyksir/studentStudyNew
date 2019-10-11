@@ -11,7 +11,25 @@ const instance = axios.create({
   baseURL: BASE_URL + API,
   timeout: 20000
 })
-
+const checkoutStatusFn = function checkoutStatusFn (res, isError) {
+  if (!isError) {
+    if (res.status === 401 && !isError) {
+      console.log(res, 'res 25')
+      location.href = '/sign/'
+      return {
+        code: 401,
+        mag: '登录失效， 请从新登录'
+      }
+    }
+  } else {
+    if (res.response.status === 401 && isError) {
+      console.log(res.response, 'res.response 20')
+      location.href = '/sign/'
+      return Promise.reject(res.response.data)
+    }
+  }
+  return res
+}
 // request 拦截
 instance.interceptors.request.use(config => {
   const token = Cookies.get('session') // 获取 Cookie
@@ -20,9 +38,10 @@ instance.interceptors.request.use(config => {
   }
   if (token) {
     config.data['token'] = token
-  }/* else {
-    config.data['token'] = 'EDU_TOKEN_STU_5b69b9cb83065d403869739ae7f0995e' // 开发时 写死的
-  }*/
+  } else {
+    // config.data['token'] = 'EDU_TOKEN_STU_5b69b9cb83065d403869739ae7f0995e' // 开发时 写死的
+    // config.data['token'] = ''
+  }
   if (config.method === 'post') { config.data = qs.stringify(config.data) }
   return config
 }, err => {
@@ -30,17 +49,9 @@ instance.interceptors.request.use(config => {
 })
 // response 拦截
 instance.interceptors.response.use(response => {
-  // 401 未登录
-  if (response.status === 401) {
-    location.href = '/sign/'
-    return {
-      code: 401,
-      mag: '登录失效， 请从新登录'
-    }
-  }
-  return response
+  return checkoutStatusFn(response, false)
 }, error => {
-  return Promise.reject(error)
+  return checkoutStatusFn(error, true)
 })
 
 export default instance
@@ -72,7 +83,7 @@ export function get (url, params = {}) {
 export function post (url, data = {}) {
   return new Promise((resolve, reject) => {
     instance.post(url, data)
-    .then(response => {
+      .then(response => {
         resolve(response.data)
       }, err => {
         reject(err)
