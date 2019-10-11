@@ -110,11 +110,18 @@ export default {
   },
   mounted() {
     setTimeout(() => {
+<<<<<<< HEAD
       console.log(1111111111111, '1111')
       let userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
       this.userName = userInfo && userInfo.trueName || '陌生人';
       this.lastLoginTime = this.$moment(userInfo.lastLoginTime).format('YYYY-MM-DD HH:mm') ;
       this.endTime = this.$moment(userInfo.endTime).format('YYYY-MM-DD HH:mm:ss');
+=======
+      let userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
+      this.userName = userInfo.trueName
+      this.lastLoginTime = this.$moment(userInfo.lastLoginTime).format('YYYY-MM-DD HH:mm')
+      this.endTime = this.$moment(userInfo.endTime).format('YYYY-MM-DD HH:mm:ss')
+>>>>>>> 8331bb4ab665b3803f55f8bc13384a8063cb3827
       console.log(userInfo, 'userInfo')
     }, 3000)
     this.getHasStudyCourse();
