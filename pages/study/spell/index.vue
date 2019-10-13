@@ -275,12 +275,6 @@ export default {
             _that.courseNameStr = data.courseNameStr;
             _that.enVoiceSrc = data;
             _that.getWordChafenFun(data);
-            let  backFlag = _.find(this.wordNameArr, (word)=>{
-                return word.wordName==data.wordName;
-            });
-            if(backFlag==undefined) {
-                _that.wordNameArr.unshift(data)
-            }
             _that.voice={
                 src:_that.urlVoice + data.wordName + (_that.check?1:0) + '.mp3',
 
@@ -367,17 +361,26 @@ export default {
                }
             })
             if(flag) {
+                if(this.spellWord.length>this.right.length) {
+                    debugger
+                    this.spellWord = this.$store.state.name; 
+                }
+                this.$store.commit('handlehangeSpellName',this.spellWord)
                 let str = ''
                 this.right.forEach((item)=>{
                     str+=item;
                 })
-                if(this.spellWord  == str) {
-                    this.$refs.englishPronu.play();
-                }else{
-                     if(this.spellWord.length>this.right.length) {
-                        this.spellWord = this.$store.state.name; 
+                if(this.spellWord == str) {
+                    let  backFlag = _.find(this.wordNameArr, (word)=>{
+                        return word.wordName==this.enVoiceSrc.wordName;
+                    });
+                    if(backFlag==undefined) {
+                        this.wordNameArr.unshift(this.enVoiceSrc)
                     }
+                }else{
+                     
                     let confirmName = '';
+                    
                     this.right.forEach((ele,index)=>{
                         if(this.spellWord[index]!=ele) {
                             confirmName += `<span style="color: red">${this.spellWord[index] }</span>`;
@@ -394,12 +397,13 @@ export default {
                     })
                     this.spellWord = confirmName;
                 }
+                this.$refs.englishPronu.play();
             }else if(!flag) {
                 this.$store.commit('handlehangeSpellName',this.spellWord)
             }
 
-
-            
+            console.log()
+            console.log(this.spellWord)
            
         },
         handleVoiceCategoryChange(check) {
