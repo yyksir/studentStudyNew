@@ -93,7 +93,14 @@ export default {
   mounted () {
     setTimeout(() => {
       let userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
-      this.userName = userInfo.trueName
+      if (!userInfo) {
+        this.$router.push({
+          path: '/sign/',
+          redirect: true
+        })
+        return false
+      }
+      this.userName = userInfo && userInfo.trueName
     }, 3000)
   },
   methods: {

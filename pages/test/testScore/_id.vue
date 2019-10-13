@@ -6,34 +6,34 @@
     </header>
     <div class="courseInfoContainer">
       <div class="floor1">
-        <span>产品名称 · 测试课程 · 课程名称 · 辨音</span>
+        <span>产品名称 · 测试课程 · {{detailObj.courseName}} · {{categoryObj[detailObj.learnType]}}</span>
       </div>
       <div class="floor2">
-        <span>测试内容：章节一、章节二</span>
+        <span>测试内容：{{detailObj.unitName}}</span>
       </div>
       <div class="floor3">
-        <span>（共50题  对34题 错23题 时常 34分23秒）</span>
+        <span>（共 {{detailArr.length}} 题  对 {{detailObj.rightNum}} 题 错 {{detailObj.wrongNum}} 题 时长 {{detailObj.continueTime}}）</span>
       </div>
       <div class="floor4">
-        <span>2019-08-07 19:02:17 姓名：张航 成绩：99分</span>
+        <span>{{detailObj.createTime}} 姓名：{{detailObj.name}} 成绩：{{detailObj.score || 0}}分</span>
       </div>
     </div>
     <ul class="ulElem">
       <li class="liElem"
-        v-for="(item, itemindex) of 20"
-        :key="itemindex"
+        v-for="(item, serialIndex) of detailArr"
+        :key="item.id"
       >
         <span class="liElemTop">
-          <span class="serialNumber">1、</span>
-          <span class="wordName">because</span>
-          <span class="meaning">单词的意思</span>
-          <span class="answer">(A)</span>
+          <span class="serialNumber">{{serialIndex + 1}}、</span>
+          <span class="wordName">{{item.wordName}}</span>
+          <span class="meaning">{{item.meaning}}</span>
+          <span class="answer">( {{item.selected}} )</span>
         </span>
-        <span class="liElemBottom">
-          <span class="optionSelect active">A、哈哈</span>
-          <span class="optionSelect">B、发广告广告</span>
-          <span class="optionSelect">C、风格化风格化</span>
-          <span class="optionSelect">D、发广告风格豆腐干</span>
+        <span class="liElemBottom" v-if="detailObj.learnType !== 2">
+          <span class="optionSelect" :class="{'active': item.answer === 'A'}">A、哈哈</span>
+          <span class="optionSelect" :class="{'active': item.answer === 'B'}">B、发广告广告</span>
+          <span class="optionSelect" :class="{'active': item.answer === 'C'}">C、风格化风格化</span>
+          <span class="optionSelect" :class="{'active': item.answer === 'D'}">D、发广告风格豆腐干</span>
         </span>
       </li>
     </ul>
@@ -44,7 +44,9 @@
 export default {
   data () {
     return {
-      detailArr: []
+      detailObj: {},
+      detailArr: [],
+      categoryObj: { 1: '认读', 2: '拼写', 3: '辨音' },
     }
   },
   created () {
@@ -62,14 +64,15 @@ export default {
       }
       this.$API.POST('/census/getOneTestRrecord', { id: this.$route.params.id })
         .then((res) => {
-          console.log(_.cloneDeep(res.data), 'res 试卷详情')
           if (res && res.hasOwnProperty('code') && res.code === 0) {
-            this.detailArr = res.data
+            this.detailObj = res.data
+            this.detailArr = res.data.testContent
             return false
           }
           this.detailArr = []
         })
         .catch((err) => {
+          this.detailObj = {}
           this.detailArr = []
           this.$message.error('获取试卷详情失败， 联系管理员: ' + err.msg)
           console.log(err, 'err 获取试卷详情失败， 联系管理员')
@@ -142,7 +145,7 @@ export default {
         justify-content flex-start
         align-items center
         width 100%
-        height 60px
+        min-height 20px
         margin 20px 0
         list-style none
         font-size 17px
