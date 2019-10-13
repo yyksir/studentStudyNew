@@ -1,86 +1,104 @@
 <template>
-    <div class="box">
-        <div class="boxLeft">
-            <div class="upBtn">
-                <a-icon type="down" />
+    <div class="boxContent" >
+        <div class="toptitle clearfix">
+            <span class="titleName" style="margin-right: 32px;">{{courseNameStr}}</span>
+            <div class="titleLeft">
+                <a-switch checkedChildren="美" unCheckedChildren="英" v-model="check" @change="handleVoiceCategoryChange" />
+                <a-icon class="close" type="close" @click="handleCloseRouter" />
             </div>
-            <div class="itemBox">
-                <div class="item" v-for="(item,index) of leftgetMyUnit" :class="{'selectTab':currentIndex==index}"  :key="item.id" @click="handleInitUnit(item,index)">
-                    <h3 class="itemTitle">
-                        {{item.unitName}}
-                    </h3>
-                    <div class="itemConte">
-                        词条{{item.learnCount}}--已学{{item.learnCount}}|错误{{item.learnCount}}
-                    </div>
-                </div>
-            </div>
-            <div class="downBtn">
-                <a-icon type="up" />
-            </div>
+            
         </div>
-        <div class="boxright" >
-            <div class="tabBox">
-                <span 
-                v-for="(wordName,index) of wordNameArr" 
-                :key="index" 
-                :class="{'highSeletced':currentTitleIndex==index}" 
-                @click="getLearningWord(wordName)" >
-                    {{wordName.wordName}}
-                </span>
+        <div class="box clearfix">
+            <div class="boxLeft">
+                <div class="upBtn" @click="handleDownUnit">
+                    <a-icon type="down" />
+                </div>
+                <div class="itemBox">
+                    <div class="item" v-for="(item,index) of leftgetMyUnit" :class="{'selectTab':currentIndex==index}"  :key="item.id" @click="handleInitUnit(item,index)">
+                        <h3 class="itemTitle">
+                            {{item.unitName}}
+                        </h3>
+                        <div class="itemConte">
+                            词条{{item.learnCount}}--已学{{item.learnCount}}|错误{{item.learnCount}}
+                        </div>
+                    </div>
+                </div>
+                <div class="downBtn" @click="handleUpUnit">
+                    <a-icon type="up" />
+                </div>
             </div>
-            <div class="boxShowContent">
-                <div v-if="Object.keys(enVoiceSrc)!=0"   class="boxShosContentInner" v-cloak>
-                    <h1>
-                        {{enVoiceSrc.wordName}}
-                    </h1>
-                    <div class="spellBox">
-                        <div class="spellSelectName">
-                            {{spellWord}}
-                        </div>
-                        <!-- <div class="spellListSecond ">
-                            <span class="itemspan spellPublic"  v-for="(item,index) of getWordChafen.first" :key="index"  @click="handleSpell(item,index,'1')">
-                                <span class="spellPublic" :class="{'highLight':currentFirstNameIndex==index}">
-                                   {{item}}
-                                </span> 
-                            </span>
-                        </div>
-                        <div class="spellListSecond ">
-                            <span class="itemspan "  v-for="(item,index) of getWordChafen.second" :key="index"  @click="handleSpell(item,index,'2')">
-                               <span class="spellPublic" :class="{'highLight':currentSecondNameIndex==index}">
-                                   {{item}}
-                                </span> 
-                            </span>
-                        </div> -->
-                        <div class="spellListSecond ">
-                            <span class="itemspan " v-for="(item,index) of nameArr" :key="index" >
-                                <span class="spellPublic" v-for="(name,nameIndex)  of item" :key="nameIndex"   @click="handleSpell(name,nameIndex)">
-                                     {{name}}
+            <div class="boxright" >
+                <div class="tabBox">
+                    <span 
+                    v-for="(wordName,index) of wordNameArr" 
+                    :key="index" 
+                    :class="{'highSeletced':currentTitleIndex==index}" 
+                    @click="handtabName(wordName,index)" >
+                        {{wordName.wordName}}
+                    </span>
+                </div>
+                <div class="boxShowContent">
+                    <div v-if="Object.keys(enVoiceSrc)!=0"   class="boxShosContentInner" v-cloak>
+                        <h1>
+                            {{enVoiceSrc.wordName}}
+                        </h1>
+                        <div class="spellBox">
+                            <div class="spellSelectName" v-html="spellWord">
+                                
+                            </div>
+                            <div class="spellListSecond ">
+                                <span class="itemspan spellPublic"  
+                                    v-for="(item,index) in first" 
+                                    :key="index"  
+                                    @click="handleSpell(item,index,'1')">
+                                    <span class="spellPublic" :class="{'highLight':item.isSelected}">
+                                    {{item.name}}
+                                    </span> 
                                 </span>
-                            </span>
+                            </div>
+                            <div class="spellListSecond ">
+                                <span class="itemspan "  v-for="(item,index) in second" :key="index"  @click="handleSpell(item,index,'2')">
+                                <span class="spellPublic" :class="{'highLight':item.isSelected}">
+                                    {{item.name}}
+                                    </span> 
+                                </span>
+                            </div>
+                            <audio class="audioDomEn" ref="englishPronu" :src="voice.src">
+                                <source class="audioDomEn"  type="audio/mpeg">
+                                <embed class="audioDomEn" height="0" width="0" src="">
+                                    您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
+                            </audio>
+                            <!-- <div class="spellListSecond ">
+                                <span class="itemspan " v-for="(item,index) of nameArr" :key="index" >
+                                    <span class="spellPublic" v-for="(name,nameIndex)  of item" :key="nameIndex"   @click="handleSpell(name,nameIndex)">
+                                        {{name}}
+                                    </span>
+                                </span>
+                            </div> -->
+                        </div>
+                        <div class="content" >
+                            <p>翻译:{{enVoiceSrc.meaning}}</p>
+                            <p >
+                                {{enVoiceSrc.exampleSentence1}}
+                            </p>
+                            <p >
+                                {{enVoiceSrc.exampleSentence2}}
+                            </p>
+                            <p >
+                                {{enVoiceSrc.exampleSentence3}}
+                            </p>
+
                         </div>
                     </div>
-                    <div class="content" >
-                        <p>翻译:{{enVoiceSrc.meaning}}</p>
-                        <p >
-                            {{enVoiceSrc.exampleSentence1}}
-                        </p>
-                         <p >
-                            {{enVoiceSrc.exampleSentence2}}
-                        </p>
-                         <p >
-                            {{enVoiceSrc.exampleSentence3}}
-                        </p>
-
+                    <div v-else style="text-align:center">
+                        暂无数据
                     </div>
                 </div>
-                <div v-else>
-                    暂无数据
-                </div>
-            </div>
-            <div class="btnBox">
-                <div >
-                    <a-button type="primary" @click="handleKnow('0')">错误/不认识</a-button>
-                    <a-button type="danger" @click="handleKnow('1')">下一题</a-button>
+                <div class="btnBox">
+                    <div >
+                        <a-button type="primary" @click="handleKnow('0')">错误/不认识</a-button>
+                        <a-button type="danger" @click="handleKnow('1')">下一题</a-button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -113,12 +131,21 @@ export default {
              ],
              currentFirstNameIndex:-1,
              currentSecondNameIndex:-1,
+             studyTime:'',//学习的时间
+             check:true,//选择的音美音
+             courseNameStr:'',//课程名称
+             first:[],
+             second:[],
+             right:[],
+             voice:{ //声音
+                 src:''
+             }
+
         }
     },
     mounted() {
         this.initData('1');
         this.currentIndex = 0;
-        console.log('mouted')
         window.addEventListener('beforeunload', e => this.beforeunloadFn(e))
     },
     methods:{
@@ -136,6 +163,17 @@ export default {
             }).catch((err) => {
                 console.log(err, 'err')
             })
+
+            this.$API.POST('/learn/getLearningTime',{
+                id:this.query.id,
+            }).then((res) => {
+                console.log("获取时间");
+                this.studyTime = res.data;
+                console.log(res.data)
+            }).catch((err) => {
+                console.log(err, 'err')
+            })
+            
         },
         handleInitUnit(unit,index) {
             this.wordNameArr
@@ -199,22 +237,13 @@ export default {
         },
         getLearningWord(localUnit) {
             let _that  = this;
-            _that.enVoiceSrc = {};
+            
             _that.$API.POST('/learn/getLearningWord',{
                 id:localUnit.id,
             }).then((res) => {
                  console.log(res)
                 if(res.code=='0') {
-                    _that.enVoiceSrc = res.data;
-                     _that.getWordChafenFun(res.data);
-                    let  backFlag = _.find(this.wordNameArr, (word)=>{
-                        return word.wordName==res.data.wordName;
-                    });
-                    if(backFlag==undefined) {
-                        this.wordNameArr.unshift(res.data)
-                    }
-    
-                   
+                    _that.handleChangeBackName(res.data)
                 }else if(res.code=='1008') {
                     _that.$confirm({
                         title: res.msg,
@@ -249,14 +278,44 @@ export default {
                 console.log(err, 'err')
             })
         },
+        handleChangeBackName(data) {
+            let _that = this;
+            _that.enVoiceSrc = {};
+             _that.courseNameStr = data.courseNameStr;
+            _that.enVoiceSrc = data;
+                _that.getWordChafenFun(data);
+            let  backFlag = _.find(this.wordNameArr, (word)=>{
+                return word.wordName==data.wordName;
+            });
+            if(backFlag==undefined) {
+                _that.wordNameArr.unshift(data)
+            }
+            _that.voice={
+                src:_that.urlVoice + data.wordName + (_that.check?1:0) + '.mp3',
+
+            };
+        },
         getWordChafenFun(data) {//获取wordname的选择数组
             this.$API.POST('/learn/getWordChafen',{
                 wordName:data.wordName
             }).then((res) => { 
                 if(res.code=='0') {
-                    this.getWordChafen = res.data;
+                    const getdata  = res.data
+                    this.first = getdata.first.map((item)=>{
+                        const container = {};
+                        container.name = item;
+                        container.isSelected = false
+                        return container;
+                    })
+                    this.second = getdata.second.map((item)=>{
+                        const container = {};
+                        container.name = item;
+                        container.isSelected = false
+                        return container;
+                    })
+                    this.right = res.data.right;
                 }
-                console.log(res)
+
             })
             .catch((err) => {
                 this.getWordChafen = {};
@@ -265,6 +324,7 @@ export default {
             }) 
         },
         handleKnow(isKnow) {
+            this.spellWord = ''
             this.$API.POST('/learn/doLearn',{
                 courseId:this.enVoiceSrc.courseId,
                 unitId:this.enVoiceSrc.unitId,
@@ -288,17 +348,77 @@ export default {
             // ...
         },
         handleSpell(name,index,row){
+            console.log(name,index,row)
             if(row=='1') {
-                this.currentFirstNameIndex = index;
+                if(this.second[index].isSelected) {
+                    this.second[index].isSelected =false
+                }
+                this.first[index].isSelected =true;
             }else{
-                this.currentSecondNameIndex = index
+                if(this.first[index].isSelected) {
+                    this.first[index].isSelected =false
+                }
+                this.second[index].isSelected =true;
             }
-            //this.currentNameIndex = index
-            console.log(name,index)
-            if(this.spellWord.length==index){
-                this.spellWord +=name;
+            //row 是一行 二行 name就是值 index就是下标
+            if(this.spellWord.length>this.right.length) {
+                this.spellWord = this.$store.state.name; 
             }
-            
+            console.log(this.$store)
+            if(this.spellWord.length<=this.right.length) {
+                this.spellWord = '';
+                this.right.forEach((element,indexIner) => {
+                    if(this.first[indexIner].isSelected) {
+                        this.spellWord +=this.first[indexIner].name;
+                    }
+                    if(this.second[indexIner].isSelected) {
+                        this.spellWord +=this.second[indexIner].name;
+                    }
+                    
+                });
+                this.$store.commit('handlehangeSpellName',this.spellWord)
+            }
+            //$store.state.name 
+            //$store.commit('handlehangeSpellName',name)
+
+            if(this.spellWord.length == this.right.length) {
+                let confirmName = '';
+                this.right.forEach((ele,index)=>{
+                    if(this.spellWord[index]!=ele) {
+                         confirmName += `<span style="color: red">${this.spellWord[index] }</span>`;
+                    }else{
+                        confirmName += this.spellWord[index];
+                    }
+                    
+                })
+                this.spellWord = confirmName;
+                this.$refs.englishPronu.play();
+            }
+        },
+        handleVoiceCategoryChange(check) {
+            console.log(check)
+            this.check = check;
+        },
+        handleCloseRouter() {
+            this.$router.go(-1);
+        },
+        handleDownUnit(){
+            this.currentIndex ++;
+            if(this.currentIndex>=this.leftgetMyUnit.length) {
+                this.currentIndex = 0
+            }
+            this.handleInitUnit(this.leftgetMyUnit[this.currentIndex],this.currentIndex)
+        },
+        handleUpUnit() {
+            this.currentIndex --;
+            if(this.currentIndex<=-1) {
+                this.currentIndex = this.leftgetMyUnit.length-1;
+            }
+            this.handleInitUnit(this.leftgetMyUnit[this.currentIndex],this.currentIndex)
+        },
+        handtabName(wordName,index) {
+            this.currentTitleIndex = index;
+            this.handleChangeBackName(wordName);
         }
 
     },
@@ -317,7 +437,7 @@ export default {
         // const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
         // if (true) {
              console.log('likai')
-              next()  
+                 next()  
           //  }
             
         // } else {
@@ -339,17 +459,40 @@ export default {
      display: none;
 
 }
-.box{
-    display flex
-    flex-direction row
-    width 100%
+.boxContent{
     height 100%
+    width 100%
+    .toptitle{
+        height 50px
+        line-height 50px
+        padding: 0 30px 0 20px;
+        .titleLeft{
+            float right
+            .close{
+                font-size 20px
+                cursor pointer
+                vertical-align middle
+                margin-left 20px
+            }
+        }
+        .titleName{
+            font-size 20px
+            font-weight 700
+        }
+    }
+}
+.box{
+
+    width 100%
+    height calc(100% - 50px)
    .boxLeft{
         width: 260px;
         background: #001529;
-        overflow-y auto
+        float left
         color #ffffff
         position relative
+        height 100%
+        overflow auto
         .upBtn{
             background-color #3A466C
             text-align center
@@ -371,7 +514,7 @@ export default {
             overflow auto
             .item{
                 color #ffffff
-                padding-bottom 20px
+                padding 10px 0
                 cursor pointer
                 text-align center
                 .itemTitle{
@@ -386,8 +529,9 @@ export default {
     }
     .boxright{
         background: #f0f4f5;
-        flex: 1;
-        overflow: scroll;
+        float left
+        overflow: auto
+        width calc(100% - 260px)
         .tabBox{
             height 53px
             background-color #ffffff
@@ -398,9 +542,10 @@ export default {
             overflow: hidden
             span {
                 float left
-                overflow auto
                 font-size 18px
                 margin-right 15px
+                height 52px
+                cursor pointer
             }
             .highSeletced{
                 border-bottom: 3px solid #e7355c;
@@ -414,8 +559,12 @@ export default {
             padding 50px 100px 0
             .boxShosContentInner{
                 height 100%
+                position relative
                 .spellBox{
-                    text-align center
+                    margin: 0 auto;
+                    position: absolute;
+                    left: 50%;
+                    transform: translateX(-50%);
                     .spellSelectName{
                         text-align center
                         margin-bottom 10px
@@ -438,13 +587,14 @@ export default {
                                 cursor pointer
                             }
                             .highLight{
-                                background-color red
+                                border 2px solid #67C23A
+                                line-height 40px
                             }
                         }
                     }
                 }
                 .content{
-                    margin-top 30px
+                    margin-top 140px
                 }
             }
         }

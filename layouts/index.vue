@@ -1,5 +1,5 @@
 <template>
-  <div class="app">
+  <div class="app clearfix">
     <div class="left-menu">
       <div class="logo">
         <img @click="handleGoToHomePage" src="../assets/img/logo.png" title="点击去首页" alt="logo" style="cursor: pointer;">
@@ -119,7 +119,8 @@ export default {
         redirect: true
       })
     }
-    //
+    //display flex
+    //flex-direction row
   }
 }
 </script>
@@ -136,16 +137,25 @@ export default {
   #__layout > div
     width 100%
     height 100%
+  .clearfix：after{
+    content:"."; 
+    display:block; 
+    clear:both; 
+    height:0; 
+    overflow:hidden; 
+    visibility:hidden;
+    } 
 </style>
 <style lang="stylus" scoped>
   .app{
-    display flex
-    flex-direction row
+    
     width 100%
     height 100%
     .left-menu{
       width 260px
       background: #001529;
+      height 100%
+      float left
       .logo{
         height 160px
         text-align center
@@ -170,8 +180,9 @@ export default {
     }
     .right-menu{
       background #f0f4f5
-      flex 1
-      overflow: scroll;
+      width: calc(100% - 260px);
+      float: left;
+      height 100%
       header{
           background white
           height 58px
