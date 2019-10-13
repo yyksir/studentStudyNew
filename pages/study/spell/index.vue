@@ -39,42 +39,32 @@
                 </div>
                 <div class="boxShowContent">
                     <div v-if="Object.keys(enVoiceSrc)!=0"   class="boxShosContentInner" v-cloak>
-                        <h1>
-                            {{enVoiceSrc.wordName}}
-                        </h1>
-                        <div class="spellBox">
-                            <div class="spellSelectName" v-html="spellWord">
-                                
-                            </div>
-                            <div class="spellListSecond ">
-                                <span class="itemspan spellPublic"  
-                                    v-for="(item,index) in first" 
-                                    :key="index"  
-                                    @click="handleSpell(item,index,'1')">
-                                    <span class="spellPublic" :class="{'highLight':item.isSelected}">
-                                    {{item.name}}
-                                    </span> 
-                                </span>
-                            </div>
-                            <div class="spellListSecond ">
-                                <span class="itemspan "  v-for="(item,index) in second" :key="index"  @click="handleSpell(item,index,'2')">
-                                <span class="spellPublic" :class="{'highLight':item.isSelected}">
-                                    {{item.name}}
-                                    </span> 
-                                </span>
-                            </div>
-                            <audio class="audioDomEn" ref="englishPronu" :src="voice.src">
-                                <source class="audioDomEn"  type="audio/mpeg">
-                                <embed class="audioDomEn" height="0" width="0" src="">
-                                    您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
-                            </audio>
-                            <!-- <div class="spellListSecond ">
-                                <span class="itemspan " v-for="(item,index) of nameArr" :key="index" >
-                                    <span class="spellPublic" v-for="(name,nameIndex)  of item" :key="nameIndex"   @click="handleSpell(name,nameIndex)">
-                                        {{name}}
+                        <div class="boxShosContentInnerSelect">               
+                            <div class="spellBox">
+                                <h1  class="spellSelectName" v-html="spellWord"></h1>
+                                <div class="spellListSecond ">
+                                    <span class="itemspan spellPublic"  
+                                        v-for="(item,index) in first" 
+                                        :key="index"  
+                                        @click="handleSpell(item,index,'1')">
+                                        <span class="spellPublic" :class="{'highLight':item.isSelected=='1','errLight':item.isSelected=='2'}">
+                                        {{item.name}}
+                                        </span> 
                                     </span>
-                                </span>
-                            </div> -->
+                                </div>
+                                <div class="spellListSecond ">
+                                    <span class="itemspan "  v-for="(item,index) in second" :key="index"  @click="handleSpell(item,index,'2')">
+                                    <span class="spellPublic" :class="{'highLight':item.isSelected=='1','errLight':item.isSelected=='2'}">
+                                        {{item.name}}
+                                        </span> 
+                                    </span>
+                                </div>
+                                <audio class="audioDomEn" ref="englishPronu" :src="voice.src">
+                                    <source class="audioDomEn"  type="audio/mpeg">
+                                    <embed class="audioDomEn" height="0" width="0" src="">
+                                        您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
+                                </audio>
+                            </div>
                         </div>
                         <div class="content" >
                             <p>翻译:{{enVoiceSrc.meaning}}</p>
@@ -106,6 +96,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
     layout: 'index',
     data(){
@@ -281,9 +272,9 @@ export default {
         handleChangeBackName(data) {
             let _that = this;
             _that.enVoiceSrc = {};
-             _that.courseNameStr = data.courseNameStr;
+            _that.courseNameStr = data.courseNameStr;
             _that.enVoiceSrc = data;
-                _that.getWordChafenFun(data);
+            _that.getWordChafenFun(data);
             let  backFlag = _.find(this.wordNameArr, (word)=>{
                 return word.wordName==data.wordName;
             });
@@ -304,18 +295,17 @@ export default {
                     this.first = getdata.first.map((item)=>{
                         const container = {};
                         container.name = item;
-                        container.isSelected = false
+                        container.isSelected = '0'
                         return container;
                     })
                     this.second = getdata.second.map((item)=>{
                         const container = {};
                         container.name = item;
-                        container.isSelected = false
+                        container.isSelected = '0'
                         return container;
                     })
                     this.right = res.data.right;
                 }
-
             })
             .catch((err) => {
                 this.getWordChafen = {};
@@ -341,59 +331,76 @@ export default {
                 this.$message.warning('获取数据失败');
                 console.log(err, 'err')
             }) 
-            
         },
         beforeunloadFn(e) {
             console.log('刷新或关闭')
             // ...
         },
         handleSpell(name,index,row){
-            console.log(name,index,row)
+            //isSelected 0代表没选择 1 代表ok 2代表err
+            let flag = true;
+           // console.log(name,index,row)//row 是一行 二行 name就是值 index就是下标
             if(row=='1') {
-                if(this.second[index].isSelected) {
-                    this.second[index].isSelected =false
+                if(this.second[index].isSelected=='1') {
+                    this.second[index].isSelected = '0'
                 }
-                this.first[index].isSelected =true;
+                this.first[index].isSelected = '1';
             }else{
-                if(this.first[index].isSelected) {
-                    this.first[index].isSelected =false
+                if(this.first[index].isSelected=='1') {
+                    this.first[index].isSelected = '0'
                 }
-                this.second[index].isSelected =true;
+                this.second[index].isSelected = '1';
             }
-            //row 是一行 二行 name就是值 index就是下标
-            if(this.spellWord.length>this.right.length) {
-                this.spellWord = this.$store.state.name; 
-            }
-            console.log(this.$store)
-            if(this.spellWord.length<=this.right.length) {
-                this.spellWord = '';
-                this.right.forEach((element,indexIner) => {
-                    if(this.first[indexIner].isSelected) {
-                        this.spellWord +=this.first[indexIner].name;
+            this.spellWord = '';
+            this.right.forEach((element,indexIner) => {
+                if(this.first[indexIner].isSelected=='1') {
+                    this.spellWord +=this.first[indexIner].name;
+                }
+                if(this.second[indexIner].isSelected=='1') {
+                    this.spellWord +=this.second[indexIner].name;
+                }
+            });
+           
+            this.right.forEach((item,indexIner)=>{
+               if(this.first[indexIner].isSelected=='0'&&this.second[indexIner].isSelected=='0') {
+                   flag=false
+               }
+            })
+            if(flag) {
+                let str = ''
+                this.right.forEach((item)=>{
+                    str+=item;
+                })
+                if(this.spellWord  == str) {
+                    this.$refs.englishPronu.play();
+                }else{
+                     if(this.spellWord.length>this.right.length) {
+                        this.spellWord = this.$store.state.name; 
                     }
-                    if(this.second[indexIner].isSelected) {
-                        this.spellWord +=this.second[indexIner].name;
-                    }
-                    
-                });
+                    let confirmName = '';
+                    this.right.forEach((ele,index)=>{
+                        if(this.spellWord[index]!=ele) {
+                            confirmName += `<span style="color: red">${this.spellWord[index] }</span>`;
+                            if(this.first[index].isSelected=='1') {
+                                this.first[index].isSelected=='0'
+                                this.second[index].isSelected='2'
+                            }else{
+                                this.second[index].isSelected='0'
+                                this.first[index].isSelected='2'
+                            }
+                        }else{
+                            confirmName += this.spellWord[index];
+                        }
+                    })
+                    this.spellWord = confirmName;
+                }
+            }else if(!flag) {
                 this.$store.commit('handlehangeSpellName',this.spellWord)
             }
-            //$store.state.name 
-            //$store.commit('handlehangeSpellName',name)
 
-            if(this.spellWord.length == this.right.length) {
-                let confirmName = '';
-                this.right.forEach((ele,index)=>{
-                    if(this.spellWord[index]!=ele) {
-                         confirmName += `<span style="color: red">${this.spellWord[index] }</span>`;
-                    }else{
-                        confirmName += this.spellWord[index];
-                    }
-                    
-                })
-                this.spellWord = confirmName;
-                this.$refs.englishPronu.play();
-            }
+
+            
+           
         },
         handleVoiceCategoryChange(check) {
             console.log(check)
@@ -559,42 +566,49 @@ export default {
             padding 50px 100px 0
             .boxShosContentInner{
                 height 100%
-                position relative
-                .spellBox{
-                    margin: 0 auto;
-                    position: absolute;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    .spellSelectName{
-                        text-align center
-                        margin-bottom 10px
-                    }
-                    .spellListSecond{
-                        overflow hidden
-                        .itemspan{
-                            display flex
-                            flex-direction column
-                            float left
-                            .spellPublic{
-                                display: inline-block;
-                                width: 40px;
-                                height: 40px;
-                                text-align: center;
-                                line-height: 40px;
-                                background-color #fff
-                                margin-left 10px
-                                margin-bottom 10px
-                                cursor pointer
-                            }
-                            .highLight{
-                                border 2px solid #67C23A
-                                line-height 40px
+                .boxShosContentInnerSelect{
+                    height 225px
+                    position relative
+                    .spellBox{
+                        margin: 0 auto;
+                        position: absolute;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        .spellSelectName{
+                            text-align center
+                            margin-bottom 10px
+                            height 50px
+                        }
+                        .spellListSecond{
+                            overflow hidden
+                            .itemspan{
+                                display flex
+                                flex-direction column
+                                float left
+                                .spellPublic{
+                                    display: inline-block;
+                                    width: 40px;
+                                    height: 40px;
+                                    text-align: center;
+                                    line-height: 40px;
+                                    background-color #fff
+                                    margin-left 10px
+                                    margin-bottom 10px
+                                    cursor pointer
+                                }
+                                .highLight{
+                                    border 2px solid #67C23A
+                                }
+                                .errLight{
+                                    border 2px solid red
+                                }
                             }
                         }
                     }
                 }
+                
                 .content{
-                    margin-top 140px
+                    margin-top 20px
                 }
             }
         }
