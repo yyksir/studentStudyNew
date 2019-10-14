@@ -385,10 +385,10 @@ export default {
                         if(this.spellWord[index]!=ele) {
                             confirmName += `<span style="color: red">${this.spellWord[index] }</span>`;
                             if(this.first[index].isSelected=='1') {
-                                this.first[index].isSelected=='0'
+                                // this.first[index].isSelected=='0'
                                 this.second[index].isSelected='2'
                             }else{
-                                this.second[index].isSelected='0'
+                               // this.second[index].isSelected='0'
                                 this.first[index].isSelected='2'
                             }
                         }else{
