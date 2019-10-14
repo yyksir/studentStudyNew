@@ -141,7 +141,8 @@ export default {
     mounted() {
         this.initData('1');
         this.currentIndex = 0;
-        window.addEventListener('beforeunload', e => this.beforeunloadFn(e))
+        window.addEventListener('beforeunload', e => this.beforeunloadFn(e));
+        console.log('mouted')
     },
     methods:{
         initData(flag) {
@@ -462,6 +463,16 @@ export default {
     },
     destroyed() {
         console.log('销毁')
+         this.$API.POST('/learn/uptLearningTime',{
+                id:this.query.id,
+                learnTime:'222'
+            }).then((res) => {
+                console.log("获取时间");
+                this.studyTime = res.data;
+                console.log(res.data)
+            }).catch((err) => {
+                console.log(err, 'err')
+            })
         window.removeEventListener('beforeunload', e => this.beforeunloadFn(e))
     }
     
@@ -548,6 +559,8 @@ export default {
         float left
         overflow: auto
         width calc(100% - 260px)
+        height 100%
+        overflow auto
         .tabBox{
             height 53px
             background-color #ffffff

@@ -282,6 +282,8 @@ export default {
 
 <style lang="stylus" scoped>
   .body {
+    height 100%
+    overflow auto
     header {
       height: 58px;
       line-height: 58px;
