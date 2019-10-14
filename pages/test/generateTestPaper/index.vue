@@ -139,8 +139,9 @@ export default {
       console.log(e.target.value, 'radio checked')
     },
     handleBtnExportClick () {
+      const userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
       const params = {
-        usId: 501,
+        usId: userInfo.id,
         cId: this.courseId, // 课程 id
         uId: this.course, // 课程
         sId:  this.range, // 测试范围 1 全部, 2 备忘本

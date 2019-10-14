@@ -75,8 +75,8 @@ export default {
       rowsCount: 0, // 一共有多少条数据
       curPagerNo: 1,
       pageSize: 10,
-      totalPageNumber: 0, // 一共有几页
-      queryResArr: []
+      totalPageNumber: 0 // 一共有几页
+      // queryResArr: []
     }
   },
   created () {
@@ -144,7 +144,9 @@ export default {
     },
     // 页码改变
     handlePageSizeChange (page, pageSize) {
-      if (this.queryResArr.length < 1) { return }
+      console.log(page, pageSize)
+      // if (this.queryResArr.length < 1) { return }
+      if (this.tableData.length < 1) { return }
       this.curPagerNo = page
       this.pageSize = pageSize
       this.queryInfo()

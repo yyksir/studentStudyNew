@@ -83,7 +83,7 @@ export default {
         .then((res) => {
           if (res && res.hasOwnProperty('code') && res.code === 0) {
             const resDataObj = res.data
-            this.$Cookies.set('session', resDataObj.token, 1)
+            this.$Cookies.set('session', resDataObj.token, { expires: 1 })
             sessionStorage.setItem('userInfo', JSON.stringify(resDataObj))
             setTimeout(() => {
               this.isLoading = false
