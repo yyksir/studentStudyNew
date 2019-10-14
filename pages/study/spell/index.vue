@@ -85,9 +85,12 @@
                     </div>
                 </div>
                 <div class="btnBox">
-                    <div >
-                        <a-button type="primary" @click="handleKnow('0')">错误/不认识</a-button>
-                        <a-button type="danger" @click="handleKnow('1')">下一题</a-button>
+                    <div v-show="step=='2'">
+                        <a-button type="primary" @click="handleKnow('0')">认识</a-button>
+                        <a-button type="primary" @click="handleKnow('1')">不认识</a-button>
+                    </div>
+                    <div v-show="step=='3'">
+                         <a-button type="danger" @click="handleGoNext()">下一题</a-button>
                     </div>
                 </div>
             </div>
@@ -130,7 +133,8 @@ export default {
              right:[],
              voice:{ //声音
                  src:''
-             }
+             },
+             step:'1', //1表示第一步 2 表示正确 3表示下一题
 
         }
     },
@@ -154,7 +158,6 @@ export default {
             }).catch((err) => {
                 console.log(err, 'err')
             })
-
             this.$API.POST('/learn/getLearningTime',{
                 id:this.query.id,
             }).then((res) => {
@@ -164,7 +167,6 @@ export default {
             }).catch((err) => {
                 console.log(err, 'err')
             })
-            
         },
         handleInitUnit(unit,index) {
             this.wordNameArr
@@ -228,13 +230,13 @@ export default {
         },
         getLearningWord(localUnit) {
             let _that  = this;
-            
             _that.$API.POST('/learn/getLearningWord',{
                 id:localUnit.id,
             }).then((res) => {
                  console.log(res)
                 if(res.code=='0') {
                     _that.handleChangeBackName(res.data)
+                   
                 }else if(res.code=='1008') {
                     _that.$confirm({
                         title: res.msg,
@@ -260,7 +262,6 @@ export default {
                             _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],0)
                         }
                     })
-
                 }else{
                     _that.enVoiceSrc = {}
                 }
@@ -277,8 +278,8 @@ export default {
             _that.getWordChafenFun(data);
             _that.voice={
                 src:_that.urlVoice + data.wordName + (_that.check?1:0) + '.mp3',
-
             };
+            _that.step='1'
         },
         getWordChafenFun(data) {//获取wordname的选择数组
             this.$API.POST('/learn/getWordChafen',{
@@ -317,7 +318,8 @@ export default {
                 type:this.query.type,
             }).then((res) => { 
                 if(res.code=='0') {
-                    this.getLearningWord(this.leftgetMyUnit[this.currentIndex]) 
+                    this.step='3';
+                    // this.getLearningWord(this.leftgetMyUnit[this.currentIndex]) 
                 }
                 console.log(res)
             })
@@ -325,6 +327,9 @@ export default {
                 this.$message.warning('获取数据失败');
                 console.log(err, 'err')
             }) 
+        },
+        handleGoNext() {
+            this.getLearningWord(this.leftgetMyUnit[this.currentIndex]) 
         },
         beforeunloadFn(e) {
             console.log('刷新或关闭')
@@ -362,7 +367,6 @@ export default {
             })
             if(flag) {
                 if(this.spellWord.length>this.right.length) {
-                    debugger
                     this.spellWord = this.$store.state.name; 
                 }
                 this.$store.commit('handlehangeSpellName',this.spellWord)
@@ -371,6 +375,7 @@ export default {
                     str+=item;
                 })
                 if(this.spellWord == str) {
+                    this.step = '2';
                     let  backFlag = _.find(this.wordNameArr, (word)=>{
                         return word.wordName==this.enVoiceSrc.wordName;
                     });
