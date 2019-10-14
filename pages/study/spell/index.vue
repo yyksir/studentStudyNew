@@ -2,6 +2,7 @@
     <div class="boxContent" >
         <div class="toptitle clearfix">
             <span class="titleName" style="margin-right: 32px;">{{courseNameStr}}</span>
+            <span style="margin-right: 32px;">本次学习时长: {{hours}}小时{{minitus}}分钟{{seconds}}秒</span>
             <div class="titleLeft">
                 <a-switch checkedChildren="美" unCheckedChildren="英" v-model="check" @change="handleVoiceCategoryChange" />
                 <a-icon class="close" type="close" @click="handleCloseRouter" />
@@ -114,15 +115,6 @@ export default {
              currentTitleIndex:0,//显示title的下标
              getWordChafen:{},//离散数组得到的词
              spellWord:'',//拼接成的单词
-             nameArr:[
-                 ['c','d'],
-                 ['o','e'],
-                 ['f','n'],
-                 ['d','t'],
-                 ['i','r'],
-                 ['o','t'],
-                 ['t','l'],
-             ],
              currentFirstNameIndex:-1,
              currentSecondNameIndex:-1,
              studyTime:'',//学习的时间
@@ -135,14 +127,16 @@ export default {
                  src:''
              },
              step:'1', //1表示第一步 2 表示正确 3表示下一题
-
+             hours:0,//小时
+             minitus:0,//分钟
+             seconds:0,//秒
+             interval: null, // 定时器
         }
     },
     mounted() {
         this.initData('1');
         this.currentIndex = 0;
         window.addEventListener('beforeunload', e => this.beforeunloadFn(e));
-        console.log('mouted')
     },
     methods:{
         initData(flag) {
@@ -162,12 +156,49 @@ export default {
             this.$API.POST('/learn/getLearningTime',{
                 id:this.query.id,
             }).then((res) => {
-                console.log("获取时间");
+                console.log("开始获取时间");
                 this.studyTime = res.data;
+                 this.getDifferenceTime()
                 console.log(res.data)
             }).catch((err) => {
                 console.log(err, 'err')
             })
+            this.timeFormat();
+        },
+        timeFormat() {
+            clearInterval(this.interval)
+            this.interval = null;
+            this.hours = 0;
+            this.minitus = 0;
+            this.seconds = 0;
+        },
+        getDifferenceTime() {
+            this.interval = setInterval(() => {
+                this.studyTime ++;
+                this.showTime(this.studyTime);
+            }, 1000)
+        },
+        showTime(val){
+            if(val<60){
+                    this.hours = 0;
+                    this.minitus = 0;
+                    this.seconds =val;
+            }else{
+                var min_total = Math.floor(val / 60); // 分钟
+                var sec = Math.floor(val % 60); // 余秒
+                if(min_total<60){
+                    this.hours = 0;
+                    this.minitus = min_total;
+                    this.seconds = sec;
+                }else{
+                    var hour_total = Math.floor(min_total / 60); // 小时数
+                    var min = Math.floor(min_total % 60); // 余分钟
+                    this.hours = hour_total;
+                    this.minitus = min;
+                    this.seconds =sec;
+                }
+            }
+
         },
         handleInitUnit(unit,index) {
             this.wordNameArr
@@ -333,8 +364,14 @@ export default {
             this.getLearningWord(this.leftgetMyUnit[this.currentIndex]) 
         },
         beforeunloadFn(e) {
-            console.log('刷新或关闭')
-            // ...
+            this.$API.POST('/learn/uptLearningTime',{
+                id:this.query.id,
+                learnTime:this.studyTime
+            }).then((res) => {
+                console.log(res.data)
+            }).catch((err) => {
+                console.log(err, 'err')
+            })
         },
         handleSpell(name,index,row){
             //isSelected 0代表没选择 1 代表ok 2代表err
@@ -407,8 +444,6 @@ export default {
             }else if(!flag) {
                 this.$store.commit('handlehangeSpellName',this.spellWord)
             }
-
-            console.log()
             console.log(this.spellWord)
            
         },
@@ -462,17 +497,14 @@ export default {
         // }
     },
     destroyed() {
-        console.log('销毁')
-         this.$API.POST('/learn/uptLearningTime',{
-                id:this.query.id,
-                learnTime:'222'
-            }).then((res) => {
-                console.log("获取时间");
-                this.studyTime = res.data;
-                console.log(res.data)
-            }).catch((err) => {
-                console.log(err, 'err')
-            })
+        this.interval = null;
+        this.$API.POST('/learn/uptLearningTime',{
+            id:this.query.id,
+            learnTime:this.studyTime
+        }).then((res) => {
+        }).catch((err) => {
+            console.log(err, 'err')
+        })
         window.removeEventListener('beforeunload', e => this.beforeunloadFn(e))
     }
     
