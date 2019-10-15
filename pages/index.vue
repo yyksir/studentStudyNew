@@ -70,6 +70,35 @@
         </div>
       </div>
     </div>
+      <a-modal 
+        title="提示"
+        v-model="visible"
+        @cancel="handleCancel"
+        :footer="null"
+      >
+        <div style="position:relative;overflow: hidden;">
+          <div v-if="selectItem.isStart=='0'">
+            <a-button type="primary" style="float:left"   @click="handlePageTest">
+              章节学前测试
+            </a-button>
+            <a-button  type="primary" style="position: absolute;top: 50%;left: 50%;transform:translate(-50%,-50%);"   @click="handleActionStusy">
+              开始学习
+            </a-button>
+            <a-button type="primary" style="float:right"  @click="handleTotalTest">
+              学前总测试
+            </a-button> 
+        </div>
+        <div v-else-if="selectItem.isStart=='1'">
+          <a-button type="primary" style="float:left"   @click="handleActionStusy">
+            继续学习
+          </a-button>
+          <a-button type="primary" style="float:right"  @click="handleDeleteStudyRecord">
+            删除学习记录
+          </a-button> 
+
+        </div>
+        </div>
+      </a-modal>
   </div>
 </template>
 
@@ -106,6 +135,8 @@ export default {
         legend:[],
         series:[],
       },
+       visible:false,
+       selectItem:{},
     };
   },
   mounted() {
@@ -273,7 +304,103 @@ export default {
       });
     },
     handleStartStudy(course) {
+      this.visible = true;
+      this.selectItem = course;
       console.log(course)
+    },
+    handleCancel() {
+      this.visible = false
+    },
+    handlePageTest () {//章节学前测试
+    const item =  this.selectItem;
+      this.$router.push({
+        path:'/test/courseTest/' + item.type,
+        query:{
+          courseId:item.courseId,
+          united:0,
+          testType:0,
+        }
+      })
+    },
+    handleActionStusy() {//开始学习
+    //item.type=='1'?"认读":item.type=='2'?"拼写":"辨音"
+      this.$API.POST('/course/uptCourseIsStarted',{
+        id:this.selectItem.id,
+      }).then((res) => {
+        if(this.selectItem.type=='1') {
+          this.$router.push({path: '/study/recognize/',
+          query: {
+            res: JSON.stringify(this.selectItem) 
+            } 
+          })
+        }else if(this.selectItem.type=='2'){
+          this.$router.push({path: '/study/spell/',
+          query: {
+            res:JSON.stringify(this.selectItem) 
+            } 
+          })
+        }else{
+          this.$router.push({path: '/study/dialect/',
+          query: {
+            res:JSON.stringify(this.selectItem)
+            } 
+          })
+        }
+      }).catch((err) => {
+        this.$message.warning('进入课程失败');
+        console.log(err, 'err')
+      })
+      
+    },
+    handleTotalTest() { //总测试
+      const item =  this.selectItem;
+      this.$router.push({
+        path:'/test/courseTest/' + item.type,
+        query:{
+          courseId:item.courseId,
+          united:0,
+          testType:3,
+        }
+      })
+    },
+    handleDeleteItem(item) {
+      this.$confirm({
+        title: '提示',
+        content: '你确实想删除此课程吗?(删除后可重新下载)',
+        okText: '确认',
+        cancelText: '取消',
+        onOk() {
+          this.$API.POST('/course/delMyCourse',{
+            id:item.id
+          }).then((res) => {
+          console.log((res))
+            this.$message.success(res.data);
+            this.getMyCourseData()
+          })
+          .catch((err) => {
+            this.$message.warning('获取数据失败');
+            console.log(err, 'err')
+          })
+        },
+      });
+    },
+    handleDeleteStudyRecord() {
+      const item =  this.selectItem;
+      this.$API.POST('/learn/clearLearnRecord',{
+        id:item.id
+        }).then((res) => {
+        console.log((res))
+          if (res && res.code=='0' ) {
+            this.$message.success(res.data);
+          }else{
+            this.$message.warning('清除失败');
+          }
+           this.visible = false;
+        })
+        .catch((err) => {
+          this.$message.warning('清除失败');
+          console.log(err, 'err')
+        })
     }
   }
 }

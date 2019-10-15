@@ -316,7 +316,6 @@ export default {
                                 _that.currentIndex  = 0;
                             }
                         }
-                        
                     })
 
                 }else{

@@ -190,6 +190,7 @@ export default {
       width: calc(100% - 260px);
       float: left;
       height 100%
+      overflow auto
       header{
           background white
           height 58px
