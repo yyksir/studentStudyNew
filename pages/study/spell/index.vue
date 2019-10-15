@@ -7,7 +7,6 @@
                 <a-switch checkedChildren="美" unCheckedChildren="英" v-model="check" @change="handleVoiceCategoryChange" />
                 <a-icon class="close" type="close" @click="handleCloseRouter" />
             </div>
-            
         </div>
         <div class="box clearfix">
             <div class="boxLeft">
@@ -201,7 +200,7 @@ export default {
 
         },
         handleInitUnit(unit,index) {
-            this.wordNameArr
+            // this.wordNameArr
             let _that = this;
             _that.currentIndex = index;
             let localUnit = unit;
@@ -541,7 +540,6 @@ export default {
     }
 }
 .box{
-
     width 100%
     height calc(100% - 50px)
    .boxLeft{

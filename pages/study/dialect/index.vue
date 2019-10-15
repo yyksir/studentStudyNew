@@ -1,8 +1,17 @@
 <template>
+<div class="boxContent" >
+    <div class="toptitle clearfix">
+        <span class="titleName" style="margin-right: 32px;">{{courseNameStr}}</span>
+        <span style="margin-right: 32px;">本次学习时长: {{hours}}小时{{minitus}}分钟{{seconds}}秒</span>
+        <div class="titleLeft">
+            <a-switch checkedChildren="美" unCheckedChildren="英" v-model="check" @change="handleVoiceCategoryChange" />
+            <a-icon class="close" type="close" @click="handleCloseRouter" />
+        </div>
+    </div>
     <div class="box">
         <div class="boxLeft">
             <div class="upBtn">
-                <a-icon type="down" />
+                <a-icon type="down" @click="handleDownUnit"/>
             </div>
             <div class="itemBox">
                 <div class="item" v-for="(item,index) of leftgetMyUnit" :class="{'selectTab':currentIndex==index}"  :key="item.id" @click="handleInitUnit(item,index)">
@@ -14,49 +23,61 @@
                     </div>
                 </div>
             </div>
-            <div class="downBtn">
+            <div class="downBtn" @click="handleUpUnit">
                 <a-icon type="up" />
             </div>
         </div>
         <div class="boxright" >
-            <div>
-                <canvas id='canvas' width="800" height="400"></canvas>
-            </div>
-            <div>
-                <audio id="audioDomEn" ref="audioDomEn" controls="controls" >
-                    <source id="audio"  type="audio/mpeg">
-                    您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
-                </audio>
-            </div>
-            <div class="btnBox">
-                <div v-show="step=='1'" >
-                    <a-button type="primary" @click="handleGotoStepTwo">答案</a-button>
-                    <a-button type="danger" @click="handleBtnVoiceEnClick" >重读</a-button>
+            <div class="tabBox">
+                <span 
+                    v-for="(wordName,index) of wordNameArr" 
+                    :key="index" 
+                    :class="{'highSeletced':currentTitleIndex==index}" 
+                    @click="handtabName(wordName,index)" >
+                        {{wordName.wordName}}
+                    </span>
                 </div>
-                <div v-show="step=='2'" >
-                    <a-button type="primary" @click="handleKnow('1')">认识</a-button>
-                    <a-button type="primary" @click="handleKnow('0')">不认识</a-button>
-                    <a-button type="danger" @click="handleBtnVoiceEnClick" >重读</a-button>
+                <div class="boxShowContent">
+                                <div>
+                    <canvas id='canvas' width="400" height="200"></canvas>
                 </div>
-                
-            </div>
-            <div class="content" v-show="step=='2'">
-                <p >
-                    {{enVoiceSrc.exampleSentence1}}
-                </p>
-                 <p >
-                    {{enVoiceSrc.exampleSentence2}}
-                </p>
-                 <p >
-                    {{enVoiceSrc.exampleSentence3}}
-                </p>
+                <div>
+                    <audio id="audioDomEn" ref="audioDomEn" controls="controls" >
+                        <source id="audio"  type="audio/mpeg">
+                        您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
+                    </audio>
+                </div>
+                <div class="btnBox">
+                    <div v-show="step=='1'" >
+                        <a-button type="primary" @click="handleGotoStepTwo">答案</a-button>
+                        <a-button type="danger" @click="handleBtnVoiceEnClick" >重读</a-button>
+                    </div>
+                    <div v-show="step=='2'" >
+                        <a-button type="primary" @click="handleKnow('1')">认识</a-button>
+                        <a-button type="primary" @click="handleKnow('0')">不认识</a-button>
+                        <a-button type="danger" @click="handleBtnVoiceEnClick" >重读</a-button>
+                    </div>
+                    
+                </div>
+                <div class="content" v-show="step=='2'">
+                    <p >
+                        {{enVoiceSrc.exampleSentence1}}
+                    </p>
+                    <p >
+                        {{enVoiceSrc.exampleSentence2}}
+                    </p>
+                    <p >
+                        {{enVoiceSrc.exampleSentence3}}
+                    </p>
 
+                </div>
             </div>
-          
-        </div>
 
         
+        </div>
     </div>
+</div>
+    
 </template>
 
 <script>
@@ -64,31 +85,48 @@ export default {
     layout: 'index',
     data() {
         return {
-             query:JSON.parse(this.$route.query.res),
-            //  {
-            //     courseId: 1,
-            //     createTime: null,
-            //     id: 90,
-            //     isStart: 1,
-            //     learnCount: 0,
-            //     type: 3,
-            //     unitId: 1,
-            //     unitName: "小学单词体验课1",
-            //     unknowCount: 0,
-            //     userId: 501,
+            query:JSON.parse(this.$route.query.res),
+        //  {
+        //     courseId: 1,
+        //     createTime: null,
+        //     id: 90,
+        //     isStart: 1,
+        //     learnCount: 0,
+        //     type: 3,
+        //     unitId: 1,
+        //     unitName: "小学单词体验课1",
+        //     unknowCount: 0,
+        //     userId: 501,
 
-            //  }
-             leftgetMyUnit:[],//单元的开合JSON.parse(this.$route.query.res)
-             currentIndex:0,//左侧tab的下标
-             pronunciation:1,//the前面是ip   后面就是1和0  1代表美式发音0代表英式发音  
-             enVoiceSrc:{},//获取到的翻译返回值
-             urlVoice: 'http://121.40.138.216/',
-             step:'1',
+        //  }
+            leftgetMyUnit:[],//单元的开合JSON.parse(this.$route.query.res)
+            currentIndex:0,//左侧tab的下标
+            pronunciation:1,//the前面是ip   后面就是1和0  1代表美式发音0代表英式发音  
+            enVoiceSrc:{},//获取到的翻译返回值
+            currentTitleIndex:0,//显示title的下标
+            urlVoice: 'http://121.40.138.216/',
+            step:'1',
+            studyTime:'',//学习的时间
+             wordNameArr:[],//度过单词的集合
+            check:true,//选择的音美音
+            courseNameStr:'',//课程名称
+            first:[],
+            second:[],
+            right:[],
+            voice:{ //声音
+                src:''
+            },
+            step:'1', //1表示第一步 2 表示正确 3表示下一题
+            hours:0,//小时
+            minitus:0,//分钟
+            seconds:0,//秒
+            interval: null, // 定时器
         }
     },
     mounted() {
         this.initData('1');
         this.currentIndex = 0;
+         window.addEventListener('beforeunload', e => this.beforeunloadFn(e));
     },
     methods:{
         initData(flag) {
@@ -101,6 +139,60 @@ export default {
                         this.handleInitUnit(this.leftgetMyUnit[this.currentIndex],0)
                     }
                 }
+                console.log(res.data)
+            }).catch((err) => {
+                console.log(err, 'err')
+            })
+            this.$API.POST('/learn/getLearningTime',{
+                id:this.query.id,
+            }).then((res) => {
+                this.studyTime = res.data;
+                this.getDifferenceTime()
+            }).catch((err) => {
+                console.log(err, 'err')
+            })
+            this.timeFormat();
+        },
+        timeFormat() {
+            clearInterval(this.interval)
+            this.interval = null;
+            this.hours = 0;
+            this.minitus = 0;
+            this.seconds = 0;
+        },
+        getDifferenceTime() {
+            this.interval = setInterval(() => {
+                this.studyTime ++;
+                this.showTime(this.studyTime);
+            }, 1000)
+        },
+        showTime(val){
+            if(val<60){
+                    this.hours = 0;
+                    this.minitus = 0;
+                    this.seconds =val;
+            }else{
+                var min_total = Math.floor(val / 60); // 分钟
+                var sec = Math.floor(val % 60); // 余秒
+                if(min_total<60){
+                    this.hours = 0;
+                    this.minitus = min_total;
+                    this.seconds = sec;
+                }else{
+                    var hour_total = Math.floor(min_total / 60); // 小时数
+                    var min = Math.floor(min_total % 60); // 余分钟
+                    this.hours = hour_total;
+                    this.minitus = min;
+                    this.seconds =sec;
+                }
+            }
+
+        },
+        beforeunloadFn(e) {
+            this.$API.POST('/learn/uptLearningTime',{
+                id:this.query.id,
+                learnTime:this.studyTime
+            }).then((res) => {
                 console.log(res.data)
             }).catch((err) => {
                 console.log(err, 'err')
@@ -164,6 +256,7 @@ export default {
                 if(res.code=='0'){
                      _that.enVoiceSrc = res.data
                     console.log(res)
+                    _that.courseNameStr = res.data.courseNameStr;
                 // const resdata = res.data
                 //window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
                     let audioDomEn = this.$refs.audioDomEn;
@@ -305,7 +398,14 @@ export default {
                 isKnow:isKnow,
                 type:this.query.type,
             }).then((res) => {
+                let  backFlag = _.find(this.wordNameArr, (word)=>{
+                    return word.wordName==this.enVoiceSrc.wordName;
+                });
+                if(backFlag==undefined) {
+                    this.wordNameArr.unshift(this.enVoiceSrc)
+                }
                 this.getLearningWord(this.leftgetMyUnit[this.currentIndex])
+
                 console.log(res)
             })
             .catch((err) => {
@@ -314,26 +414,105 @@ export default {
             })
 
         },
+        handleVoiceCategoryChange(check) {
+            console.log(check)
+            this.check = check;
+        },
+        handleCloseRouter() {
+            this.$router.go(-1);
+        },
+        handleDownUnit(){
+            this.currentIndex ++;
+            if(this.currentIndex>=this.leftgetMyUnit.length) {
+                this.currentIndex = 0
+            }
+            this.handleInitUnit(this.leftgetMyUnit[this.currentIndex],this.currentIndex)
+        },
+        handleUpUnit() {
+            this.currentIndex --;
+            if(this.currentIndex<=-1) {
+                this.currentIndex = this.leftgetMyUnit.length-1;
+            }
+            this.handleInitUnit(this.leftgetMyUnit[this.currentIndex],this.currentIndex)
+        },
+        handtabName(wordName,index) {
+            this.currentTitleIndex = index;
+            this.handleChangeBackName(wordName);
+        }
 
     },
-
+    beforeRouteEnter (to, from, next) {
+        // 在渲染该组件的对应路由被 confirm 前调用
+        // 不！能！获取组件实例 `this`
+        // 因为当守卫执行前，组件实例还没被创建
+        next(vm => {
+            // 通过 `vm` 访问组件实例
+             console.log('进去')
+        })
+    },
+    beforeRouteLeave (to, from, next) {
+        // 导航离开该组件的对应路由时调用
+        // 可以访问组件实例 `this`
+        // const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
+        // if (true) {
+             console.log('likai')
+                 next()  
+          //  }
+            
+        // } else {
+        //     next(false)
+        // }
+    },
+    destroyed() {
+        this.interval = null;
+        this.$API.POST('/learn/uptLearningTime',{
+            id:this.query.id,
+            learnTime:this.studyTime
+        }).then((res) => {
+        }).catch((err) => {
+            console.log(err, 'err')
+        })
+        window.removeEventListener('beforeunload', e => this.beforeunloadFn(e))
+    }
     
 
 }
 </script>
 
 <style lang="stylus" scoped>
-.box{
-    display flex
-    flex-direction row
-    width 100%
+.boxContent{
     height 100%
+    width 100%
+    .toptitle{
+        height 50px
+        line-height 50px
+        padding: 0 30px 0 20px;
+        .titleLeft{
+            float right
+            .close{
+                font-size 20px
+                cursor pointer
+                vertical-align middle
+                margin-left 20px
+            }
+        }
+        .titleName{
+            font-size 20px
+            font-weight 700
+        }
+    }
+}
+.box{
+    width 100%
+    height calc(100% - 50px)
    .boxLeft{
         width: 260px;
         background: #001529;
-        overflow-y scroll
+        overflow-y auto
         color #ffffff
+        height 100%
         position relative
+        float left
         .upBtn{
             background-color #3A466C
             text-align center
@@ -370,10 +549,87 @@ export default {
     }
     .boxright{
         background: #f0f4f5;
-        flex: 1;
-        overflow: scroll;
+        float left
+        overflow: auto
+        width calc(100% - 260px)
+        height 100%
+        overflow auto
+        .tabBox{
+            height 53px
+            background-color #ffffff
+            padding 0 20px
+            line-height 53px
+            margin-bottom: 10px
+            white-space: nowrap
+            overflow: hidden
+            span {
+                float left
+                font-size 18px
+                margin-right 15px
+                height 52px
+                cursor pointer
+            }
+            .highSeletced{
+                border-bottom: 3px solid #e7355c;
+                color: #e7355c
+                font-weight: 700
+                cursor pointer
+            }
+        }
+        .boxShowContent{
+            min-height 300px
+            padding 50px 100px 0
+            .boxShosContentInner{
+                height 100%
+                .boxShosContentInnerSelect{
+                    height 225px
+                    position relative
+                    .spellBox{
+                        margin: 0 auto;
+                        position: absolute;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        .spellSelectName{
+                            text-align center
+                            margin-bottom 10px
+                            height 50px
+                        }
+                        .spellListSecond{
+                            overflow hidden
+                            .itemspan{
+                                display flex
+                                flex-direction column
+                                float left
+                                .spellPublic{
+                                    display: inline-block;
+                                    width: 40px;
+                                    height: 40px;
+                                    text-align: center;
+                                    line-height: 40px;
+                                    background-color #fff
+                                    margin-left 10px
+                                    margin-bottom 10px
+                                    cursor pointer
+                                }
+                                .highLight{
+                                    border 2px solid #67C23A
+                                }
+                                .errLight{
+                                    border 2px solid red
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                .content{
+                    margin-top 20px
+                }
+            }
+        }
         .btnBox{
             text-align center
+            margin-top 30px
         }
     } 
 }
