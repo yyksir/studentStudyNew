@@ -3,6 +3,7 @@
   <div class="container">
     <header class="header">
       <span class="title">测试成绩</span>
+      <a href="javascript:;" class="btnExport" @click="handleBtnExportClick">导出</a>
     </header>
     <div class="courseInfoContainer">
       <div class="floor1">
@@ -30,10 +31,34 @@
           <span class="answer">( {{item.selected}} )</span>
         </span>
         <span class="liElemBottom" v-if="detailObj.learnType !== 2">
-          <span class="optionSelect" :class="{'active': item.answer === 'A'}">A、哈哈</span>
-          <span class="optionSelect" :class="{'active': item.answer === 'B'}">B、发广告广告</span>
-          <span class="optionSelect" :class="{'active': item.answer === 'C'}">C、风格化风格化</span>
-          <span class="optionSelect" :class="{'active': item.answer === 'D'}">D、发广告风格豆腐干</span>
+          <a-tooltip class="optionSelect" style="font-style:normal;" placement="top"
+          >
+            <template slot="title">
+              <span>{{item.optionA}}</span>
+            </template>
+            <span class="" :class="{'active': item.answer === 'A'}">A、{{item.optionA}}<!-- <span class="bgWhite"></span> --></span>
+          </a-tooltip>
+          <a-tooltip class="optionSelect" style="font-style:normal;" placement="top"
+          >
+            <template slot="title">
+              <span>{{item.optionB}}</span>
+            </template>
+            <span class="" :class="{'active': item.answer === 'A'}">B、{{item.optionB}}<!-- <span class="bgWhite"></span> --></span>
+          </a-tooltip>
+          <a-tooltip class="optionSelect" style="font-style:normal;" placement="top"
+          >
+            <template slot="title">
+              <span>{{item.optionC}}</span>
+            </template>
+            <span class="" :class="{'active': item.answer === 'A'}">C、{{item.optionC}}<!-- <span class="bgWhite"></span> --></span>
+          </a-tooltip>
+          <a-tooltip class="optionSelect" style="font-style:normal;" placement="top"
+          >
+            <template slot="title">
+              <span>{{item.optionD}}</span>
+            </template>
+            <span class="" :class="{'active': item.answer === 'A'}">D、{{item.optionD}}<!-- <span class="bgWhite"></span> --></span>
+          </a-tooltip>
         </span>
       </li>
     </ul>
@@ -77,6 +102,22 @@ export default {
           this.$message.error('获取试卷详情失败， 联系管理员: ' + err.msg)
           console.log(err, 'err 获取试卷详情失败， 联系管理员')
         })
+    },
+    handleBtnExportClick () {
+      let userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
+      this.$API.GET('/down/downloadTestRecord', { id: 28 })
+        .then((res) => {
+          console.log(res, 'res 导出试卷 成功')
+          // if (res && res.hasOwnProperty('code') && res.code === 0) {
+          //   this.detailObj = res.data
+          //   this.detailArr = res.data.testContent
+          //   return false
+          // }
+        })
+        .catch((err) => {
+          console.log(err, 'err 导出试卷失败， 联系管理员')
+          this.$message.error('导出试卷失败，， 联系管理员: ' + err.msg)
+        })
     }
     //
   }
@@ -92,14 +133,26 @@ export default {
     width 100%
     height 100%
     .header
+      display flex
+      justify-content space-between
+      align-items center
       box-sizing border-box
       width 100%
       height 56px
-      padding 0 130px 30px 130px
+      padding 0 130px 0 130px
       .title
         line-height 56px
         font-size 20px
         font-weight 600
+      .btnExport
+        width 72px
+        height 33px
+        border 1px solid #b8bcca
+        border-radius 4px
+        font-size 13px
+        line-height 33px
+        text-align center
+        color #b8bcca
     .courseInfoContainer
       display flex
       flex-direction column
@@ -171,10 +224,23 @@ export default {
           width 100%
           padding-left 80px
           .optionSelect
+            position relative
             width 24%
             font-size 17px
             line-height 17px
             color #b2b7c6
+            overflow hidden
+            text-overflow ellipsis
+            white-space nowrap
+            // .bgWhite
+            //   display block
+            //   width 30px
+            //   height 17px
+            //   background-color #fff
+            //   position absolute
+            //   right 0
+            //   top 0
+            //   z-index 9
           .active
             color #6fd6b2
 </style>
