@@ -174,7 +174,11 @@ export default {
     },
     init () {
       this.clearIntervalFn()
-      this.getTestPaper()
+      setTimeout(() => {
+        this.$nextTick(() => {
+          this.getTestPaper()
+        })
+      }, 3000)
     },
     clearIntervalFn () {
       clearInterval(this.interval)

@@ -59,9 +59,11 @@ export default {
     }
   },
   created () {
-    this.$nextTick(() => {
-      this.storageArr = Object.keys(localStorage)
-    })
+    setTimeout(() => {
+      this.$nextTick(() => {
+        this.storageArr = Object.keys(localStorage)
+      })
+    }, 3000)
   },
   methods: {
     oninput () {

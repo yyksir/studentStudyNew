@@ -14,7 +14,7 @@ const instance = axios.create({
 const checkoutStatusFn = function checkoutStatusFn (res, isError) {
   if (!isError) {
     if (res.status === 401 && !isError) {
-      console.log(res, 'res 25')
+      // console.log(res, 'res 25')
       location.href = '/sign/'
       return {
         code: 401,
@@ -23,7 +23,7 @@ const checkoutStatusFn = function checkoutStatusFn (res, isError) {
     }
   } else {
     if (res.response.status === 401 && isError) {
-      console.log(res.response, 'res.response 20')
+      // console.log(res.response, 'res.response 20')
       location.href = '/sign/'
       return Promise.reject(res.response.data)
     }
