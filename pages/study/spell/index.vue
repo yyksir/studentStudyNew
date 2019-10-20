@@ -104,7 +104,7 @@ export default {
     layout: 'index',
     data(){
         return {
-            query:JSON.parse(this.$route.query.res),
+            query:this.$route.query,
              leftgetMyUnit:[],//单元的开合JSON.parse(this.$route.query.res)
              currentIndex:0,//左侧tab的下标
              pronunciation:1,//the前面是ip   后面就是1和0  1代表美式发音0代表英式发音  

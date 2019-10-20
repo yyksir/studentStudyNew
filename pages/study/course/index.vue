@@ -139,21 +139,15 @@ export default {
       }).then((res) => {
         if(this.selectItem.type=='1') {
           this.$router.push({path: '/study/recognize/',
-          query: {
-            res: JSON.stringify(this.selectItem) 
-            } 
+          query: this.selectItem || {}
           })
         }else if(this.selectItem.type=='2'){
           this.$router.push({path: '/study/spell/',
-          query: {
-            res:JSON.stringify(this.selectItem) 
-            } 
+          query: this.selectItem || {}
           })
         }else{
           this.$router.push({path: '/study/dialect/',
-          query: {
-            res:JSON.stringify(this.selectItem)
-            } 
+          query: this.selectItem || {}
           })
         }
       }).catch((err) => {

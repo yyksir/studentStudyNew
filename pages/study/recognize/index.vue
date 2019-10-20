@@ -106,7 +106,7 @@ export default {
     layout: 'index',
       data() {
         return {
-             query:JSON.parse(this.$route.query.res),
+             query:this.$route.query,
             //  {
             //     courseId: 1,
             //     createTime: null,
@@ -226,7 +226,15 @@ export default {
                     okText: '是',
                     cancelText: '否',
                     onOk() {
-                        console.log('章节测试');
+                        _that.$router.push({
+                                path:'/test/courseTest/' + localUnit.type,
+                                query:{
+                                    courseId:localUnit.courseId,
+                                    united:localUnit.unitedId,
+                                    testType:1,
+                                }
+                            })
+                            console.log('章节测试');
                     },
                     onCancel() {
                         _that.uptCourseUnitIsStarted(localUnit);
