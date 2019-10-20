@@ -1,5 +1,16 @@
 
 module.exports = {
+  router:{
+   base:"/engStudy" //此为根目录，如果有具体目录需求按实际情况写
+  },
+  generate: {
+    routes: [
+      '/test/courseTest/1',
+      '/test/courseTest/2',
+      '/test/courseTest/3'
+    ]
+  },
+  //mode:'spa',
   mode: 'universal',
   /*
   ** Headers of the page
