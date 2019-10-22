@@ -343,24 +343,24 @@ export default {
             this.step = '1';
             if(isKnow=='0') {
                 this.step = '3'
-            }else{
-               this.$API.POST('/learn/doLearn',{
-                    courseId:this.enVoiceSrc.courseId,
-                    unitId:this.enVoiceSrc.unitId,
-                    wordId:this.enVoiceSrc.id,
-                    isKnow:isKnow,
-                    type:this.query.type,
-                }).then((res) => { 
-                    if(res.code=='0') {
-                       this.getLearningWord(this.leftgetMyUnit[this.currentIndex]) 
-                    }
-                    console.log(res)
-                })
-                .catch((err) => {
-                    this.$message.warning('获取数据失败');
-                    console.log(err, 'err')
-                }) 
             }
+            this.$API.POST('/learn/doLearn',{
+                courseId:this.enVoiceSrc.courseId,
+                unitId:this.enVoiceSrc.unitId,
+                wordId:this.enVoiceSrc.id,
+                isKnow:isKnow,
+                type:this.query.type,
+            }).then((res) => { 
+                if(res.code=='0') {
+                    this.getLearningWord(this.leftgetMyUnit[this.currentIndex]) 
+                }
+                console.log(res)
+            })
+            .catch((err) => {
+                this.$message.warning('获取数据失败');
+                console.log(err, 'err')
+            }) 
+            
             
         },
         beforeunloadFn(e) {

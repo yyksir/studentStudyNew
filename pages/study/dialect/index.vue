@@ -81,14 +81,6 @@
 </template>
 
 <script>
-let AudioContext = window.AudioContext || window.webkitAudioContext;
-let audioContext = audioContext||new AudioContext();
-let analyser = audioContext.createAnalyser();
-analyser.fftSize = 256;
-analyser = audioContext.createAnalyser();
-
-// let audio = document.getElementById('audio');
-let audioSrc = audioSrc||audioContext.createMediaElementSource(audioDomEn);
 export default {
     layout: 'index',
     data() {
@@ -331,6 +323,7 @@ export default {
                 if(backFlag==undefined) {
                     this.wordNameArr.unshift(this.enVoiceSrc)
                 }
+                this.currentTitleIndex = 0;
                 this.getLearningWord(this.leftgetMyUnit[this.currentIndex])
 
                 console.log(res)
@@ -411,9 +404,14 @@ export default {
                 //  gradient.addColorStop(0, '#ff0000');
                 //  ctx.fillStyle = gradient;//填充
 
-                
-                // context = context || new AudioContext();
-                //     source = source || context.createMediaElementSource(audio);
+                let AudioContext = window.AudioContext || window.webkitAudioContext;
+                let audioContext = new AudioContext();
+                let analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                analyser = audioContext.createAnalyser();
+
+                // let audio = document.getElementById('audio');
+                let audioSrc = audioContext.createMediaElementSource(audioDomEn);
                 audioSrc.connect(analyser);
                 analyser.connect(audioContext.destination);
                 let canvas = document.getElementById('canvas');
@@ -456,22 +454,22 @@ export default {
                 }
                 render();
         },
-        analyzerInitialize() {
+         analyzerInitialize() {
             if (context == undefined) {
-                context = new AudioContext();
-            }
-                analyser = context.createAnalyser();
-                canvas = analyserElement;
-                ctx = canvas.getContext('2d');
-            if (MEDIA_ELEMENT_NODES.has(audio)) {
-                source = MEDIA_ELEMENT_NODES.get(audio);
-            } else {
-                source = context.createMediaElementSource(audio);
-                MEDIA_ELEMENT_NODES.set(audio, source);
-            }
-            source.connect(analyser);
-            analyser.connect(context.destination);
-            frameLooper();
+            context = new AudioContext();
+        }
+        analyser = context.createAnalyser();
+        canvas = analyserElement;
+        ctx = canvas.getContext('2d');
+        if (MEDIA_ELEMENT_NODES.has(audio)) {
+            source = MEDIA_ELEMENT_NODES.get(audio);
+        } else {
+            source = context.createMediaElementSource(audio);
+            MEDIA_ELEMENT_NODES.set(audio, source);
+        }
+        source.connect(analyser);
+        analyser.connect(context.destination);
+        frameLooper();
         }
 
 
