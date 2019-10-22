@@ -33,7 +33,7 @@
                     v-for="(wordName,index) of wordNameArr" 
                     :key="index" 
                     :class="{'highSeletced':currentTitleIndex==index}" 
-                    @click="getLearningWord(wordName)" >
+                    @click="handtabName(wordName,index)" >
                         {{wordName.wordName}}
                     </span>
                 </div>
@@ -49,7 +49,7 @@
                                     {{item.pronu}}
                                 </span>
                                 <img src="../../../assets/img/voicePause.png" style="margin-right: 10px;" @click="handleBtnVoiceClick(index)" >
-                                <audio :class="'audioDomEn'+index" :ref="'englishPronu'+index">
+                                <audio :id="'audioDomEn'+index" :class="'audioDomEn'+index" :ref="'englishPronu'+index">
                                     <source class="audioDomEn" :src="item.src" type="audio/mpeg">
                                     <embed class="audioDomEn" height="0" width="0" src="">
                                         您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
@@ -280,25 +280,7 @@ export default {
             }).then((res) => {
                  console.log(res)
                 if(res.code=='0') {
-                    _that.enVoiceSrc = res.data;
-                    _that.courseNameStr = res.data.courseNameStr;
-                    let  backFlag = _.find(this.wordNameArr, (word)=>{
-                        return word.wordName==res.data.wordName;
-                    });
-                    if(backFlag==undefined) {
-                        _that.wordNameArr.unshift(res.data)
-                    }
-                    _that.workldArr[0]={
-                        name:'英',
-                        pronu:res.data.englishPronu||'',
-                        src:_that.urlVoice + res.data.wordName + 0 + '.mp3',
-
-                    };
-                    _that.workldArr[1]={
-                        name:'美',
-                        pronu:res.data.americaPronu||'',
-                        src: _that.urlVoice + res.data.wordName + 1 + '.mp3',
-                    };
+                   _that.handleChangeBackName(res.data)
                 }else if(res.code=='1008') {
                     _that.$confirm({
                         title: res.msg,
@@ -335,21 +317,23 @@ export default {
             })
         },
         handleBtnVoiceClick(index) {
-            if(index=='1') {
-                const englishPronu1 = this.$refs.englishPronu1
-                englishPronu1[0].play();
+            let falg = '';
+            if(index==0){
+                falg=1
             }else{
-                const englishPronu0 =this.$refs.englishPronu0
-                englishPronu0[0].play();
+               falg = 0; 
             }
-               // englishPronu.load()
-            // let playPromise = englishPronu.play();
-            // if (playPromise !== undefined) {    
-            //     playPromise.then(() => {        
-            //      playPromise.play();
-            //     }).catch(()=> { 
-
-            //     })
+            this.$nextTick(()=>{
+                var audio =document.querySelector('#audioDomEn'+index);
+                audio.src =  this.urlVoice + this.enVoiceSrc.wordName + falg + '.mp3';
+                audio.play();
+            })
+            // if(index=='1') {
+            //     const englishPronu1 = this.$refs.englishPronu1
+            //     englishPronu1[0].play();
+            // }else{
+            //     const englishPronu0 =this.$refs.englishPronu0
+            //     englishPronu0[0].play();
             // }
         },
         handleGotoStepTwo() {
@@ -413,7 +397,37 @@ export default {
         handtabName(wordName,index) {
             this.currentTitleIndex = index;
             this.handleChangeBackName(wordName);
-        }
+        },
+        handleChangeBackName(data) {
+            let _that = this;
+            _that.enVoiceSrc = {};
+            _that.step='1';
+            _that.enVoiceSrc = data;
+            _that.courseNameStr = data.courseNameStr;
+            let  backFlag = _.find(_that.wordNameArr, (word)=>{
+                return word.wordName==data.wordName;
+            });
+            if(backFlag==undefined) {
+                _that.wordNameArr.unshift(data)
+            }
+            _that.workldArr=[];
+            _that.workldArr[0]={
+                name:'英',
+                pronu:data.englishPronu||'',
+                src:_that.urlVoice + data.wordName + 0 + '.mp3',
+            };
+            _that.workldArr[1]={
+                name:'美',
+                pronu:data.americaPronu||'',
+                src: _that.urlVoice + data.wordName + 1 + '.mp3',
+            };
+            _that.$nextTick(()=>{
+                var audio =document.querySelector('#audioDomEn'+(_that.check?1:0));
+                audio.src =  _that.urlVoice + data.wordName + (_that.check?1:0) + '.mp3';
+                audio.play();
+            })
+             
+        },
 
     },
       beforeRouteEnter (to, from, next) {

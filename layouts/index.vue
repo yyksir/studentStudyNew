@@ -95,7 +95,7 @@ export default {
       let userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
       if (!userInfo) {
         this.$router.push({
-          path: '/sign/',
+          path: '/engStudy/sign/',
           redirect: true
         })
         return false
