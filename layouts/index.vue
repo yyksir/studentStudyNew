@@ -76,7 +76,8 @@
         <div class="signOutContainer">
           <span v-show="!collapsed">{{userName}}</span>
           
-          <img class="" style="display: block;width: 20px;height: 22px;" src="../assets/img/signout.png"></nuxt-link>
+          <img class="" style="display: block;width: 20px;height: 22px;" src="../assets/img/signout.png">
+          <!-- </nuxt-link> -->
         </div>
       </a-popconfirm>
     </div>
@@ -136,6 +137,7 @@ export default {
         return
       }
       this.$API.GET('/system/loginOut', { id: this.$Cookies.get('session') })
+      // this.$API.POST('/system/loginOut', { id: this.$Cookies.get('session') })
         .then((res) => {
           console.log(res, 'res 退出 成功')
           sessionStorage.removeItem('start') // 计时器
