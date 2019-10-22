@@ -1,8 +1,16 @@
 <template>
   <div class="app clearfix">
-    <div class="left-menu">
+    <div class="left-menu"
+      :class="{
+        'maxWidth': !collapsed,
+        'minWidth': collapsed
+      }"
+    >
+      <a-button class="btnToogle" type="link" @click="toggleCollapsed">
+        <a-icon :type="collapsed ? 'menu-unfold' : 'menu-fold'" />
+      </a-button>
       <div class="logo">
-        <img @click="handleGoToHomePage" src="../assets/img/logo.png" title="点击去首页" alt="logo" style="cursor: pointer;">
+        <img v-show="!collapsed" @click="handleGoToHomePage" src="../assets/img/logo.png" title="点击去首页" alt="logo" style="cursor: pointer;">
       </div>
       <a-menu
         mode="inline"
@@ -13,8 +21,11 @@
         :openKeys="openKeys"
         @openChange="onOpenChange"
       >
-          <a-menu-item key="19"><nuxt-link to="/">
-            <img class="icon" src="../assets/img/guanli.png">管理首页</nuxt-link>
+          <a-menu-item key="19">
+            <nuxt-link to="/">
+              <img class="icon" src="../assets/img/guanli.png">
+              <span v-show="!collapsed">管理首页</span>
+            </nuxt-link>
           </a-menu-item>
           <a-sub-menu key="sub6">
             <span slot="title"><a-icon type="mail" /><span>我的学习</span></span>
@@ -63,7 +74,8 @@
         @confirm="handleBtnSignOutClick"
       >
         <div class="signOutContainer">
-          {{userName}}
+          <span v-show="!collapsed">{{userName}}</span>
+          
           <img class="" style="display: block;width: 20px;height: 22px;" src="../assets/img/signout.png"></nuxt-link>
         </div>
       </a-popconfirm>
@@ -104,6 +116,9 @@ export default {
     }, 3000)
   },
   methods: {
+    toggleCollapsed () {
+      this.collapsed = !this.collapsed
+    },
     onOpenChange (openKeys) {
       const latestOpenKey = openKeys.find(key => this.openKeys.indexOf(key) === -1)
       if (this.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
@@ -170,11 +185,18 @@ export default {
     
     width 100%
     height 100%
+
     .left-menu{
       width 260px
       background: #001529;
       height 100%
       float left
+      position relative
+      .btnToogle {
+        position absolute
+        right 0
+        top 0
+      }
       .logo{
         height 160px
         text-align center
@@ -196,6 +218,12 @@ export default {
         color rgba(255, 255, 255, .65)
         cursor pointer
       }
+    }
+    .maxWidth {
+      width 260px
+    }
+    .minWidth {
+      width 80px
     }
     .right-menu{
       background #f0f4f5
