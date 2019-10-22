@@ -11,6 +11,14 @@
         <span style="margin-right: 32px;">共{{testPaperArr.length > 0 ? testPaperArr.length : 0}}<span style="color: #ff4d4f;">题</span></span>
         <a-switch v-if="category === 3" checkedChildren="美" unCheckedChildren="英" v-model="check" @change="handleVoiceCategoryChange" />
       </div>
+      <div class="unansweredContainer">
+        <span class="unansweredTitle">未答题号</span>
+        <span class="unansweredElem" v-for="unanswered of unansweredArr" :key="unanswered"
+          @click="handleUnansweredElemClick(unanswered)"
+        >
+          {{unanswered}}
+        </span>
+      </div>
       <div class="mainPagination">
         <a-tooltip placement="left" :title="pagination.isDisabled ? '这题您已经答过了' : ''" :getPopupContainer="(trigger) => { return trigger.parentElement }"
           v-for="(pagination, paginationIndex) of testPaperArr.length > 0 ? testPaperArr : []"
@@ -66,7 +74,7 @@
                   v-for="(testPaper, testPaperIndex) of testPaperArr.length > 0 ? testPaperArr[activeIndex].optionArr : []"
                   :key="testPaperIndex"
                 >
-                  <i class="choose" style="font-style:normal;">{{testPaper.key}}</i>
+                  <i class="choose" :class="{ 'selectedText' : testPaper.choose }" style="font-style:normal;">{{testPaper.key}}</i>
                   <a-tooltip class="chooseHint" style="font-style:normal;" placement="top"
                     :class="{ 'selected' : testPaper.choose }"
                     @click="handleBtnChooseClick(testPaper, testPaperIndex, activeIndex)"
@@ -139,6 +147,7 @@ export default {
   data () {
     return {
       check: true,
+      unansweredArr: [], // 未答题号 数组
       testPaperArr: [],
       courseName: '',
       unitName: '',
@@ -372,6 +381,10 @@ export default {
         this.getWordChafen(this.testPaperArr[this.activeIndex].wordName)
       }
     },
+    handleUnansweredElemClick (unanswered) {
+      // this.activeIndex = (unanswered * 1) - 1
+      this.handlePaginationClick('', (unanswered * 1) - 1)
+    },
     // 选择按钮被点击
     handleBtnChooseClick (testPaper, testPaperIndex, activeIndex) {
       this.testPaperArr[activeIndex].optionArr.forEach((ele, index) => {
@@ -505,7 +518,11 @@ export default {
         this.isSubmit = false
         return false
       }
-      const arr = this.testPaperArr.filter(function (element, index, array) {
+      this.unansweredArr = []
+      const arr = this.testPaperArr.filter((element, index, array) => {
+        if (element.isDisabled === false) {
+          this.unansweredArr.push(index + 1)
+        }
         return element.isDisabled === false
       })
       if (arr.length > 0) {
@@ -623,6 +640,30 @@ export default {
         justify-content center
         align-items center
         background-color #fff
+      .unansweredContainer
+        width 100%
+        display flex
+        justify-content center
+        flex-wrap wrap
+        align-items center
+        .unansweredTitle
+          width 100%
+          padding 15px 0
+          text-align center
+          font-size 18px
+          line-height 30px
+          color #F56C6C
+        .unansweredElem
+          display flex
+          justify-content center
+          align-items center
+          width 30px
+          height 30px
+          margin-bottom 10px
+          margin-right 10px
+          border-radius 50%
+          background-color #E6A23C
+          cursor pointer
       .mainPagination
         width 100%
         height 80px
@@ -752,8 +793,11 @@ export default {
                     white-space: nowrap;
                     text-indent 10px
                     cursor pointer
+                  .selectedText
+                    color #67C23A
                   .selected
                     color #67C23A
+                    border-color #67C23A
                 .mask
                   width 100%
                   height 100%
