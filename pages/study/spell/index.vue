@@ -86,8 +86,8 @@
                 </div>
                 <div class="btnBox">
                     <div v-show="step=='2'">
-                        <a-button type="primary" @click="handleKnow('0')">认识</a-button>
-                        <a-button type="primary" @click="handleKnow('1')">不认识</a-button>
+                        <a-button type="primary" @click="handleKnow('1')">认识</a-button>
+                        <a-button type="primary" @click="handleKnow('0')">不认识</a-button>
                     </div>
                     <div v-show="step=='3'">
                          <a-button type="danger" @click="handleGoNext()">下一题</a-button>
