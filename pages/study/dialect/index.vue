@@ -215,8 +215,8 @@ export default {
                             path:'/test/courseTest/' + localUnit.type,
                             query:{
                                 courseId:localUnit.courseId,
-                                united:localUnit.unitedId,
-                                testType:1,
+                                unitId:localUnit.unitedId,
+                                testType:0,
                             }
                         })
                         console.log('章节测试');
@@ -275,7 +275,7 @@ export default {
                                 path:'/test/courseTest/' + localUnit.type,
                                 query:{
                                     courseId:localUnit.courseId,
-                                    united:localUnit.unitedId,
+                                    unitId:localUnit.unitedId,
                                     testType:1,
                                 }
                             })

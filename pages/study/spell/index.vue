@@ -217,7 +217,7 @@ export default {
                             path:'/test/courseTest/' + localUnit.type,
                             query:{
                                 courseId:localUnit.courseId,
-                                united:localUnit.unitedId,
+                                unitId:localUnit.unitedId,
                                 testType:0,
                             }
                         })
@@ -279,7 +279,7 @@ export default {
                                 path:'/test/courseTest/' + localUnit.type,
                                 query:{
                                     courseId:localUnit.courseId,
-                                    united:localUnit.unitedId,
+                                    unitId:localUnit.unitedId,
                                     testType:1,
                                 }
                             })

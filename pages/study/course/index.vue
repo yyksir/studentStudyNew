@@ -127,8 +127,8 @@ export default {
         path:'/test/courseTest/' + item.type,
         query:{
           courseId:item.courseId,
-          united:0,
-          testType:0,
+          unitId:0,
+          testType:2,
         }
       })
     },
@@ -162,8 +162,8 @@ export default {
         path:'/test/courseTest/' + item.type,
         query:{
           courseId:item.courseId,
-          united:0,
-          testType:3,
+          unitId:0,
+          testType:2,
         }
       })
     },

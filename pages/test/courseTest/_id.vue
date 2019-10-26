@@ -184,8 +184,16 @@ export default {
     init () {
       this.clearIntervalFn()
       setTimeout(() => {
-        this.$nextTick(() => {
-          this.getTestPaper()
+        this.$nextTick(() => {//courseID 生成的试卷id unitid 单元id
+         this.category = this.$route.params.id * 1
+          if(this.$route.query.testType=='2') {//2学前总测试0 学前测1 学后测 3课程测试
+            this.getBeforeStudyTotalTest();
+          }else if(this.$route.query.testType=='0'||this.$route.query.testType=='1'){
+            this.getStudyLaterOrBeforeUnitTest()
+          }else{
+            this.getTestPaper()
+          }
+          
         })
       }, 3000)
     },
@@ -195,45 +203,13 @@ export default {
       this.min = 0
       this.seconds = 0
     },
-    getTestPaper () {
-      const params = this.$route.query
-      this.category = this.$route.params.id * 1
-      this.$API.POST('/course/getSpecialT', params)
-        .then((res) => {
-          window.addEventListener('popstate', (e) => {
-            sessionStorage.removeItem('start')
-            sessionStorage.removeItem('storageTestPaperArr')
-            sessionStorage.removeItem('resDataCopy')
-            this.clearIntervalFn()
-            window.removeEventListener('popstate', function () {})
-          }, false)
-          if (!sessionStorage.getItem('start')) {
-            sessionStorage.setItem('start', +new Date())
-          }
-          this.getDifferenceTime()
+    getBeforeStudyTotalTest() {
+      this.$API.POST('/course/getTotalTestpaper', {
+        courseId:this.$route.query.courseId
+      }).then((res) => {
+          this.handlePopstate()
           if (res && res.data && res.data.length > 0) {
-            if (
-              sessionStorage.getItem('storageTestPaperArr') === null ||
-              sessionStorage.getItem('storageTestPaperArr') === undefined ||
-              sessionStorage.getItem('storageTestPaperArr') === 'undefined' ||
-              sessionStorage.getItem('storageTestPaperArr') === ''
-            ) {
-              this.setData(res)
-            } else {
-              this.testPaperArr = JSON.parse(sessionStorage.getItem('storageTestPaperArr'))
-              if (this.category !== 2) {
-                this.setActiveIndex(true)
-                this.isSubmitFn()
-                this.setVoice(false)
-              }
-              // 拼写 时  获取拆分的单词
-              if (this.category === 2) {
-                this.setActiveIndex(true)
-                this.isSubmitFn()
-                this.getWordChafen(res.data[this.activeIndex].wordName)
-              }
-            }
-            this.getTestPaperHeader()
+            this.backDataTest(res)
           } else {
             this.$message.warning('暂无数据')
             this.testPaperArr = []
@@ -245,6 +221,82 @@ export default {
           this.activeIndex = 0
           this.$message.warning('获取试卷失败')
         })
+    },
+    getStudyLaterOrBeforeUnitTest() {
+       this.$API.POST('/course/getChapterTestpaper', {
+        courseId:this.$route.query.courseId,
+        unitId:this.$route.query.unitId
+      }).then((res) => {
+         this.handlePopstate()
+          if (res && res.data && res.data.length > 0) {
+            this.backDataTest(res)
+          } else {
+            this.$message.warning('暂无数据')
+            this.testPaperArr = []
+          }
+        })
+        .catch((err) => {
+          console.log(err, 'err 获取试卷失败')
+          this.testPaperArr = []
+          this.activeIndex = 0
+          this.$message.warning('获取试卷失败')
+        })
+    },
+    getTestPaper () {
+      const params = this.$route.query
+     
+      this.$API.POST('/course/getSpecialT', params)
+        .then((res) => {
+          this.handlePopstate()
+          if (res && res.data && res.data.length > 0) {
+            this.backDataTest(res)
+          } else {
+            this.$message.warning('暂无数据')
+            this.testPaperArr = []
+          }
+        })
+        .catch((err) => {
+          console.log(err, 'err 获取试卷失败')
+          this.testPaperArr = []
+          this.activeIndex = 0
+          this.$message.warning('获取试卷失败')
+        })
+    },
+    handlePopstate() {
+       window.addEventListener('popstate', (e) => {
+            sessionStorage.removeItem('start')
+            sessionStorage.removeItem('storageTestPaperArr')
+            sessionStorage.removeItem('resDataCopy')
+            this.clearIntervalFn()
+            window.removeEventListener('popstate', function () {})
+          }, false)
+          if (!sessionStorage.getItem('start')) {
+            sessionStorage.setItem('start', +new Date())
+          }
+          this.getDifferenceTime()
+    },
+    backDataTest(res){
+        if (
+            sessionStorage.getItem('storageTestPaperArr') === null ||
+            sessionStorage.getItem('storageTestPaperArr') === undefined ||
+            sessionStorage.getItem('storageTestPaperArr') === 'undefined' ||
+            sessionStorage.getItem('storageTestPaperArr') === '') {
+            this.setData(res)
+          } else {
+            this.testPaperArr = JSON.parse(sessionStorage.getItem('storageTestPaperArr'))
+            if (this.category !== 2) {
+              this.setActiveIndex(true)
+              this.isSubmitFn()
+              this.setVoice(false)
+            }
+            // 拼写 时  获取拆分的单词
+            if (this.category === 2) {
+              this.setActiveIndex(true)
+              this.isSubmitFn()
+              this.getWordChafen(res.data[this.activeIndex].wordName)
+            }
+          }
+          this.getTestPaperHeader()
     },
     setData (res) {
       let resDataCopy = JSON.parse(JSON.stringify(res.data))
@@ -299,7 +351,7 @@ export default {
       let params = {
         courseId: this.$route.query.courseId * 1, // 选择的课程id
         unitId: this.$route.query.unitId * 1, // 0：全部；其他数：对应选择的unitId
-        testType: 3, // 0：学前测；1：学后测；2：学前总测试；3：课程测试  （比如：3）
+        testType: this.$route.query.testType, // 0：学前测；1：学后测；2：学前总测试；3：课程测试  （比如：3）
       }
       if (this.$route.params.hasOwnProperty('testType')) {
         params.testType = this.$route.query.testType * 1
