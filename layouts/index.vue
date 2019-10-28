@@ -136,8 +136,7 @@ export default {
         this.$message.error('退出失败， 联系管理员')
         return
       }
-      this.$API.GET('/system/loginOut', { id: this.$Cookies.get('session') })
-      // this.$API.POST('/system/loginOut', { id: this.$Cookies.get('session') })
+      this.$API.POST('/system/loginOut', { id: this.$Cookies.get('session') })
         .then((res) => {
           console.log(res, 'res 退出 成功')
           sessionStorage.removeItem('start') // 计时器
@@ -152,7 +151,7 @@ export default {
         })
         .catch((err) => {
           console.log(err, 'err 退出失败 联系管理员')
-          this.$message.error('退出失败， 联系管理员: ' + err.msg)
+          this.$message.error('退出失败， 联系管理员: ' + (err.msg || err.message))
         })
     }
     //display flex

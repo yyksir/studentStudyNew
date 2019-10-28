@@ -18,13 +18,16 @@ const checkoutStatusFn = function checkoutStatusFn (res, isError) {
       location.href = '/sign/'
       return {
         code: 401,
-        mag: '登录失效， 请从新登录'
+        msg: '登录失效， 请从新登录'
       }
     }
   } else {
     if (res.response.status === 401 && isError) {
       // console.log(res.response, 'res.response 20')
       location.href = '/sign/'
+      return Promise.reject(res.response.data)
+    }
+    if (res.response.status !== 401 && res.response.status !== 200 && isError) {
       return Promise.reject(res.response.data)
     }
   }
@@ -38,9 +41,13 @@ instance.interceptors.request.use(config => {
   }
   if (token) {
     config.data['token'] = token
+    /*config.method === 'post'
+    ? config.data['token'] = token
+    : (config.method === 'get'
+      ? config.params['token'] = token
+      : console.log('不符合'))*/
   } else {
     // config.data['token'] = 'EDU_TOKEN_STU_5b69b9cb83065d403869739ae7f0995e' // 开发时 写死的
-    // config.data['token'] = ''
   }
   if (config.method === 'post') { config.data = qs.stringify(config.data) }
   return config

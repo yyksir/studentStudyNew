@@ -551,6 +551,10 @@ export default {
     },
     // 拼写 点击事件
     handleSpellElemClick (res, index, firstOrSecond) {
+      if ((this.testPaperArr[this.activeIndex].wordName.length + 5) === this.testPaperArr[this.activeIndex].selected.length) {
+        console.log('长度限制, 禁止再点选答案')
+        return
+      }
       if (firstOrSecond === 1) {
         this.firstActiveIndex = index
         this.secondActiveIndex = ''
