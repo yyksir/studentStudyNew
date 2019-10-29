@@ -56,7 +56,7 @@
             <div class="contentHeaderVoice" v-if="category === 3"><!-- 辨音 -->
               <div class="voiceLeft">
                 <canvas id="myCanvas"></canvas>
-                <audio id="audioDomEn" ref="audioDomEn" controls="controls" controlsList="nodownload">
+                <audio id="audioDomEn" ref="audioDomEn" controls="controls" controlsList="nodownload" preload="auto">
                   <source id="audio"  type="audio/mpeg">
                   您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
                 </audio>
@@ -265,6 +265,7 @@ export default {
     handlePopstate() {
        window.addEventListener('popstate', (e) => {
             sessionStorage.removeItem('start')
+            sessionStorage.removeItem('timeVocabulary')
             sessionStorage.removeItem('storageTestPaperArr')
             sessionStorage.removeItem('resDataCopy')
             this.clearIntervalFn()
@@ -436,6 +437,7 @@ export default {
     handleUnansweredElemClick (unanswered) {
       // this.activeIndex = (unanswered * 1) - 1
       this.handlePaginationClick('', (unanswered * 1) - 1)
+      this.setVoice(true)
     },
     // 选择按钮被点击
     handleBtnChooseClick (testPaper, testPaperIndex, activeIndex) {
@@ -496,6 +498,12 @@ export default {
       }
       audioDomEn.crossOrigin = 'anonymous'
       audioDomEn.src = URL_VOICE + this.testPaperArr[this.activeIndex].wordName + this.categoryVoice + '.mp3'
+
+// audioDomEn.addEventListener('onclick', function () {
+//   console.log(1111)
+// }, false)
+// return
+      // return
 
       const AudioContext = window.AudioContext || window.webkitAudioContext
       let audioContext = new AudioContext()
@@ -594,6 +602,7 @@ export default {
     // 取消
     handleBtnCancelClick () {
       sessionStorage.removeItem('start')
+      sessionStorage.removeItem('timeVocabulary')
       sessionStorage.removeItem('storageTestPaperArr')
       sessionStorage.removeItem('resDataCopy')
       this.clearIntervalFn()
@@ -636,6 +645,7 @@ export default {
           if (res && res.hasOwnProperty('code') && res.code === 0) {
             this.$message.success('提交试卷' + res.msg)
             sessionStorage.removeItem('start')
+            sessionStorage.removeItem('timeVocabulary')
             sessionStorage.removeItem('storageTestPaperArr')
             sessionStorage.removeItem('resDataCopy')
             this.clearIntervalFn()
@@ -721,11 +731,14 @@ export default {
           background-color #E6A23C
           cursor pointer
       .mainPagination
+        box-sizing border-box
         width 100%
-        height 80px
+        min-height 80px
+        padding 0 100px
         display flex
         justify-content center
         align-items center
+        flex-wrap wrap
         .paginationElem
           display flex
           justify-content center

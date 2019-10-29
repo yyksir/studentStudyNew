@@ -8,10 +8,11 @@
       <a-table class="tableElem" style="width: 100%;height: 100%;"
         :dataSource="tableData"
         :columns="tableColumns"
-        :scroll="{ x: 1500, y: 550 }"
+        :scroll="{ x: 1400, y: 550 }"
         :pagination="false"
         :loading="loading"
       >
+        <!-- <a slot="action" slot-scope="text" href="javascript:;">action</a> -->
         <div class="btnContainer" slot="action" slot-scope="text">
           <span class="icon iconfont icon-chakan" @click="handleBtnDetailClick(text)">查看</span>
           <a-popconfirm title="确定要删除此条信息吗 ？" placement="left" okText="确定" cancelText="取消"
@@ -43,28 +44,31 @@
 </template>
 
 <script>
-import moment from 'moment'
 const columns = [
-  { title: '测试内容', width: '120px', dataIndex: 'courseName', align: 'center', key: '0'},
-  { title: '测试时间', width: '120px', dataIndex: 'createTime', align: 'center', key: '1' },
-  { title: '测试词汇', width: '120px', dataIndex: 'testType', align: 'center', key: '2' },
+  { title: '测试内容', width: 160, dataIndex: 'courseName', key: 'courseName', fixed: 'left', align: 'center' },
+  { title: '测试时间', width: 160, dataIndex: 'createTime', key: 'createTime', align: 'center' },
+  { title: '测试词汇', dataIndex: 'testType', key: 'testType', width: 150, align: 'center' },
   {
     title: '测试总览',
-    width: '120px',
+    width: 150,
     dataIndex: 'overview',
     align: 'center',
-    key: '3',
+    key: 'overview',
     scopedSlots: { customRender: 'overview' },
   },
-  { title: '测试时长', width: '120px', dataIndex: 'continueTime', align: 'center', key: '4' },
-  { title: '测试成绩', width: '120px', dataIndex: 'score', align: 'center', key: '5' },
+  { title: '测试时长', dataIndex: 'continueTime', key: 'continueTime', width: 150, align: 'center' },
+  { title: '测试成绩', dataIndex: 'score', key: 'score', width: 150, align: 'center' },
   {
     title: '操作',
     key: 'operation',
-    width: '50px',
-    scopedSlots: { customRender: 'action' }
+    fixed: 'right',
+    width: 100,
+    align: 'center',
+    scopedSlots: { customRender: 'action' },
   }
 ]
+import moment from 'moment'
+
 export default {
   layout: 'index',
   data () {
@@ -131,6 +135,8 @@ export default {
           wrongNum: resArr[index].wrongNum
         }
       })
+      console.log(resArr, 'resArr')
+      // return
       this.tableData = resArr
     },
     // 自定义页码的结构

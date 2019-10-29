@@ -147,6 +147,7 @@ export default {
       this.seconds = 0
       setTimeout(function () {
         sessionStorage.removeItem('timeVocabulary')
+        sessionStorage.removeItem('start')
       }, 3000)
     },
     // 获取时间差值, 计算答题用时
@@ -189,6 +190,7 @@ export default {
           }
           if (res && res.code === 0 && res.data.length > 0) {
             window.addEventListener('popstate', (e) => {
+              sessionStorage.removeItem('start')
               sessionStorage.removeItem('timeVocabulary')
               this.clearIntervalFn()
               window.removeEventListener('popstate', function () {})
@@ -242,6 +244,7 @@ export default {
     // 取消
     handleBtnCancelClick () {
       sessionStorage.removeItem('timeVocabulary')
+      sessionStorage.removeItem('start')
       this.clearIntervalFn()
       this.$router.go(-1)
     },
@@ -274,6 +277,7 @@ export default {
         .then((res) => {
           // console.log(res, 'res 提交成功')
           if (res && res.hasOwnProperty('code') && res.code === 0) {
+            sessionStorage.removeItem('start')
             sessionStorage.removeItem('timeVocabulary')
             this.clearIntervalFn()
             this.$message.success('提交试卷' + res.msg)

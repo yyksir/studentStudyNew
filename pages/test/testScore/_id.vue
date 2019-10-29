@@ -28,7 +28,18 @@
           <span class="serialNumber">{{serialIndex + 1}}、</span>
           <span class="wordName">{{item.wordName}}</span>
           <span class="meaning">{{item.meaning}}</span>
-          <span class="answer">( {{item.selected}} )</span>
+          <span class="answer" v-if="detailObj.learnType !== 2"
+            :class="{
+              'correct': item.selected === item.answer,
+              'error': item.selected !== item.answer,
+            }"
+          >( {{item.selected}} )</span>
+          <span class="answer" v-if="detailObj.learnType === 2"
+            :class="{
+              'correct': item.selected === item.wordName,
+              'error': item.selected !== item.wordName,
+            }"
+          >( {{item.selected}} )</span>
         </span>
         <span class="liElemBottom" v-if="detailObj.learnType !== 2">
           <a-tooltip class="optionSelect" style="font-style:normal;" placement="top"
@@ -43,21 +54,21 @@
             <template slot="title">
               <span>{{item.optionB}}</span>
             </template>
-            <span class="" :class="{'active': item.answer === 'A'}">B、{{item.optionB}}<!-- <span class="bgWhite"></span> --></span>
+            <span class="" :class="{'active': item.answer === 'B'}">B、{{item.optionB}}<!-- <span class="bgWhite"></span> --></span>
           </a-tooltip>
           <a-tooltip class="optionSelect" style="font-style:normal;" placement="top"
           >
             <template slot="title">
               <span>{{item.optionC}}</span>
             </template>
-            <span class="" :class="{'active': item.answer === 'A'}">C、{{item.optionC}}<!-- <span class="bgWhite"></span> --></span>
+            <span class="" :class="{'active': item.answer === 'C'}">C、{{item.optionC}}<!-- <span class="bgWhite"></span> --></span>
           </a-tooltip>
           <a-tooltip class="optionSelect" style="font-style:normal;" placement="top"
           >
             <template slot="title">
               <span>{{item.optionD}}</span>
             </template>
-            <span class="" :class="{'active': item.answer === 'A'}">D、{{item.optionD}}<!-- <span class="bgWhite"></span> --></span>
+            <span class="" :class="{'active': item.answer === 'D'}">D、{{item.optionD}}<!-- <span class="bgWhite"></span> --></span>
           </a-tooltip>
         </span>
       </li>
@@ -67,6 +78,7 @@
 
 <script>
 export default {
+  layout: 'index',
   data () {
     return {
       detailObj: {},
@@ -215,7 +227,10 @@ export default {
           .answer
             font-size 18px
             line-height 18px
+          .correct
             color #6fd6b2
+          .error
+            color #f5222d
         .liElemBottom
           box-sizing border-box
           display flex

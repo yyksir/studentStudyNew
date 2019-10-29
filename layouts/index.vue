@@ -136,7 +136,8 @@ export default {
         this.$message.error('退出失败， 联系管理员')
         return
       }
-      this.$API.POST('/system/loginOut', { id: this.$Cookies.get('session') })
+      // this.$API.POST('/system/loginOut', { id: this.$Cookies.get('session') })
+      this.$API.POST('/system/loginOut', {})
         .then((res) => {
           console.log(res, 'res 退出 成功')
           sessionStorage.removeItem('start') // 计时器
