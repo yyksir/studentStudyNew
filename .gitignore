@@ -5,3 +5,4 @@ node_modules/
 *.rar
 .nuxt
 .idea
+/dist
