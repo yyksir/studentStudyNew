@@ -60,10 +60,15 @@ module.exports = {
   ** Build configuration
   */
   build: {
+    analyze: true,
+    analyze: {
+      analyzerMode: 'static'
+    },
     /*
     ** You can extend webpack config here
     */
     // extend (config, ctx) {},
+    productionSourceMap:false,
     extend (config, { isClient }) {
       // 为 客户端打包 进行扩展配置
       if (isClient) {
