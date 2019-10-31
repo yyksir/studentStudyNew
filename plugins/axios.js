@@ -22,6 +22,9 @@ const checkoutStatusFn = function checkoutStatusFn (res, isError) {
       }
     }
   } else {
+    if (!res.response && res.config.url.includes('doStLogin') && isError) {
+      return Promise.reject(res)
+    }
     if (res.response.status === 401 && isError) {
       // console.log(res.response, 'res.response 20')
       location.href = '/sign/'
@@ -58,6 +61,14 @@ instance.interceptors.request.use(config => {
 instance.interceptors.response.use(response => {
   return checkoutStatusFn(response, false)
 }, error => {
+  console.log(error, 'error 61')
+  // console.log(error.config, 'error.config 62')
+  // console.log(error.request, 'error.request 63')
+  // console.log(error.response, 'error.response 64')
+  // console.log(error.isAxiosError, 'error.isAxiosError 65')
+  // console.log(error.toJSON, 'error.toJSON 66')
+  console.log(Object.keys(error), 'error 67')
+  console.log(error.message, 'error 61')
   return checkoutStatusFn(error, true)
 })
 
