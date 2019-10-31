@@ -53,6 +53,9 @@ module.exports = {
       commons: true
     },
     analyze: true,
+    analyze: {
+      analyzerMode: 'static'
+    },
     optimization: {
       noEmitOnErrors: true,
       mangleWasmImports: true,
@@ -120,6 +123,7 @@ module.exports = {
       },
     },
     // extend (config, ctx) {},
+    productionSourceMap:false,
     extend (config, { isClient }) {
       if (isClient) {
         config.devtool = 'cheap-module-eval-source-map'
