@@ -53,9 +53,9 @@ module.exports = {
       commons: true
     },
     analyze: true,
-    analyze: {
-      analyzerMode: 'static'
-    },
+    // analyze: {
+    //   analyzerMode: 'static'
+    // },
     optimization: {
       noEmitOnErrors: true,
       mangleWasmImports: true,

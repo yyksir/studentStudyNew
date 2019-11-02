@@ -1,5 +1,4 @@
 import Vue from 'vue'
-// import Antd from 'ant-design-vue/lib'
 
 import {
 	message,
@@ -25,10 +24,9 @@ import {
 	// radioGroup,
 	Switch
 } from 'ant-design-vue'
-// console.log(message, 'message')
-// Vue.use(Antd)
 
 Vue.prototype.$message = message
+Vue.prototype.$confirm = Modal.confirm
 
 Vue.use(message)
 Vue.use(Tooltip)
@@ -52,4 +50,3 @@ Vue.use(Modal)
 Vue.use(Radio)
 // Vue.use(radioGroup)
 Vue.use(Switch)
-
