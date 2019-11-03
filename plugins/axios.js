@@ -16,8 +16,8 @@ const checkoutStatusFn = function checkoutStatusFn (res, isError) {
   if (!isError) {
     if (res.status === 401 && !isError) {
       // console.log(res, 'res 25')
-      location.href = '/sign/'
-      // location.href = '/engStudy/sign/'
+     // location.href = '/sign/'
+      location.href = location.protocol + '://' + location.host + '/engStudy/sign/'
       return {
         code: 401,
         msg: '登录失效， 请从新登录'
@@ -29,8 +29,8 @@ const checkoutStatusFn = function checkoutStatusFn (res, isError) {
     }
     if (res.response && res.response.status === 401 && isError) {
       // console.log(res.response, 'res.response 20')
-      location.href = '/sign/'
-      // location.href = '/engStudy/sign/'
+     // location.href = '/sign/'
+      location.href = location.protocol + '://' + location.host + '/engStudy/sign/'
       return Promise.reject(res.response.data)
     }
     if (res.response && res.response.status !== 401 && res.response.status !== 200 && isError) {
