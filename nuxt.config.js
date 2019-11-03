@@ -1,6 +1,6 @@
 module.exports = {
   router:{
-    base:"/engStudy" //此为根目录，如果有具体目录需求按实际情况写
+    base:"/engStudy" // 此为根目录，如果有具体目录需求按实际情况写
   },
   generate: {
     routes: [
@@ -32,9 +32,9 @@ module.exports = {
   ],
   // Plugins to load before mounting the App
   plugins: [
+    '@/plugins/antd-ui',
     '~plugins/api',
     '~plugins/echarts',
-    '@/plugins/antd-ui',
     '~plugins/moment.js',
     '~plugins/jsCookie.js',
     { src: '~plugins/lodash.js', ssr: false },
@@ -47,15 +47,17 @@ module.exports = {
   build: {
     extractCSS: true,
     devtools: false,
-    splitChunks: {
+    // 可能造成某些页面 没有 layout 布局
+    /*splitChunks: {
       layouts: false,
       pages: true,
       commons: true
-    },
-    analyze: true,
-    // analyze: {
-    //   analyzerMode: 'static'
-    // },
+    },*/
+    // 打包分析的代码就别 上传了, 自己本地修改
+    /*analyze: true,
+    analyze: {
+      analyzerMode: 'static'
+    },*/
     optimization: {
       noEmitOnErrors: true,
       mangleWasmImports: true,

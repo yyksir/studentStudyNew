@@ -96,9 +96,13 @@ export default {
           this.$message.warning(res.showMsg)
         })
         .catch((err) => {
-          this.isLoading = false
-          this.$message.warning('登录失败')
           console.log(err, 'err 登录失败')
+          this.isLoading = false
+          if (err.message && err.message === 'timeout of 20000ms exceeded') {
+            this.$message.warning('请求超时')
+            return
+          }
+          this.$message.warning('登录失败')
         })
     }
     //
