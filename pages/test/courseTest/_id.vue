@@ -12,14 +12,24 @@
         <a-switch v-if="category === 3" checkedChildren="美" unCheckedChildren="英" v-model="check" @change="handleVoiceCategoryChange" />
       </div>
       <div class="unansweredContainer">
-        <span class="unansweredTitle">未答题号</span>
-        <span class="unansweredElem" v-for="unanswered of unansweredArr" :key="unanswered"
-          @click="handleUnansweredElemClick(unanswered)"
-        >
-          {{unanswered}}
-        </span>
+        <div class="unansweredTitle">未答题号</div>
+        <div class="unansweredPaginationContainer">
+          <button class="unansweredElem" v-for="unanswered of unansweredArr" :key="unanswered"
+            @click="handleUnansweredElemClick(unanswered)"
+          >
+            {{unanswered}}
+          </button>
+        </div>
+        <!-- <a-pagination class="paginationElem"
+          :defaultCurrent="1"
+          :total="testPaperVocabularyArr.length"
+          :defaultPageSize="1"
+          :current="activeIndex + 1"
+          @change="onPaginationChange"
+        /> -->
       </div>
-      <div class="mainPagination">
+      <!-- <div class="mainPagination"> -->
+      <div class="mainPagination" :style="{ 'width': widthPagination }">
         <a-tooltip placement="left" :title="pagination.isDisabled ? '这题您已经答过了' : ''" :getPopupContainer="(trigger) => { return trigger.parentElement }"
           v-for="(pagination, paginationIndex) of testPaperArr.length > 0 ? testPaperArr : []"
           :key="paginationIndex"
@@ -118,7 +128,7 @@
               辨音
             </div> -->
           </div>
-          <div class="contentFooter"><span v-if="category === 2">快捷键 backspace 退格; 空格键 清空重选</span></div>
+          <div class="contentFooter" v-if="category === 2"><span>快捷键 backspace 退格; 空格键 清空重选</span></div>
         </div>
       </div>
     </main>
@@ -146,6 +156,7 @@ export default {
   name: 'course-test-type',
   data () {
     return {
+      widthPagination: '1300px',
       check: true,
       unansweredArr: [], // 未答题号 数组
       testPaperArr: [],
@@ -285,6 +296,7 @@ export default {
             this.setData(res)
           } else {
             this.testPaperArr = JSON.parse(sessionStorage.getItem('storageTestPaperArr'))
+            // this.widthPagination = (this.testPaperArr.length * 26) + 'px'
             if (this.category !== 2) {
               this.setActiveIndex(true)
               this.isSubmitFn()
@@ -332,6 +344,7 @@ export default {
       })
       sessionStorage.setItem('storageTestPaperArr', JSON.stringify(resDataCopy))
       this.testPaperArr = resDataCopy
+      // this.widthPagination = (this.testPaperArr.length * 26) + 'px'
       this.setActiveIndex(true)
       this.isSubmitFn()
       this.setVoice(false)
@@ -694,6 +707,10 @@ export default {
         font-size 22px
         font-weight 600
     .mainContainer
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
       width 100%;
       flex 1
       overflow-x hidden
@@ -709,36 +726,50 @@ export default {
       .unansweredContainer
         width 100%
         display flex
-        justify-content center
-        flex-wrap wrap
+        flex-direction column
+        justify-content flex-start
         align-items center
         .unansweredTitle
           width 100%
-          padding 15px 0
+          // padding 15px 0
           text-align center
           font-size 18px
           line-height 30px
           color #F56C6C
-        .unansweredElem
+        .unansweredPaginationContainer
+          width 1300px
           display flex
-          justify-content center
+          justify-content flex-start
+          // justify-content center
           align-items center
-          width 30px
-          height 30px
-          margin-bottom 10px
-          margin-right 10px
-          border-radius 50%
-          background-color #E6A23C
-          cursor pointer
+          flex-wrap nowrap
+          overflow-x auto
+          overflow-y hidden
+          .unansweredElem
+            display flex
+            justify-content center
+            align-items center
+            width 30px
+            height 30px
+            margin-bottom 10px
+            margin-right 10px
+            border-radius 50%
+            background-color #E6A23C
+            cursor pointer
       .mainPagination
         box-sizing border-box
         width 100%
         min-height 80px
-        padding 0 100px
+        margin-bottom 4px
+        // padding 0 100px
         display flex
-        justify-content center
+        justify-content flex-start
+        // justify-content center
         align-items center
-        flex-wrap wrap
+        // flex-wrap wrap
+        flex-wrap nowrap
+        overflow-x auto
+        overflow-y hidden
         .paginationElem
           display flex
           justify-content center
@@ -777,7 +808,7 @@ export default {
             width 100%
             min-height 102px
             padding 0 33px
-            padding-top 22px
+            // padding-top 22px
             font-size 40px
             line-height 102px
             text-align center
