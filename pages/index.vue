@@ -52,7 +52,7 @@
       <div class="title">学习统计</div>
       <div class="toolbar">
         
-        <div class="week" :class="{weekend:curentIndex==index}" v-for="(item,index) of tab" :key="index" @click="handleseletced(index)">按周统计</div>
+        <div class="week" :class="{weekend:curentIndex==index}" v-for="(item,index) of tab" :key="index" @click="handleseletced(index)">{{item.name}}</div>
         <div class="timeSelect">
           <a-range-picker @change="onChange" />
         </div>
