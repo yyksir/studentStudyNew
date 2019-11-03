@@ -17,7 +17,7 @@ const checkoutStatusFn = function checkoutStatusFn (res, isError) {
     if (res.status === 401 && !isError) {
       // console.log(res, 'res 25')
      // location.href = '/sign/'
-      location.href = location.protocol + '://' + location.host + '/engStudy/sign/'
+      location.href = location.origin + '/engStudy/sign/'
       return {
         code: 401,
         msg: '登录失效， 请从新登录'
@@ -30,7 +30,7 @@ const checkoutStatusFn = function checkoutStatusFn (res, isError) {
     if (res.response && res.response.status === 401 && isError) {
       // console.log(res.response, 'res.response 20')
      // location.href = '/sign/'
-      location.href = location.protocol + '://' + location.host + '/engStudy/sign/'
+      location.href = location.origin + '/engStudy/sign/'
       return Promise.reject(res.response.data)
     }
     if (res.response && res.response.status !== 401 && res.response.status !== 200 && isError) {
@@ -64,14 +64,14 @@ instance.interceptors.request.use(config => {
 instance.interceptors.response.use(response => {
   return checkoutStatusFn(response, false)
 }, error => {
-  console.log(error, 'error 61')
-  console.log(error.config, 'error.config 62')
-  console.log(error.request, 'error.request 63')
-  console.log(error.response, 'error.response 64')
-  console.log(error.isAxiosError, 'error.isAxiosError 65')
-  console.log(error.toJSON, 'error.toJSON 66')
-  console.log(Object.keys(error), 'error 67')
-  console.log(error.message, 'error 61')
+  // console.log(error, 'error 61')
+  // console.log(error.config, 'error.config 62')
+  // console.log(error.request, 'error.request 63')
+  // console.log(error.response, 'error.response 64')
+  // console.log(error.isAxiosError, 'error.isAxiosError 65')
+  // console.log(error.toJSON, 'error.toJSON 66')
+  // console.log(Object.keys(error), 'error 67')
+  // console.log(error.message, 'error 61')
   return checkoutStatusFn(error, true)
 })
 

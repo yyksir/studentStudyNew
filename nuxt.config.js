@@ -3,6 +3,7 @@ module.exports = {
     base:"/engStudy" // 此为根目录，如果有具体目录需求按实际情况写
   },
   generate: {
+    dir: 'engStudy',
     routes: [
       '/test/courseTest/1',
       '/test/courseTest/2',
@@ -47,6 +48,7 @@ module.exports = {
   build: {
     extractCSS: true,
     devtools: false,
+    cssSourceMap: process.env.NODE_ENV === 'development',
     // 可能造成某些页面 没有 layout 布局
     /*splitChunks: {
       layouts: false,
