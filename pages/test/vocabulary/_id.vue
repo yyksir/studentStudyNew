@@ -6,17 +6,26 @@
     </header>
     <div class="hintInfoContainer">
       <span style="margin-right: 32px;">用时 {{min}} 分 {{seconds}} 秒</span>
-      <span style="margin-right: 32px;">共 {{testPaperVocabularyArr.length > 0 ? testPaperVocabularyArr.length : 0}}<span style="color: #ff4d4f;"> 题</span></span>
+      <span style="margin-right: 32px;">
+        共 {{testPaperVocabularyArr.length > 0 ? testPaperVocabularyArr.length : 0}}
+        <span style="color: #ff4d4f;margin-right: 32px;"> 题</span>
+        <span style="color: #67C23A;margin-right: 32px;"> 绿色背景: 已答题号</span>
+        <span style="color: #ff4d4f;margin-right: 32px;"> 红色背景: 未答题号</span>
+        <span style="color: #303133;margin-right: 32px;"> 题号字体颜色黑色: 当前题</span>
+        <span style="color: #303133;margin-right: 32px;"> 当前题号: {{activeIndex + 1}}</span>
+      </span>
       <!-- <span>未答题号: {{unansweredArr}}</span> -->
     </div>
-    <div class="unansweredContainer">
+    <!-- 未答题号 **************************************************************** -->
+    <!-- <div class="unansweredContainer">
       <span class="unansweredTitle">未答题号</span>
       <span class="unansweredElem" v-for="unanswered of unansweredArr" :key="unanswered"
         @click="handleUnansweredElemClick(unanswered)"
       >
         {{unanswered}}
       </span>
-    </div>
+    </div> -->
+
     <div class="paginationContainer">
       <a-pagination class="paginationElem"
         :defaultCurrent="1"
@@ -127,13 +136,18 @@ export default {
       return this.$route.params
     }
   },
+  watch: {
+    activeIndex (val, oldVal) {
+      sessionStorage.setItem('activeIndex', val)
+    }
+  },
   // created () {
   mounted () {
     this.init()
   },
   methods: {
     init () {
-      this.clearIntervalFn()
+      // this.clearIntervalFn()
       setTimeout(() => {
         this.$nextTick(() => {
           this.getTestPaper()
@@ -148,6 +162,8 @@ export default {
       setTimeout(function () {
         sessionStorage.removeItem('timeVocabulary')
         sessionStorage.removeItem('start')
+        sessionStorage.removeItem('testPaperVocabularyArr')
+        sessionStorage.removeItem('activeIndex')
       }, 3000)
     },
     // 获取时间差值, 计算答题用时
@@ -159,48 +175,78 @@ export default {
       }, 1000)
     },
     isSubmitFn () {
-      if (this.testPaperVocabularyArr.length < 1) {
-        this.isSubmit = false
-        return false
-      }
-      this.unansweredArr = []
-      const arr = this.testPaperVocabularyArr.filter((element, index, array) => {
-        if (element.selected === null) {
-          this.unansweredArr.push(index + 1)
+      
+      setTimeout(() => {
+        if (this.testPaperVocabularyArr.length < 1) {
+          this.isSubmit = false
+          return false
         }
-        return element.selected === null
-      })
-      if (arr.length > 0) {
-        this.isSubmit = false
-        return false
-      }
-      if (arr.length === 0) {
-        this.isSubmit = true
-        return false
-      }
-      return true
+        this.unansweredArr = []
+        const arr = this.testPaperVocabularyArr.filter((element, index, array) => {
+          if (element.selected === null) {
+            this.unansweredArr.push(index + 1)
+          }
+          return element.selected === null
+        })
+        // 判断哪些题 是 未答 [绿色: 已答题号, 红色: 未答题号] 默认给个 绿色
+        let andtLi = document.getElementsByClassName('ant-pagination-item')
+        for (let m = 0, ml = this.unansweredArr.length; m < ml; m++) {
+          for (let i = 0, l = andtLi.length; i < l; i++) {
+            if (andtLi[i].getAttribute('title') * 1 === this.unansweredArr[m]) {
+              andtLi[i].classList.add('red')
+            }
+          }
+        }
+        if (arr.length > 0) {
+          this.isSubmit = false
+          return false
+        }
+        if (arr.length === 0) {
+          this.isSubmit = true
+          return false
+        }
+        return true
+      }, 500)
     },
     getTestPaper () {
       this.$API.POST('/course/getWordNumTestpaper', {type: this.routeParamsObj.id})
         .then((res) => {
           // console.log(_.cloneDeep(res), 'res 词汇量测试试题')
+          // 删除课程测试 页面 的 数据
+          sessionStorage.removeItem('start')
+          sessionStorage.removeItem('resDataCopy')
+          sessionStorage.removeItem('storageTestPaperArr')
 
           if (!sessionStorage.getItem('timeVocabulary')) {
             sessionStorage.setItem('timeVocabulary', +new Date())
           }
+          if (!sessionStorage.getItem('activeIndex')) {
+            sessionStorage.setItem('activeIndex', 0)
+          } else {
+            this.activeIndex = sessionStorage.getItem('activeIndex') * 1
+          }
           if (res && res.code === 0 && res.data.length > 0) {
             window.addEventListener('popstate', (e) => {
-              sessionStorage.removeItem('start')
-              sessionStorage.removeItem('timeVocabulary')
+              // sessionStorage.removeItem('start')
+              // sessionStorage.removeItem('timeVocabulary')
+              // sessionStorage.removeItem('activeIndex')
+              // sessionStorage.removeItem('testPaperVocabularyArr')
               this.clearIntervalFn()
               window.removeEventListener('popstate', function () {})
             }, false)
             this.getDifferenceTime()
+            if (JSON.parse(sessionStorage.getItem('testPaperVocabularyArr'))) {
+              this.testPaperVocabularyArr = JSON.parse(sessionStorage.getItem('testPaperVocabularyArr'))
+              this.chooseElemObj = this.testPaperVocabularyArr[this.activeIndex]
+              this.isSubmitFn()
+              return false
+            }
             const resDataArr = _.cloneDeep(res.data)
             resDataArr.forEach(element => {
               element['selected'] = null
             })
             this.testPaperVocabularyArr = resDataArr
+            sessionStorage.setItem('testPaperVocabularyArr', JSON.stringify(resDataArr))
             this.chooseElemObj = resDataArr[0]
             this.isSubmitFn()
             return false
@@ -237,6 +283,7 @@ export default {
     handleBtnChooseClick (selectedVal) {
       this.chooseElemObj.selected = selectedVal
       this.testPaperVocabularyArr[this.activeIndex].selected = selectedVal
+      sessionStorage.setItem('testPaperVocabularyArr', JSON.stringify(this.testPaperVocabularyArr))
       this.handleBtnNextClick()
       this.isSubmitFn()
       // console.log(_.cloneDeep(this.testPaperVocabularyArr))
@@ -369,11 +416,18 @@ export default {
         border 0
         border-radius 50%
         // background-color #F56C6C
-        background-color transparent
+        // background-color transparent
+        background-color #67C23A // 默认给个绿色, 已答题号
       .paginationElem >>> .ant-pagination-item-active
-        background-color #F56C6C
+        border 1px solid #303133
       .paginationElem >>> .ant-pagination-item-active a
-        color #fff
+        color #303133 !important
+      .paginationElem >>> .red
+        background-color #F56C6C
+      // .paginationElem >>> .green
+      //   background-color #67C23A
+      .paginationElem >>> .ant-pagination-item > a
+          color #fff
     .main
       display flex
       justify-content center

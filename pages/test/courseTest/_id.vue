@@ -2,16 +2,25 @@
   <div class="container">
     <header class="header">
       <span class="title">测试中心</span>
-      <span class="courseCategory">{{courseName}} · {{categoryObj[category]}}</span>
+      <span class="courseCategory">{{courseName}}<span v-if="courseName"> · </span>{{categoryObj[category]}}</span>
     </header>
     <main class="mainContainer">
       <div class="mainHeader">
         <span style="margin-right: 32px;">{{unitName}}</span>
         <span style="margin-right: 32px;">用时 {{min}} 分 {{seconds}} 秒</span>
-        <span style="margin-right: 32px;">共{{testPaperArr.length > 0 ? testPaperArr.length : 0}}<span style="color: #ff4d4f;">题</span></span>
+        <span style="margin-right: 32px;">
+          共{{testPaperArr.length > 0 ? testPaperArr.length : 0}}
+          <span style="color: #ff4d4f;margin-right: 32px;">题</span>
+          <span style="color: #67C23A;margin-right: 32px;"> 绿色背景: 已答题号</span>
+          <span style="color: #ff4d4f;margin-right: 32px;"> 红色背景: 未答题号</span>
+          <span style="color: #303133;margin-right: 32px;"> 题号字体颜色黑色: 当前题</span>
+          <span style="color: #303133;margin-right: 32px;"> 当前题号: {{activeIndex + 1}}</span>
+        </span>
         <a-switch v-if="category === 3" checkedChildren="美" unCheckedChildren="英" v-model="check" @change="handleVoiceCategoryChange" />
       </div>
-      <div class="unansweredContainer">
+
+      <!-- 未答题号 ****************************************************************-->
+      <!-- <div class="unansweredContainer">
         <div class="unansweredTitle">未答题号</div>
         <div class="unansweredPaginationContainer">
           <button class="unansweredElem" v-for="unanswered of unansweredArr" :key="unanswered"
@@ -20,14 +29,8 @@
             {{unanswered}}
           </button>
         </div>
-        <!-- <a-pagination class="paginationElem"
-          :defaultCurrent="1"
-          :total="testPaperVocabularyArr.length"
-          :defaultPageSize="1"
-          :current="activeIndex + 1"
-          @change="onPaginationChange"
-        /> -->
-      </div>
+      </div> -->
+
       <!-- <div class="mainPagination"> -->
       <div class="mainPagination" :style="{ 'width': widthPagination }">
         <a-tooltip placement="left" :title="pagination.isDisabled ? '这题您已经答过了' : ''" :getPopupContainer="(trigger) => { return trigger.parentElement }"
@@ -37,13 +40,16 @@
             <!-- :disabled="pagination.isDisabled" -->
           <button class="paginationElem"
             v-bind:class="{
-              'active': activeIndex === paginationIndex
+              'active': activeIndex === paginationIndex,
+              'green': pagination.isDisabled == true,
+              'red': pagination.isDisabled == false,
             }"
             :disabled="false"
             :title="pagination.isDisabled ? '这题您已经答过了' : ''"
             @click="handlePaginationClick(pagination, paginationIndex)"
           >
             {{paginationIndex + 1}}
+            <!-- {{pagination.isDisabled}} -->
           </button>
         </a-tooltip>
       </div>
@@ -66,7 +72,9 @@
             <div class="contentHeaderVoice" v-if="category === 3"><!-- 辨音 -->
               <div class="voiceLeft">
                 <canvas id="myCanvas"></canvas>
-                <audio id="audioDomEn" ref="audioDomEn" controls="controls" controlsList="nodownload" preload="auto">
+                <audio id="audioDomEn"
+                  :style="{ 'opacity': testPaperArr.length > 0 ? 1 : 0 }"
+                  ref="audioDomEn" controls="controls" controlsList="nodownload" preload="auto">
                   <source id="audio"  type="audio/mpeg">
                   您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
                 </audio>
@@ -204,7 +212,6 @@ export default {
           }else{
             this.getTestPaper()
           }
-          
         })
       }, 3000)
     },
@@ -274,25 +281,31 @@ export default {
         })
     },
     handlePopstate() {
-       window.addEventListener('popstate', (e) => {
-            sessionStorage.removeItem('start')
-            sessionStorage.removeItem('timeVocabulary')
-            sessionStorage.removeItem('storageTestPaperArr')
-            sessionStorage.removeItem('resDataCopy')
-            this.clearIntervalFn()
-            window.removeEventListener('popstate', function () {})
-          }, false)
-          if (!sessionStorage.getItem('start')) {
-            sessionStorage.setItem('start', +new Date())
-          }
-          this.getDifferenceTime()
+      // 删除词汇量测试 页面 的 数据
+      sessionStorage.removeItem('timeVocabulary')
+      sessionStorage.removeItem('testPaperVocabularyArr')
+      sessionStorage.removeItem('activeIndex')
+
+      window.addEventListener('popstate', (e) => {
+        sessionStorage.removeItem('start')
+        sessionStorage.removeItem('timeVocabulary')
+        sessionStorage.removeItem('storageTestPaperArr')
+        sessionStorage.removeItem('resDataCopy')
+        this.clearIntervalFn()
+        window.removeEventListener('popstate', function () {})
+      }, false)
+      if (!sessionStorage.getItem('start')) {
+        sessionStorage.setItem('start', +new Date())
+      }
+      this.getDifferenceTime()
     },
     backDataTest(res){
         if (
             sessionStorage.getItem('storageTestPaperArr') === null ||
             sessionStorage.getItem('storageTestPaperArr') === undefined ||
             sessionStorage.getItem('storageTestPaperArr') === 'undefined' ||
-            sessionStorage.getItem('storageTestPaperArr') === '') {
+            sessionStorage.getItem('storageTestPaperArr') === ''
+          ) {
             this.setData(res)
           } else {
             this.testPaperArr = JSON.parse(sessionStorage.getItem('storageTestPaperArr'))
@@ -591,6 +604,7 @@ export default {
     },
     // 是否显示提交试卷按钮
     isSubmitFn () {
+      console.log(this.testPaperArr, 'this.testPaperArr')
       if (this.testPaperArr.length < 1) {
         this.isSubmit = false
         return false
@@ -774,11 +788,14 @@ export default {
           display flex
           justify-content center
           align-items center
-          width 24px
-          height 24px
+          // width 24px
+          // height 24px
+          width 30px
+          height 30px
           margin-right 10px
           border-radius 100%
-          border 0!important
+          border 2px solid transparent
+          font-size .24rem
           color #ccc
           background-color transparent
           outline none!important
@@ -786,8 +803,16 @@ export default {
         .disabled
           cursor not-allowed
         .active
-          background-color #ff4d4f
+          // background-color #ff4d4f
+          // color #fff
+          border-color #303133 !important
+          color #303133!important
+        .green
           color #fff
+          background-color #67C23A
+        .red
+          color #fff
+          background-color #F56C6C
       .mainContent
         width 100%
         min-height 300px
