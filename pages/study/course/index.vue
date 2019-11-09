@@ -46,25 +46,34 @@
         title="提示"
         v-model="visible"
         @cancel="handleCancel"
+        :width='390'
         :footer="null"
       >
-        <div style="position:relative;overflow: hidden;">
+        <div class="modelIcon">
+            <div>
+              <a-icon class="proessIcon" type="info-circle" />
+            </div>
+          <div>
+            是否进行
+          </div>
+        </div>
+        <div style="position:relative;overflow: hidden;margin-bottom:20px;">
           <div v-if="selectItem.isStart=='0'">
-            <a-button type="primary" style="float:left"   @click="handlePageTest">
+            <a-button type="danger" style="float:left"   @click="handlePageTest">
               章节学前测试
-            </a-button>
-            <a-button  type="primary" style="position: absolute;top: 50%;left: 50%;transform:translate(-50%,-50%);"   @click="handleActionStusy">
+            </a-button> 
+            <a-button  type="danger" style="position: absolute;top: 50%;left: 50%;transform:translate(-50%,-50%);"   @click="handleActionStusy">
               开始学习
             </a-button>
-            <a-button type="primary" style="float:right"  @click="handleTotalTest">
+            <a-button type="danger" style="float:right"  @click="handleTotalTest">
               学前总测试
             </a-button> 
         </div>
         <div v-else-if="selectItem.isStart=='1'">
-          <a-button type="primary" style="float:left"   @click="handleActionStusy">
+          <a-button type="danger" style="float:left"   @click="handleActionStusy">
             继续学习
           </a-button>
-          <a-button type="primary" style="float:right"  @click="handleDeleteStudyRecord">
+          <a-button type="danger" style="float:right"  @click="handleDeleteStudyRecord">
             删除学习记录
           </a-button> 
 
@@ -335,5 +344,18 @@ export default {
     .page{
       text-align center
     }
+  }
+  .modelIcon{
+    text-align center
+    font-size 20px
+    margin-bottom 30px
+    margin-top 10px
+  }
+  .proessIcon{
+    color red
+    font-size 38px
+  }
+  .ant-btn-danger {
+    color rgba(0, 0, 0, 0.65)
   }
 </style>
