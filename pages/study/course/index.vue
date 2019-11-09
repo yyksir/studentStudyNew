@@ -222,6 +222,7 @@ export default {
           }else{
             this.$message.warning('清除失败');
           }
+          this.getMyCourseData();
            this.visible = false;
         })
         .catch((err) => {
