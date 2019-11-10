@@ -449,7 +449,8 @@ export default {
       justify-content center
       align-items center
       width 100%
-      flex 1
+      // flex 1
+      height auto
       overflow-x hidden
       overflow-y auto
       .paperContentContainer
