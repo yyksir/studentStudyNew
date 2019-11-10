@@ -805,11 +805,11 @@ export default {
         margin-bottom 4px
         // padding 0 100px
         display flex
-        justify-content flex-start
-        // justify-content center
+        // justify-content flex-start
+        justify-content center
         align-items center
-        // flex-wrap wrap
-        flex-wrap nowrap
+        flex-wrap wrap
+        // flex-wrap nowrap
         overflow-x auto
         overflow-y hidden
         .paginationElem
