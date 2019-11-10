@@ -1,6 +1,14 @@
 <!-- 我的词典 -->
 <template>
   <div class="dictionaryConatiner">
+    <a-spin style="
+      width: 100%;height: 100%;position: fixed;left: 0;top: 0;z-index: 999;
+      display: flex;flex-direction: column;;justify-content: center;align-items: center;
+      background-color: rgba(0, 0, 0, .5)
+      "
+      size="large"
+      v-show="spinning"
+    />
     <header class="dictionaryHeader">
       <span class="dictionaryText">我的词典</span>
     </header>
@@ -53,6 +61,7 @@ export default {
   layout: 'index',
   data () {
     return {
+      spinning: false,
       searchRes: '',
       storageArr: [],
       translate: ''
@@ -85,8 +94,10 @@ export default {
       } else {
         params.translate = this.translate
       }
+      this.spinning = true
       this.$API.POST('/census/translate', params)
         .then((res) => {
+          this.spinning = false
           if (res && res.hasOwnProperty('code') && res.data) {
             if (this.translate && res.data) {
               localStorage.setItem(this.translate, this.translate)
@@ -99,6 +110,7 @@ export default {
           }
         })
         .catch((err) => {
+          this.spinning = false
           console.log(err, 'err 翻译接口调用失败')
           // this.setEmptyData()
           this.$message.error(err.message + '翻译接口调用失败, 联系管理员')

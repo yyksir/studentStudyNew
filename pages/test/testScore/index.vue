@@ -1,6 +1,14 @@
 <!-- 测试成绩 -->
 <template>
   <div class="container">
+    <a-spin style="
+      width: 100%;height: 100%;position: fixed;left: 0;top: 0;z-index: 999;
+      display: flex;flex-direction: column;;justify-content: center;align-items: center;
+      background-color: rgba(0, 0, 0, .5)
+      "
+      size="large"
+      v-show="loading"
+    />
     <header class="header">
       <span class="title">测试成绩</span>
     </header>
@@ -10,8 +18,8 @@
         :columns="tableColumns"
         :scroll="{ x: 1400, y: 550 }"
         :pagination="false"
-        :loading="loading"
       >
+        <!-- :loading="loading" -->
         <!-- <a slot="action" slot-scope="text" href="javascript:;">action</a> -->
         <div class="btnContainer" slot="action" slot-scope="text">
           <span class="icon iconfont icon-chakan" @click="handleBtnDetailClick(text)">查看</span>
@@ -186,14 +194,17 @@ export default {
     },
     // 删除
     handleConfirm (text) {
+      this.loading = true
       this.$API.POST('/census/delTestRrecord', {
         id: text.id
       })
       .then((res) => {
+        this.loading = false
         this.$message.success('删除成功')
         this.queryInfo()
       })
       .catch((err) => {
+        this.loading = false
         this.$message.success('删除失败, 请联系管理员')
         console.log(err, 'err 删除失败')
       })

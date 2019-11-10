@@ -1,5 +1,13 @@
 <template>
     <div class="body">
+      <a-spin style="
+        width: 100%;height: 100%;position: fixed;left: 0;top: 0;z-index: 999;
+        display: flex;flex-direction: column;;justify-content: center;align-items: center;
+        background-color: rgba(0, 0, 0, .5)
+        "
+        size="large"
+        v-show="spinning"
+      />
       <header>
         <div class="title">
           我的课程
@@ -88,6 +96,7 @@ export default {
   layout: 'index',
   data () {
     return {
+      spinning: true,
       visible:false,
       parames:{
         courseName:'',
@@ -104,8 +113,10 @@ export default {
   },
   methods:{
     getMyCourseData() {
+      this.spinning = true
       this.$API.POST('/course/getMyCourse',this.parames).then((res) => {
         console.log((res))
+        this.spinning = false
           if (res && res.data&& res.data.list.length>0 ) {
             this.getMyCourse = res.data.list;
             
@@ -115,6 +126,7 @@ export default {
           this.totalPage = res.data.totalPageNumber
         })
         .catch((err) => {
+          this.spinning = false
           this.$message.warning('获取数据失败');
           console.log(err, 'err')
         })
@@ -142,10 +154,12 @@ export default {
       })
     },
     handleActionStusy() {//开始学习
+      this.spinning = true
     //item.type=='1'?"认读":item.type=='2'?"拼写":"辨音"
       this.$API.POST('/course/uptCourseIsStarted',{
         id:this.selectItem.id,
       }).then((res) => {
+        this.spinning = false
         if(this.selectItem.type=='1') {
           this.$router.push({path: '/study/recognize/',
           query: this.selectItem || {}
@@ -160,6 +174,7 @@ export default {
           })
         }
       }).catch((err) => {
+        this.spinning = false
         this.$message.warning('进入课程失败');
         console.log(err, 'err')
       })
@@ -183,14 +198,17 @@ export default {
         okText: '确认',
         cancelText: '取消',
         onOk() {
+          this.spinning = true
           this.$API.POST('/course/delMyCourse',{
             id:item.id
           }).then((res) => {
+            this.spinning = false
           console.log((res))
             this.$message.success(res.data);
             this.getMyCourseData()
           })
           .catch((err) => {
+            this.spinning = false
             this.$message.warning('获取数据失败');
             console.log(err, 'err')
           })
@@ -213,9 +231,11 @@ export default {
     // },
     handleDeleteStudyRecord() {
       const item =  this.selectItem;
+      this.spinning = true
       this.$API.POST('/learn/clearLearnRecord',{
         id:item.id
         }).then((res) => {
+          this.spinning = false
         console.log((res))
           if (res && res.code=='0' ) {
             this.$message.success(res.data);
@@ -226,6 +246,7 @@ export default {
            this.visible = false;
         })
         .catch((err) => {
+          this.spinning = false
           this.$message.warning('清除失败');
           console.log(err, 'err')
         })

@@ -1,5 +1,13 @@
 <template>
   <div class="container">
+    <a-spin style="
+      width: 100%;height: 100%;position: fixed;left: 0;top: 0;z-index: 999;
+      display: flex;flex-direction: column;;justify-content: center;align-items: center;
+      background-color: rgba(0, 0, 0, .5)
+      "
+      size="large"
+      v-show="spinning"
+    />
     <header class="header">
       <span class="title">测试中心</span>
       <span class="courseCategory">{{courseName}}<span v-if="courseName"> · </span>{{categoryObj[category]}}</span>
@@ -164,6 +172,7 @@ export default {
   name: 'course-test-type',
   data () {
     return {
+      spinning: false,
       widthPagination: '1300px',
       check: true,
       unansweredArr: [], // 未答题号 数组
@@ -192,6 +201,7 @@ export default {
   },
   components: {},
   created () {
+    this.spinning = true
     this.init()
   },
   methods: {
@@ -222,49 +232,57 @@ export default {
       this.seconds = 0
     },
     getBeforeStudyTotalTest() {
+      this.spinning = true
       this.$API.POST('/course/getTotalTestpaper', {
         courseId:this.$route.query.courseId
       }).then((res) => {
-          this.handlePopstate()
-          if (res && res.data && res.data.length > 0) {
-            this.backDataTest(res)
-          } else {
-            this.$message.warning('暂无数据')
-            this.testPaperArr = []
-          }
-        })
-        .catch((err) => {
-          console.log(err, 'err 获取试卷失败')
+        this.spinning = false
+        this.handlePopstate()
+        if (res && res.data && res.data.length > 0) {
+          this.backDataTest(res)
+        } else {
+          this.$message.warning('暂无数据')
           this.testPaperArr = []
-          this.activeIndex = 0
-          this.$message.warning('获取试卷失败')
-        })
+        }
+      })
+      .catch((err) => {
+        this.spinning = false
+        console.log(err, 'err 获取试卷失败')
+        this.testPaperArr = []
+        this.activeIndex = 0
+        this.$message.warning('获取试卷失败')
+      })
     },
     getStudyLaterOrBeforeUnitTest() {
+       this.spinning = true
        this.$API.POST('/course/getChapterTestpaper', {
         courseId:this.$route.query.courseId,
         unitId:this.$route.query.unitId
       }).then((res) => {
-         this.handlePopstate()
-          if (res && res.data && res.data.length > 0) {
-            this.backDataTest(res)
-          } else {
-            this.$message.warning('暂无数据')
-            this.testPaperArr = []
-          }
-        })
-        .catch((err) => {
-          console.log(err, 'err 获取试卷失败')
+        this.spinning = false
+        this.handlePopstate()
+        if (res && res.data && res.data.length > 0) {
+          this.backDataTest(res)
+        } else {
+          this.$message.warning('暂无数据')
           this.testPaperArr = []
-          this.activeIndex = 0
-          this.$message.warning('获取试卷失败')
-        })
+        }
+      })
+      .catch((err) => {
+        this.spinning = false
+        console.log(err, 'err 获取试卷失败')
+        this.testPaperArr = []
+        this.activeIndex = 0
+        this.$message.warning('获取试卷失败')
+      })
     },
     getTestPaper () {
+      this.spinning = true
       const params = this.$route.query
      
       this.$API.POST('/course/getSpecialT', params)
         .then((res) => {
+          this.spinning = false
           this.handlePopstate()
           if (res && res.data && res.data.length > 0) {
             this.backDataTest(res)
@@ -274,6 +292,7 @@ export default {
           }
         })
         .catch((err) => {
+          this.spinning = false
           console.log(err, 'err 获取试卷失败')
           this.testPaperArr = []
           this.activeIndex = 0
@@ -383,8 +402,10 @@ export default {
       if (this.$route.params.hasOwnProperty('testType')) {
         params.testType = this.$route.query.testType * 1
       }
+      this.spinning = true
       this.$API.POST('/course/getTestPaperHeader', params)
       .then((res) => {
+        this.spinning = false
         if (res && res.hasOwnProperty('code') && res.code === 0) {
           this.courseName = res.data.courseName
           this.unitName = res.data.unitName
@@ -394,6 +415,7 @@ export default {
         }
       })
       .catch((err) => {
+        this.spinning = false
         this.courseName = ''
         this.unitName = ''
         console.log(err, 'err getTestPaperHeader')
@@ -401,8 +423,10 @@ export default {
     },
     // 拼写 时  获取拆分的单词
     getWordChafen (wordName) {
+      this.spinning = true
       this.$API.POST('/learn/getWordChafen', { wordName: wordName })
         .then((res) => {
+          this.spinning = false
           if (res && res.hasOwnProperty('code') && res.code === 0) {
             const resData = res.data
             let firstArr = []
@@ -444,6 +468,7 @@ export default {
           }
         })
         .catch((err) => {
+          this.spinning = false
           this.right = []
           this.first = []
           this.second = []
@@ -667,8 +692,10 @@ export default {
       if (this.$route.params.hasOwnProperty('testType')) {
         params.testType = this.$route.query.testType * 1
       }
+      this.spinning = true
       this.$API.POST('/course/commitTestPaper', params)
         .then((res) => {
+          this.spinning = false
           if (res && res.hasOwnProperty('code') && res.code === 0) {
             this.$message.success('提交试卷' + res.msg)
             sessionStorage.removeItem('start')
@@ -682,6 +709,7 @@ export default {
           this.$message.error('提交试卷失败')
         })
         .catch((err) => {
+          this.spinning = false
           this.$message.error('提交试卷失败: ' + err.msg)
           console.log(err, 'err 提交试卷')
         })

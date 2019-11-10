@@ -1,6 +1,14 @@
 <!-- 生成试卷 -->
 <template>
   <div class="container">
+    <a-spin style="
+      width: 100%;height: 100%;position: fixed;left: 0;top: 0;z-index: 999;
+      display: flex;flex-direction: column;;justify-content: center;align-items: center;
+      background-color: rgba(0, 0, 0, .5)
+      "
+      size="large"
+      v-show="spinning"
+    />
     <header class="header">
       <span class="title">生成试卷</span>
     </header>
@@ -74,6 +82,7 @@ export default {
   layout: 'index',
   data () {
     return {
+      spinning: false,
       courseId: 1,
       courseArr: [],
       range: 1,
@@ -95,8 +104,10 @@ export default {
       this.getCourseArr()
     },
     getCourseArr () {
+      this.spinning = true
       this.$API.POST('/course/getServerMyCourse', {})
         .then((res) => {
+          this.spinning = false
           if (res && res.data && res.data&& res.data.length > 0) {
             this.courseArr = res.data
             this.getRadioArr()
@@ -106,6 +117,7 @@ export default {
           }
         })
         .catch((err) => {
+          this.spinning = false
           this.courseArr = []
           console.log(err, 'err 查询学习课程下拉框 接口调用失败')
           this.$message.error('查询学习课程下拉框 接口调用失败, 联系管理员')
@@ -113,10 +125,12 @@ export default {
     },
     getRadioArr () {
       if (this.courseArr.length < 1) { return }
+      this.spinning = true
       this.$API.POST('/course/getUnitLiBycourse', {
         courseId: this.courseId
       })
         .then((res) => {
+          this.spinning = false
           // console.log(res, 'res')
           if (res && res.data && res.data.data && res.data.data.length > 0) {
             this.radioArr = res.data.data
@@ -126,6 +140,7 @@ export default {
           }
         })
         .catch((err) => {
+          this.spinning = false
           this.radioArr = []
           console.log(err, 'err 查询课程列表接口调用失败')
           this.$message.error('查询课程列表接口调用失败, 联系管理员')

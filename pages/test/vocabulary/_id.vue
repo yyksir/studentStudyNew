@@ -1,5 +1,13 @@
 <template>
   <div class="container">
+    <a-spin style="
+      width: 100%;height: 100%;position: fixed;left: 0;top: 0;z-index: 999;
+      display: flex;flex-direction: column;;justify-content: center;align-items: center;
+      background-color: rgba(0, 0, 0, .5)
+      "
+      size="large"
+      v-show="spinning"
+    />
     <header class="header">
       <span class="title">词汇量测试</span>
       <span class="courseCategory">英语词汇量测试 - {{testTitleObj[routeParamsObj.id || 0]}}</span>
@@ -111,6 +119,7 @@ export default {
 	name: 'testVocabulary',
 	data () {
 		return {
+      spinning: false,
       testTitleObj: {
         1: '通用', 2: '幼儿', 3: '小学', 4: '初中', 5: '高中', 6: '大学', 7: '出国'
       },
@@ -143,6 +152,7 @@ export default {
   },
   // created () {
   mounted () {
+    this.spinning = true
     this.init()
   },
   methods: {
@@ -209,8 +219,10 @@ export default {
       }, 500)
     },
     getTestPaper () {
+      this.spinning = true
       this.$API.POST('/course/getWordNumTestpaper', {type: this.routeParamsObj.id})
         .then((res) => {
+          this.spinning = false
           // console.log(_.cloneDeep(res), 'res 词汇量测试试题')
           // 删除课程测试 页面 的 数据
           sessionStorage.removeItem('start')
@@ -258,6 +270,7 @@ export default {
           this.testPaperVocabularyArr = []
         })
         .catch((err) => {
+          this.spinning = false
           this.clearIntervalFn()
           window.removeEventListener('popstate', function () {})
           this.chooseElemObj = {}
@@ -320,8 +333,10 @@ export default {
       // console.log(testContent, 'testContent')
       // return
       // console.log(_.cloneDeep(params), 'params')
+      this.spinning = true
       this.$API.POST('/course/commitTestPaper', params)
         .then((res) => {
+          this.spinning = false
           // console.log(res, 'res 提交成功')
           if (res && res.hasOwnProperty('code') && res.code === 0) {
             sessionStorage.removeItem('start')
@@ -334,6 +349,7 @@ export default {
           this.$message.error('提交试卷失败')
         })
         .catch((err) => {
+          this.spinning = false
           console.log(err, 'err 提交失败')
           this.$message.error('提交试卷失败: ' + err.msg)
         })

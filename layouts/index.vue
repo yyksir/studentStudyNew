@@ -1,5 +1,13 @@
 <template>
   <div class="app clearfix">
+      <a-spin style="
+        width: 100%;height: 100%;position: fixed;left: 0;top: 0;z-index: 999;
+        display: flex;flex-direction: column;;justify-content: center;align-items: center;
+        background-color: rgba(0, 0, 0, .5)
+        "
+        size="large"
+        v-show="spinning"
+      />
     <div class="left-menu"
       :class="{
         'maxWidth': !collapsed,
@@ -96,6 +104,7 @@ export default {
   // middleware: 'userAuth', // 是否登录 改为不需要 前端判断， 故 注释掉 middleware
   data () {
     return {
+      spinning: false,
       collapsed: false,
       rootSubmenuKeys: ['sub6', 'sub5', 'sub2', 'sub3', 'sub4'],
       openKeys: [''],
@@ -104,9 +113,11 @@ export default {
     }
   },
   mounted () {
+    this.spinning = true
     setTimeout(() => {
       let userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
       if (!userInfo) {
+        this.spinning = false
         this.$router.push({
           path: '/engStudy/sign/',
           redirect: true
@@ -114,6 +125,7 @@ export default {
         return false
       }
       this.userName = userInfo && userInfo.trueName
+      this.spinning = false
     }, 3000)
   },
   methods: {
@@ -136,21 +148,26 @@ export default {
         this.$message.error('退出失败， 联系管理员')
         return
       }
+      this.spinning = true
       // this.$API.POST('/system/loginOut', { id: this.$Cookies.get('session') })
       this.$API.POST('/system/loginOut', {})
         .then((res) => {
-          console.log(res, 'res 退出 成功')
-          sessionStorage.removeItem('start') // 计时器
-          sessionStorage.removeItem('storageTestPaperArr') // 试题
-          sessionStorage.removeItem('userInfo')
-          sessionStorage.removeItem('resDataCopy')
-          this.$Cookies.remove('session') // token
-          this.$router.push({
-            path: '/sign',
-            redirect: true
-          })
+          setTimeout(() => {
+            console.log(res, 'res 退出 成功')
+            sessionStorage.removeItem('start') // 计时器
+            sessionStorage.removeItem('storageTestPaperArr') // 试题
+            sessionStorage.removeItem('userInfo')
+            sessionStorage.removeItem('resDataCopy')
+            this.$Cookies.remove('session') // token
+            this.spinning = false
+            this.$router.push({
+              path: '/sign',
+              redirect: true
+            })
+          }, 1500)
         })
         .catch((err) => {
+          this.spinning = false
           console.log(err, 'err 退出失败 联系管理员')
           this.$message.error('退出失败， 联系管理员: ' + (err.msg || err.message))
         })

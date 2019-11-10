@@ -1,5 +1,13 @@
 <template>
   <div class="body">
+      <a-spin style="
+        width: 100%;height: 100%;position: fixed;left: 0;top: 0;z-index: 999;
+        display: flex;flex-direction: column;;justify-content: center;align-items: center;
+        background-color: rgba(0, 0, 0, .5)
+        "
+        size="large"
+        v-show="spinning"
+      />
     <header>
       <div class="name">欢迎您！{{userName}}</div>
       <div class="endtime">账号截止日期 {{endTime}}</div>
@@ -120,6 +128,7 @@ export default {
   layout: 'index',
   data() {
     return {
+      spinning: false,
       userName: '',
       lastLoginTime: '',
       endTime: '',
@@ -153,6 +162,7 @@ export default {
     };
   },
   mounted() {
+    this.spinning = true
     setTimeout(() => {
       let userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
       this.userName = userInfo.trueName
@@ -166,11 +176,13 @@ export default {
   },
   methods:{
     getHasStudyCourse() {
+       this.spinning = true
        this.$API.POST('/course/getMyCourse',{
           courseName: '小学',
           curPagerNo: 1,
           pageSize: 10,
         }).then((res) => {
+          this.spinning = false
           if (res && res.data ) {
             this.haveStudied = res.data.list;
           }else{
@@ -178,6 +190,7 @@ export default {
           }
         })
         .catch((err) => {
+          this.spinning = false
           this.$message.warning('获取数据失败');
           console.log(err, 'err')
         })
@@ -187,7 +200,9 @@ export default {
       this.getLearningTime();
     },
     getLearningLocabulary() {
+       this.spinning = true
        this.$API.POST('/census/censusWord',this.parames).then((res) => {
+          this.spinning = false
           if (res && res.data ) {
             this.locabulary ={
                 data : res.data.data,
@@ -202,6 +217,7 @@ export default {
           this.echartsInit1(this.locabulary.legend,this.locabulary.data,this.locabulary.series)
         })
         .catch((err) => {
+          this.spinning = false
           this.locabulary.data = [];
           this.locabulary.legend = [];
           this.locabulary.series = [];
@@ -211,7 +227,9 @@ export default {
         })
     },
     getLearningTime() {
+       this.spinning = true
        this.$API.POST('/census/censusTime',this.parames).then((res) => {
+          this.spinning = false
           //date 是时间 data是值
           if (res && res.data ) {
             this.learningTime.data = res.data.data;
@@ -224,6 +242,7 @@ export default {
           this.echartsInit(this.learningTime.date,this.learningTime.data )
         })
         .catch((err) => {
+          this.spinning = false
           this.learningTime.data = [];
           this.learningTime.date = [];
           console.log(this.learningTime)
@@ -336,10 +355,12 @@ export default {
       })
     },
     handleActionStusy() {//开始学习
+      this.spinning = true
     //item.type=='1'?"认读":item.type=='2'?"拼写":"辨音"
       this.$API.POST('/course/uptCourseIsStarted',{
         id:this.selectItem.id,
       }).then((res) => {
+        this.spinning = false
         if(this.selectItem.type=='1') {
           this.$router.push({path: '/study/recognize/',
           query: {
@@ -360,6 +381,7 @@ export default {
           })
         }
       }).catch((err) => {
+        this.spinning = false
         this.$message.warning('进入课程失败');
         console.log(err, 'err')
       })
@@ -383,14 +405,17 @@ export default {
         okText: '确认',
         cancelText: '取消',
         onOk() {
+          this.spinning = true
           this.$API.POST('/course/delMyCourse',{
             id:item.id
           }).then((res) => {
-          console.log((res))
+            this.spinning = false
+            console.log((res))
             this.$message.success(res.data);
             this.getMyCourseData()
           })
           .catch((err) => {
+            this.spinning = false
             this.$message.warning('获取数据失败');
             console.log(err, 'err')
           })
@@ -398,11 +423,13 @@ export default {
       });
     },
     handleDeleteStudyRecord() {
+      this.spinning = true
       const item =  this.selectItem;
       this.$API.POST('/learn/clearLearnRecord',{
         id:item.id
         }).then((res) => {
-        console.log((res))
+          this.spinning = false
+          console.log((res))
           if (res && res.code=='0' ) {
             this.$message.success(res.data);
           }else{
@@ -411,6 +438,7 @@ export default {
            this.visible = false;
         })
         .catch((err) => {
+          this.spinning = false
           this.$message.warning('清除失败');
           console.log(err, 'err')
         })

@@ -1,6 +1,14 @@
 <!-- 备忘录 -->
 <template>
   <div class="remarkContainer">
+    <a-spin style="
+      width: 100%;height: 100%;position: fixed;left: 0;top: 0;z-index: 999;
+      display: flex;flex-direction: column;;justify-content: center;align-items: center;
+      background-color: rgba(0, 0, 0, .5)
+      "
+      size="large"
+      v-show="spinning"
+    />
     <header class="headerContainer">
       <span class="remarkText">备忘录</span>
       <!-- <div class="btnContainer">
@@ -134,6 +142,7 @@ export default {
   layout: 'index',
   data () {
     return {
+      spinning: false,
       // 学习类型 下拉框
       studyTypeArr: [
         { id: 0, name: '全部'},
@@ -169,8 +178,10 @@ export default {
       this.getCourseArr()
     },
     getCourseArr () {
+      this.spinning = true
       this.$API.POST('/course/getServerMyCourse', {})
         .then((res) => {
+          this.spinning = false
           if (res && res.data && res.data&& res.data.length > 0) {
             this.courseArr = res.data
           } else {
@@ -179,6 +190,7 @@ export default {
           }
         })
         .catch((err) => {
+          this.spinning = false
           this.courseArr = []
           console.log(err, 'err 查询学习课程下拉框 接口调用失败')
           this.$message.error('查询学习课程下拉框 接口调用失败, 联系管理员')
@@ -278,9 +290,11 @@ export default {
         curPagerNo: this.curPagerNo,
         pageSize: this.pageSize
       }
+      this.spinning = true
 
       this.$API.POST('/census/getMyUnknow', params)
         .then((res) => {
+          this.spinning = false
           if (res && res.data && res.data.list && res.data.list.length > 0) {
             const list = res.data.list
             list.forEach((ele) => {
@@ -302,6 +316,7 @@ export default {
           }
         })
         .catch((err) => {
+          this.spinning = false
           console.log(err, 'err 查询备忘录接口调用失败')
           this.setEmptyData()
           this.$message.error('查询备忘录接口调用失败, 联系管理员')

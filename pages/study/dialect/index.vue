@@ -1,5 +1,13 @@
 <template>
 <div class="boxContent" >
+      <a-spin style="
+        width: 100%;height: 100%;position: fixed;left: 0;top: 0;z-index: 999;
+        display: flex;flex-direction: column;;justify-content: center;align-items: center;
+        background-color: rgba(0, 0, 0, .5)
+        "
+        size="large"
+        v-show="spinning"
+      />
     <div class="toptitle clearfix">
         <span class="titleName" style="margin-right: 32px;">{{courseNameStr}}</span>
         <span style="margin-right: 32px;">本次学习时长: {{hours}}小时{{minitus}}分钟{{seconds}}秒</span>
@@ -85,6 +93,7 @@ export default {
     layout: 'index',
     data() {
         return {
+            spinning: true,
             query:this.$route.query,
         //  {
         //     courseId: 1,
@@ -130,9 +139,11 @@ export default {
     },
     methods:{
         initData(flag) {
+            this.spinning = true
             this.$API.POST('/course/getMyUnit',{
                 id:this.query.id,
             }).then((res) => {
+                this.spinning = false
                 if(res&&res.data) {
                     this.leftgetMyUnit =  res.data;
                     if(flag==='1') {
@@ -141,14 +152,18 @@ export default {
                 }
                 console.log(res.data)
             }).catch((err) => {
+                this.spinning = false
                 console.log(err, 'err')
             })
+            this.spinning = true
             this.$API.POST('/learn/getLearningTime',{
                 id:this.query.id,
             }).then((res) => {
+                this.spinning = false
                 this.studyTime = res.data;
                 this.getDifferenceTime()
             }).catch((err) => {
+                this.spinning = false
                 console.log(err, 'err')
             })
             this.timeFormat();
@@ -189,12 +204,15 @@ export default {
 
         },
         beforeunloadFn(e) {
+            this.spinning = true
             this.$API.POST('/learn/uptLearningTime',{
                 id:this.query.id,
                 learnTime:this.studyTime
             }).then((res) => {
+                this.spinning = false
                 console.log(res.data)
             }).catch((err) => {
+                this.spinning = false
                 console.log(err, 'err')
             })
         },
@@ -229,38 +247,46 @@ export default {
             console.log(unit)
         },
         uptCourseUnitIsStarted(localUnit) {
+            this.spinning = true
             this.$API.POST('/course/uptCourseUnitIsStarted',{
                 id:localUnit.id,
                 isStart:1
             }).then((res) => {
+                this.spinning = false
                 console.log(res)
                 this.resetWordCache(localUnit)
                 this.initData('2')
             })
             .catch((err) => {
+                this.spinning = false
                 this.$message.warning('获取数据失败');
                 console.log(err, 'err')
             })
         },
         resetWordCache(localUnit) {
+            this.spinning = true
             let _localUnit = localUnit;
             this.$API.POST('/learn/resetWordCache',{
                 id:_localUnit.id,
             }).then((res) => {
+                this.spinning = false
                 console.log(res)
                 this.getLearningWord(_localUnit)
             })
             .catch((err) => {
+                this.spinning = false
                 this.$message.warning('获取数据失败');
                 console.log(err, 'err')
             })
         },
         getLearningWord(localUnit) {
             
+            this.spinning = true
             let _that  = this;
             _that.$API.POST('/learn/getLearningWord',{
                 id:localUnit.id,
             }).then((res) => {
+                this.spinning = false
                 if(res.code=='0'){
                     _that.handleChangeBackName(res.data)
 
@@ -297,6 +323,7 @@ export default {
               
             })
             .catch((err) => {
+                this.spinning = false
                 // _that.$message.warning('获取数据失败');
                 console.log(err, 'err')
             })
@@ -309,6 +336,7 @@ export default {
             this.step  ='2'
         },
         handleKnow(isKnow) {
+            this.spinning = true
             this.step = '1'
             this.$API.POST('/learn/doLearn',{
                 courseId:this.enVoiceSrc.courseId,
@@ -317,6 +345,7 @@ export default {
                 isKnow:isKnow,
                 type:this.query.type,
             }).then((res) => {
+                this.spinning = false
                 let  backFlag = _.find(this.wordNameArr, (word)=>{
                     return word.wordName==this.enVoiceSrc.wordName;
                 });
@@ -329,6 +358,7 @@ export default {
                 console.log(res)
             })
             .catch((err) => {
+                this.spinning = false
                 this.$message.warning('获取数据失败');
                 console.log(err, 'err')
             })
@@ -497,12 +527,15 @@ export default {
         // }
     },
     destroyed() {
+        this.spinning = true
         this.interval = null;
         this.$API.POST('/learn/uptLearningTime',{
             id:this.query.id,
             learnTime:this.studyTime
         }).then((res) => {
+            this.spinning = false
         }).catch((err) => {
+            this.spinning = false
             console.log(err, 'err')
         })
         window.removeEventListener('beforeunload', e => this.beforeunloadFn(e))

@@ -1,6 +1,14 @@
 <!-- 测试成绩详情 -->
 <template>
   <div class="container">
+    <a-spin style="
+      width: 100%;height: 100%;position: fixed;left: 0;top: 0;z-index: 999;
+      display: flex;flex-direction: column;;justify-content: center;align-items: center;
+      background-color: rgba(0, 0, 0, .5)
+      "
+      size="large"
+      v-show="spinning"
+    />
     <header class="header">
       <span class="title">测试成绩</span>
       <a href="javascript:;" class="btnExport" @click="handleBtnExportClick">导出</a>
@@ -81,6 +89,7 @@ export default {
   layout: 'index',
   data () {
     return {
+      spinning: false,
       detailObj: {},
       detailArr: [],
       categoryObj: { 1: '认读', 2: '拼写', 3: '辨音' },
@@ -94,13 +103,16 @@ export default {
       this.getDetail()
     },
     getDetail () {
+      this.spinning = true
       if (!this.$route.params.hasOwnProperty('id')) {
+        this.spinning = false
         this.$message.warning('地址非法')
         this.$router.go(-1)
         return
       }
       this.$API.POST('/census/getOneTestRrecord', { id: this.$route.params.id })
         .then((res) => {
+          this.spinning = false
           if (res && res.hasOwnProperty('code') && res.code === 0) {
             this.detailObj = res.data
             this.detailArr = res.data.testContent
@@ -109,6 +121,7 @@ export default {
           this.detailArr = []
         })
         .catch((err) => {
+          this.spinning = false
           this.detailObj = {}
           this.detailArr = []
           this.$message.error('获取试卷详情失败， 联系管理员: ' + err.msg)
@@ -116,19 +129,23 @@ export default {
         })
     },
     handleBtnExportClick () {
+      this.spinning = true
       let userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
-      this.$API.GET('/down/downloadTestRecord', { id: 28 })
+      this.$API.GET('/down/downloadTestRecord', {
+        // id: 28,
+        id: this.$route.params.id
+      })
         .then((res) => {
-          console.log(res, 'res 导出试卷 成功')
-          // if (res && res.hasOwnProperty('code') && res.code === 0) {
-          //   this.detailObj = res.data
-          //   this.detailArr = res.data.testContent
-          //   return false
-          // }
+          setTimeout(() => {
+            this.spinning = false
+            res === undefined && this.$message.error('导出试卷失败，请联系管理员')
+            console.log(res, 'res 导出试卷 成功')
+          }, 2000)
         })
         .catch((err) => {
+          this.spinning = false
           console.log(err, 'err 导出试卷失败， 联系管理员')
-          this.$message.error('导出试卷失败，， 联系管理员: ' + err.msg)
+          this.$message.error('导出试卷失败，请联系管理员: ' + err.msg)
         })
     }
     //

@@ -1,6 +1,6 @@
 <template>
   <div class="loginContainer">
-    <a-spin class="mask" tip="加载中......" v-if="isLoading" />
+    <a-spin class="mask" size="large" v-if="isLoading" />
     <a-form
       id="components-form-demo-normal-login"
       :form="form"

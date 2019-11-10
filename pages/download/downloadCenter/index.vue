@@ -1,5 +1,13 @@
 <template>
   <div class="body">
+    <a-spin style="
+      width: 100%;height: 100%;position: fixed;left: 0;top: 0;z-index: 999;
+      display: flex;flex-direction: column;;justify-content: center;align-items: center;
+      background-color: rgba(0, 0, 0, .5)
+      "
+      size="large"
+      v-show="spinning"
+    />
     <header>
       <div class="title">
         下载中心
@@ -60,6 +68,7 @@ export default {
   layout: 'index',
   data () {
     return {
+      spinning: true,
       visible:false,
       currentIndex:0,
       course:[
@@ -115,7 +124,9 @@ export default {
   },
   methods:{
     getCourseList() {
+      this.spinning = true
       this.$API.POST('/course/getCourseLis',this.parames).then((res) => {
+          this.spinning = false
           if (res && res.data ) {
             this.getDownloadCenterList = res.data.list; 
             console.log(res.data)
@@ -123,6 +134,7 @@ export default {
           this.totalPageNumber = res.data.totalPageNumber;
         })
         .catch((err) => {
+          this.spinning = false
           this.$message.warning('获取数据失败');
           console.log(err, 'err')
         })
@@ -132,16 +144,18 @@ export default {
         this.$message.warning('该课程已经下载,请到我的课程查看');
         return;
       }
-       this.$API.POST('/course/downCourse',{
-         courseId:item.id,
-       }).then((res) => {
-         this.$message.warning(res.showMsg);
-         this.getCourseList();
-        })
-        .catch((err) => {
-          this.$message.warning('获取数据失败');
-          console.log(err, 'err')
-        })
+      this.spinning = true
+      this.$API.POST('/course/downCourse',{
+        courseId:item.id,
+      }).then((res) => {
+        this.spinning = false
+        this.$message.warning(res.showMsg);
+        this.getCourseList();
+      }).catch((err) => {
+        this.spinning = false
+        this.$message.warning('获取数据失败');
+        console.log(err, 'err')
+      })
     },
     onSearch (value) {
       this.parames.courseName = value;

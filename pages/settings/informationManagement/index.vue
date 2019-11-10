@@ -1,6 +1,14 @@
 <!-- 信息管理 -->
 <template>
   <div class="containerSetting">
+    <a-spin style="
+      width: 100%;height: 100%;position: fixed;left: 0;top: 0;z-index: 999;
+      display: flex;flex-direction: column;;justify-content: center;align-items: center;
+      background-color: rgba(0, 0, 0, .5)
+      "
+      size="large"
+      v-show="spinning"
+    />
     <a-form-item class="formItem"
       label="账号"
       :label-col="{ span: 5 }"
@@ -103,6 +111,7 @@ export default {
   layout: 'index',
   data () {
     return {
+      spinning: false,
       isEdit: false,
       // isEdit: true,
       // form: {},
@@ -122,19 +131,22 @@ export default {
   },
   methods: {
     getUserInfo () {
-      this.$API.POST('/course/getMyInfo', {
-      }).then((res) => {
-        if (res && res.data && res.data.data) {
-          this.setData(res.data.data)
-        } else {
+      this.spinning = true
+      this.$API.POST('/course/getMyInfo', {})
+        .then((res) => {
+          if (res && res.data && res.data.data) {
+            this.setData(res.data.data)
+          } else {
+            this.setData({})
+          }
+          this.spinning = false
+        })
+        .catch((err) => {
+          this.spinning = false
+          console.log(err, 'err')
           this.setData({})
-        }
-      })
-      .catch((err) => {
-        console.log(err, 'err')
-        this.setData({})
-        this.$message.error('获取用户信息接口调用失败, 联系管理员')
-      })
+          this.$message.error('获取用户信息接口调用失败, 联系管理员')
+        })
     },
     moment,
     disabledDate (current) {
@@ -215,16 +227,19 @@ export default {
         }
         params['userPassword'] = this.confirmPwd
       }
+      this.spinning = true
       this.$API.POST('/course/uptMyInfo', params)
-      .then((res) => {
-        this.isEdit = false
-        this.$message.success('信息修改成功')
-        this.getUserInfo()
-      })
-      .catch((err) => {
-        console.log(err, 'err')
-        this.$message.error('修改信息接口调用失败, 联系管理员')
-      })
+        .then((res) => {
+          this.spinning = false
+          this.isEdit = false
+          this.$message.success('信息修改成功')
+          this.getUserInfo()
+        })
+        .catch((err) => {
+          this.spinning = false
+          console.log(err, 'err')
+          this.$message.error('修改信息接口调用失败, 联系管理员')
+        })
     },
   }
 }
