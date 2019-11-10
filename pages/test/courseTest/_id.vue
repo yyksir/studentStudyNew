@@ -10,7 +10,10 @@
     />
     <header class="header">
       <span class="title">测试中心</span>
-      <span class="courseCategory">{{courseName}}<span v-if="courseName"> · </span>{{categoryObj[category]}}</span>
+      <div class="courseCategory">
+        {{courseName}}
+        <span v-if="courseName"> · </span>{{categoryObj[category]}}
+      </div>
     </header>
     <main class="mainContainer">
       <div class="mainHeader">
@@ -40,7 +43,8 @@
       </div> -->
 
       <!-- <div class="mainPagination"> -->
-      <div class="mainPagination" :style="{ 'width': widthPagination }">
+      <!-- <div class="mainPagination" :style="{ 'width': widthPagination }"> -->
+      <div class="mainPagination">
         <a-tooltip placement="left" :title="pagination.isDisabled ? '这题您已经答过了' : ''" :getPopupContainer="(trigger) => { return trigger.parentElement }"
           v-for="(pagination, paginationIndex) of testPaperArr.length > 0 ? testPaperArr : []"
           :key="paginationIndex"
@@ -802,8 +806,9 @@ export default {
         box-sizing border-box
         width 100%
         min-height 80px
-        margin-bottom 4px
-        // padding 0 100px
+        // margin-bottom 4px
+        margin: 20px 0
+        padding 0 150px
         display flex
         // justify-content flex-start
         justify-content center
