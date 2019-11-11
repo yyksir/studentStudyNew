@@ -36,8 +36,8 @@
        <div class="list" v-if="getDownloadCenterList.length>0">
         <div class="item" v-for="item in getDownloadCenterList" :key="item.id">
           <div class="head">
-              <div class="little-title">认读课程</div>
-              <div class="title">新概念英语一</div>
+              <div class="little-title">{{course[currentIndex].name}}</div>
+              <div class="title">{{item.courseName}}</div>
           </div>
           <div class="foot">
             <div class="txt">
