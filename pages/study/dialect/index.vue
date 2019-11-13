@@ -27,7 +27,7 @@
                         {{item.unitName}}
                     </h3>
                     <div class="itemConte">
-                        词条{{item.learnCount}}--已学{{item.learnCount}}|错误{{item.learnCount}}
+                        词条{{item.wordCount||item.learnCount}}--已学{{item.learnCount}}|错误{{item.learnCount}}
                     </div>
                 </div>
             </div>
@@ -354,7 +354,7 @@ export default {
                 }
                 this.currentTitleIndex = 0;
                 this.getLearningWord(this.leftgetMyUnit[this.currentIndex])
-
+                this.upMyUnit(this.leftgetMyUnit[this.currentIndex]);
                 console.log(res)
             })
             .catch((err) => {
@@ -363,6 +363,21 @@ export default {
                 console.log(err, 'err')
             })
 
+        },
+        upMyUnit(leftgetMyUnit){
+            console.log(leftgetMyUnit)
+            this.spinning = true
+             this.$API.POST('/course/uptMyUnit',{
+                id:leftgetMyUnit.id,
+            }).then((res) => {
+                this.spinning = false;
+                this.leftgetMyUnit[this.currentIndex].learnCount = res.data.learnCount;
+                this.leftgetMyUnit[this.currentIndex].unknowCount = res.data.unknowCount;
+                console.log(res.data)
+            }).catch((err) => {
+                this.spinning = false
+                console.log(err, 'err')
+            })
         },
         handleVoiceCategoryChange(check) {
             console.log(check)
