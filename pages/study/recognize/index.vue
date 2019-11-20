@@ -234,10 +234,35 @@ export default {
             let localUnit = unit;
             if(localUnit.isStart=='1') {
                 this.getLearningWord(localUnit)
+            }else if(localUnit.isStart=='2') {
+                _that.$confirm({
+                    title: '提示',
+                    content: '是否要进行章节学后测试',
+                    okText: '是',
+                    cancelText: '否',
+                    onOk() {
+                        _that.$router.push({
+                            path:'/test/courseTest/' + localUnit.type,
+                            query:{
+                                courseId:localUnit.courseId,
+                                unitId:localUnit.unitId,
+                                testType:1,
+                            }
+                        })
+                        console.log('章节测试');
+                    },
+                    onCancel() {
+                        _that.currentIndex ++;
+                        if(_that.currentIndex == _that.leftgetMyUnit.length) {
+                            _that.currentIndex  = 0;
+                        }
+                        _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],0)
+                    }
+                });
             }else{
                 _that.$confirm({
                     title: '提示',
-                    content: '是否要进行章节测试',
+                    content: '是否要进行章节学前测试',
                     okText: '是',
                     cancelText: '否',
                     onOk() {
@@ -245,7 +270,7 @@ export default {
                                 path:'/test/courseTest/' + localUnit.type,
                                 query:{
                                     courseId:localUnit.courseId,
-                                    unitId:localUnit.unitedId,
+                                    unitId:localUnit.unitId,
                                     testType:0,
                                 }
                             })
@@ -315,7 +340,7 @@ export default {
                                 path:'/test/courseTest/' + localUnit.type,
                                 query:{
                                     courseId:localUnit.courseId,
-                                    unitId:localUnit.unitedId,
+                                    unitId:localUnit.unitId,
                                     testType:1,
                                 }
                             })
