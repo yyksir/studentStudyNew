@@ -1,51 +1,66 @@
 <template>
   <div class="loginContainer">
     <a-spin class="mask" size="large" v-if="isLoading" />
-    <a-form
-      id="components-form-demo-normal-login"
-      :form="form"
-      class="login-form"
-      @submit="handleSubmit"
-    >
-      <a-form-item>
-        <a-input placeholder="用户名"
-          v-decorator="[
-            'userName',
-            { rules: [{ required: true, message: '请输入用户名!' }] }
-          ]"
+    <div  class="headerTop">
+      <div class="headerLeft">
+        专注于打造智能教育平台
+      </div>
+      <div class="headerRight">
+        服务热线:400-921-3577
+      </div>
+    </div>
+    <div class="content">
+      <div class="contenLeft">
+        <img src="../../assets/img/png_ct2.png" alt />
+      </div>
+      <div class="contentRight">
+        <a-form
+          id="components-form-demo-normal-login"
+          :form="form"
+          class="login-form"
+          @submit="handleSubmit"
         >
-          <a-icon slot="prefix" type="user" style="color: rgba(0,0,0,.25)" />
-        </a-input>
-      </a-form-item>
-      <a-form-item>
-        <a-input placeholder="密码" type="password"
-          v-decorator="[
-            'password',
-            { rules: [{ required: true, message: '请输入密码!' }] }
-          ]"
-        >
-          <a-icon slot="prefix" type="lock" style="color: rgba(0,0,0,.25)" />
-        </a-input>
-      </a-form-item>
-      <a-form-item>
-        <!-- <a-checkbox
-          v-decorator="[
-            'remember',
-            {
-              valuePropName: 'checked',
-              initialValue: true,
-            }
-          ]"
-        >
-          Remember me
-        </a-checkbox> -->
-        <!-- <a class="login-form-forgot" href="javascript:;">Forgot password</a> -->
-        <a-button class="login-form-button" type="primary" html-type="submit">
-          登录
-        </a-button>
-        <!-- 或者 <a href="javascript:;">现在去注册!</a> -->
-      </a-form-item>
-    </a-form>
+          <a-form-item>
+            <a-input placeholder="用户名"
+              v-decorator="[
+                'userName',
+                { rules: [{ required: true, message: '请输入用户名!' }] }
+              ]"
+            >
+              <a-icon slot="prefix" type="user" style="color: rgba(0,0,0,.25)" />
+            </a-input>
+          </a-form-item>
+          <a-form-item>
+            <a-input placeholder="密码" type="password"
+              v-decorator="[
+                'password',
+                { rules: [{ required: true, message: '请输入密码!' }] }
+              ]"
+            >
+              <a-icon slot="prefix" type="lock" style="color: rgba(0,0,0,.25)" />
+            </a-input>
+          </a-form-item>
+          <a-form-item>
+            <!-- <a-checkbox
+              v-decorator="[
+                'remember',
+                {
+                  valuePropName: 'checked',
+                  initialValue: true,
+                }
+              ]"
+            >
+              Remember me
+            </a-checkbox> -->
+            <!-- <a class="login-form-forgot" href="javascript:;">Forgot password</a> -->
+            <a-button class="login-form-button" type="primary" html-type="submit">
+              登录
+            </a-button>
+            <!-- 或者 <a href="javascript:;">现在去注册!</a> -->
+          </a-form-item>
+        </a-form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -108,38 +123,68 @@ export default {
     //
   }
   //
+    // .loginContainer
+    // width 100%
+    // height 100%
+    // display flex
+    // justify-content center
+    // align-items center
+    // .mask
+    //   box-sizing border-box
+    //   width 100%
+    //   height 100%
+    //   padding-bottom 100px
+    //   display flex
+    //   justify-content center
+    //   align-items center
+    //   position fixed
+    //   left 0
+    //   top 0
+    //   z-index 9999
+    //   background-color rgba(0, 0, 0, .5)
+    //   & >>> .ant-spin-text
+    //     color #000
+    // #components-form-demo-normal-login
+    //   width 30%
+    //   height 300px
+    //   .login-form
+    //     max-width: 300px
+    //   .login-form-forgot
+    //     float: right
+    //   .login-form-button
+    //     width: 100%
 }
 </script>
 
 <style scoped lang="stylus">
-  .loginContainer
+.loginContainer
+  width 100%
+  height 100%
+  .headerTop
     width 100%
-    height 100%
-    display flex
-    justify-content center
-    align-items center
-    .mask
-      box-sizing border-box
-      width 100%
-      height 100%
-      padding-bottom 100px
-      display flex
-      justify-content center
-      align-items center
-      position fixed
-      left 0
-      top 0
-      z-index 9999
-      background-color rgba(0, 0, 0, .5)
-      & >>> .ant-spin-text
-        color #000
-    #components-form-demo-normal-login
-      width 30%
-      height 300px
-      .login-form
-        max-width: 300px
-      .login-form-forgot
-        float: right
-      .login-form-button
-        width: 100%
+    height 70px
+    padding 0 20px
+    line-height 70px
+    font-size 18px
+    font-weight 700 
+    box-sizing  border-box
+    .headerLeft{
+      float left
+    }
+    .headerRight{
+      float right
+    }
+  .content
+    height calc(100% - 70px)
+    box-sizing  border-box
+    padding 30px 40px 0 40px
+    overflow hidden
+    background-image url(../../assets/img/login_bj.png)
+    .contenLeft
+      float left
+    .contentRight{
+      float left
+    }
+  
+
 </style>

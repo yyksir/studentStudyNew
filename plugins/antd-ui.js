@@ -22,7 +22,7 @@ import {
 	Modal,
 	Radio,
 	// radioGroup,
-	Switch
+	Switch,
 } from 'ant-design-vue'
 
 Vue.prototype.$message = message
