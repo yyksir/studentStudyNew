@@ -182,8 +182,13 @@ export default {
     background-image url(../../assets/img/login_bj.png)
     .contenLeft
       float left
+      
     .contentRight{
       float left
+      height: 300px;
+      width: 300px;
+      margin-left: 30px;
+      text-align: center;
     }
   
 
