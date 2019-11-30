@@ -403,7 +403,7 @@ export default {
         unitId: this.$route.query.unitId * 1, // 0：全部；其他数：对应选择的unitId
         testType: this.$route.query.testType, // 0：学前测；1：学后测；2：学前总测试；3：课程测试  （比如：3）
       }
-      if (this.$route.params.hasOwnProperty('testType')) {
+      if (this.$route.query.hasOwnProperty('testType')) {
         params.testType = this.$route.query.testType * 1
       }
       this.spinning = true
@@ -693,7 +693,7 @@ export default {
         testType: 3, // 0：学前测；1：学后测；2：学前总测试；3：课程测试
         continueTime: this.min + '分' + this.seconds + '秒'
       }
-      if (this.$route.params.hasOwnProperty('testType')) {
+      if (this.$route.query.hasOwnProperty('testType')) {
         params.testType = this.$route.query.testType * 1
       }
       this.spinning = true
