@@ -14,6 +14,9 @@
         <img src="../../assets/img/png_ct2.png" alt />
       </div>
       <div class="contentRight">
+        <div class='contentTitle'>
+          我是学生
+        </div>
         <a-form
           id="components-form-demo-normal-login"
           :form="form"
@@ -182,13 +185,20 @@ export default {
     background-image url(../../assets/img/login_bj.png)
     .contenLeft
       float left
-      
+
     .contentRight{
-      float left
+      float: left;
       height: 300px;
       width: 300px;
-      margin-left: 30px;
+      margin-left: 115px;
       text-align: center;
+      margin-top: 37px;
+      .contentTitle{
+        text-align: left;
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
     }
   
 

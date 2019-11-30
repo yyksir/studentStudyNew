@@ -134,7 +134,18 @@ export default {
       let resArr = data.list
       resArr.forEach((ele, index) => {
         resArr[index].createTime = moment(resArr[index].createTime).format('YYYY-MM-DD')
-        resArr[index].testType = resArr[index].testType === 0 ? '学前测' : (resArr[index].testType === 1 ? '学后测' : '学前总测试')
+        if(ele.testType===1){
+          ele.testType = '学后测'
+        }else if(ele.testType===2){
+          ele.testType = '学前总测试'
+        }else if(ele.testType===3){
+          ele.testType = '课程测试'
+        }else if(ele.testType===4){
+          ele.testType = '词汇量测试'
+        }else{
+          ele.testType = '学前测'
+        }
+       // resArr[index].testType = resArr[index].testType === 0 ? '学前测' : (resArr[index].testType === 1 ? '学后测' : '学前总测试')
         resArr[index]['key'] = resArr[index].id
         resArr[index].score = resArr[index].score + '分'
         resArr[index]['overview'] = {
