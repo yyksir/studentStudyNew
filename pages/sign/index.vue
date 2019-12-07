@@ -11,7 +11,9 @@
     </div>
     <div class="content">
       <div class="contenLeft">
-        <img src="../../assets/img/png_ct2.png" alt />
+        <div>
+          <img src="../../assets/img/png_ct2.png" alt />
+        </div>
       </div>
       <div class="contentRight">
         <div class='contentTitle'>

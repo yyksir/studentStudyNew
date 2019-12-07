@@ -53,7 +53,7 @@
 
 <script>
 const columns = [
-  { title: '测试内容', width: 160, dataIndex: 'courseName', key: 'courseName', fixed: 'left', align: 'center' },
+  { title: '测试内容', width: 200, dataIndex: 'courseName', key: 'courseName', fixed: 'left', align: 'center' },
   { title: '测试时间', width: 160, dataIndex: 'createTime', key: 'createTime', align: 'center' },
   { title: '测试词汇', dataIndex: 'testType', key: 'testType', width: 150, align: 'center' },
   {
