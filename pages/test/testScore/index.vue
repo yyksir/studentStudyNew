@@ -13,10 +13,10 @@
       <span class="title">测试成绩</span>
     </header>
     <main class="mainContainer">
-      <a-table class="tableElem" style="width: 100%;height: 100%;"
+        <!-- :scroll="{ x: 1400, y: 550 }" -->
+      <a-table class="tableElem"
         :dataSource="tableData"
         :columns="tableColumns"
-        :scroll="{ x: 1400, y: 550 }"
         :pagination="false"
       >
         <!-- :loading="loading" -->
@@ -36,16 +36,18 @@
         </div>
       </a-table>
       <div class="paginationContainer">
-        <a-pagination class="pagination"
-          :itemRender="itemRender"
-          :total="rowsCount"
-          v-model="curPagerNo"
-          :defaultPageSize="pageSize"
-          showQuickJumper
-          @change="handlePageSizeChange"
-        >
-        </a-pagination>
-        <a-button @click="handleBtnConfirmClick">确定</a-button>
+        <div class="paginationSl">
+          <a-pagination class="pagination"
+            :itemRender="itemRender"
+            :total="rowsCount"
+            v-model="curPagerNo"
+            :defaultPageSize="pageSize"
+            showQuickJumper
+            @change="handlePageSizeChange"
+          >
+          </a-pagination>
+          <a-button @click="handleBtnConfirmClick">确定</a-button>
+        </div>
       </div>
     </main>
   </div>
@@ -53,23 +55,30 @@
 
 <script>
 const columns = [
-  { title: '测试内容', width: 200, dataIndex: 'courseName', key: 'courseName', fixed: 'left', align: 'center' },
-  { title: '测试时间', width: 160, dataIndex: 'createTime', key: 'createTime', align: 'center' },
-  { title: '测试词汇', dataIndex: 'testType', key: 'testType', width: 150, align: 'center' },
+  // { title: '测试内容', width: 200, dataIndex: 'courseName', key: 'courseName', fixed: 'left', align: 'center' }, // 其他的 width 之前是 150
+  { title: '测试内容', width: 120, dataIndex: 'courseName', key: 'courseName', fixed: 'false', align: 'center' },
+  // { title: '测试时间', width: 160, dataIndex: 'createTime', key: 'createTime', align: 'center' },
+  { title: '测试时间', width: 80, dataIndex: 'createTime', key: 'createTime', align: 'center' },
+  // { title: '测试词汇', dataIndex: 'testType', key: 'testType', width: 150, align: 'center' },
+  { title: '测试词汇', dataIndex: 'testType', key: 'testType', width: 80, align: 'center' },
   {
     title: '测试总览',
-    width: 150,
+    // width: 150,
+    width: 80,
     dataIndex: 'overview',
     align: 'center',
     key: 'overview',
     scopedSlots: { customRender: 'overview' },
   },
-  { title: '测试时长', dataIndex: 'continueTime', key: 'continueTime', width: 150, align: 'center' },
-  { title: '测试成绩', dataIndex: 'score', key: 'score', width: 150, align: 'center' },
+  // { title: '测试时长', dataIndex: 'continueTime', key: 'continueTime', width: 150, align: 'center' },
+  { title: '测试时长', dataIndex: 'continueTime', key: 'continueTime', width: 80, align: 'center' },
+  // { title: '测试成绩', dataIndex: 'score', key: 'score', width: 150, align: 'center' },
+  { title: '测试成绩', dataIndex: 'score', key: 'score', width: 80, align: 'center' },
   {
     title: '操作',
     key: 'operation',
-    fixed: 'right',
+    // fixed: 'right',
+    fixed: 'false',
     width: 100,
     align: 'center',
     scopedSlots: { customRender: 'action' },
@@ -86,7 +95,7 @@ export default {
       loading: false,
       rowsCount: 0, // 一共有多少条数据
       curPagerNo: 1,
-      pageSize: 10,
+      pageSize: 6,
       totalPageNumber: 0 // 一共有几页
       // queryResArr: []
     }
@@ -243,13 +252,30 @@ export default {
         font-size 20px
         font-weight 600
     .mainContainer
+      display flex
+      flex-direction column
+      justify-content flex-start
+      align-items center
       box-sizing border-box
       width 100%
-      height auto
+      // height auto
+      flex 1
       padding 40px
+      padding-bottom 0
+      // .tableElem /deep/ .ant-spin-nested-loading,
+      // .tableElem /deep/ .ant-spin-nested-loading .ant-spin-container,
+      // .tableElem /deep/ .ant-spin-nested-loading .ant-spin-container .ant-table,
+      // .tableElem /deep/ .ant-spin-nested-loading .ant-spin-container .ant-table .ant-table-content,
+      // .tableElem /deep/ .ant-spin-nested-loading .ant-spin-container .ant-table .ant-table-content .ant-table-scroll,
+      // .tableElem /deep/ .ant-spin-nested-loading .ant-spin-container .ant-table .ant-table-content .ant-table-fixed-left,
+      // .tableElem /deep/ .ant-spin-nested-loading .ant-spin-container .ant-table .ant-table-content .ant-table-fixed-right
+      //   width 100%
+      //   height 100% !important
+      .tableElem /deep/ .ant-spin-nested-loading .ant-spin-container .ant-table .ant-table-content .ant-table-scroll .ant-table-body table .ant-table-tbody tr
+        height 106px
       .tableElem
         width 100%
-        height 100%
+        flex 1
         .btnContainer
           height 100%
           display flex
@@ -263,11 +289,19 @@ export default {
       .paginationContainer
         box-sizing border-box
         display flex
-        justify-content center
+        flex-direction column
+        justify-content flex-start
         align-items center
         width 100%
-        height 100px
-        padding 0 30px
+        height 136px
+        padding-top 30px
+        .paginationSl
+          width 100%
+          height 100%
+          box-sizing border-box
+          display flex
+          justify-content center
+          align-items flex-start
         .pagination
           margin-right 20px
           & /deep/ .ant-pagination-item-active

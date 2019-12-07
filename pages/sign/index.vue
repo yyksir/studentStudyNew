@@ -134,36 +134,6 @@ export default {
     }
     //
   }
-  //
-    // .loginContainer
-    // width 100%
-    // height 100%
-    // display flex
-    // justify-content center
-    // align-items center
-    // .mask
-    //   box-sizing border-box
-    //   width 100%
-    //   height 100%
-    //   padding-bottom 100px
-    //   display flex
-    //   justify-content center
-    //   align-items center
-    //   position fixed
-    //   left 0
-    //   top 0
-    //   z-index 9999
-    //   background-color rgba(0, 0, 0, .5)
-    //   & >>> .ant-spin-text
-    //     color #000
-    // #components-form-demo-normal-login
-    //   width 30%
-    //   height 300px
-    //   .login-form
-    //     max-width: 300px
-    //   .login-form-forgot
-    //     float: right
-    
 }
 </script>
 
