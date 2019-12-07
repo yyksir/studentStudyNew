@@ -171,6 +171,21 @@ export default {
 .loginContainer
   width 100%
   height 100%
+  .mask
+    box-sizing border-box
+    width 100%
+    height 100%
+    padding-bottom 100px
+    display flex
+    justify-content center
+    align-items center
+    position fixed
+    left 0
+    top 0
+    z-index 9999
+    background-color rgba(0, 0, 0, .5)
+    & >>> .ant-spin-text
+      color #000
   .headerTop
     width 100%
     height 70px
