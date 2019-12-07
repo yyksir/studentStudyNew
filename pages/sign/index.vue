@@ -141,8 +141,8 @@ export default {
 .loginContainer
   width 100%
   height 100%
-  background #eee url(../../assets/img/login_bj.png) no-repeat
-  background-size 100% 100vh
+  background #eee url(../../assets/img/login_bj.png) no-repeat top center
+  background-size 100% 100%
   .mask
     box-sizing border-box
     width 100%
