@@ -141,6 +141,8 @@ export default {
 .loginContainer
   width 100%
   height 100%
+  background #eee url(../../assets/img/login_bj.png) no-repeat
+  background-size 100% 100vh
   .mask
     box-sizing border-box
     width 100%
@@ -157,13 +159,14 @@ export default {
     & >>> .ant-spin-text
       color #000
   .headerTop
+    box-sizing  border-box
     width 100%
     height 70px
     padding 0 20px
     line-height 70px
     font-size 18px
     font-weight 700 
-    box-sizing  border-box
+    background-color #fff
     .headerLeft{
       float left
     }
@@ -173,23 +176,26 @@ export default {
   .content
     height calc(100% - 70px)
     box-sizing  border-box
-    padding 0px 40px 0 40px
+    // padding 0px 40px 0 40px
     overflow hidden
-    background-image url(../../assets/img/login_bj.png)
-    background-color #eeeeee
-    background-size 100%
+    background-color transparent
     .contentTitle
       height 60px
-      padding-left 30px
-      margin-top 30px
+      // margin-top 30px
+      // padding-left 30px
+      margin-top 50px
+      padding-left 100px
     .contentBox
+      box-sizing  border-box
       height calc(100% - 60px)
-      padding-top 40px
+      // padding-top 40px
+      padding-top 50px
       .contenLeft
         float left
         width 50%
         .contenLeftImg
-          margin-top 50px
+          // margin-top 50px
+          margin-top 34px
           text-align center
       .contentRight
         float: left;
