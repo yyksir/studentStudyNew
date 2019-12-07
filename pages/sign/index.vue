@@ -207,6 +207,7 @@ export default {
     overflow hidden
     background-image url(../../assets/img/login_bj.png)
     background-color #eeeeee
+    background-size 100%
     .contentTitle
       height 60px
       padding-left 30px
@@ -226,7 +227,7 @@ export default {
         width: 50%;
         .contentRightBox
           width: 473px;
-          height: 400px;
+          height: 360px;
           background-color: #fff;
           border-radius: 17px;
           padding: 30px;
