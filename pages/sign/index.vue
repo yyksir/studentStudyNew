@@ -50,7 +50,7 @@
                 <a-icon slot="prefix" type="lock" style="color: rgba(0,0,0,.25)" />
               </a-input>
             </a-form-item>
-            <a-form-item>
+            <a-form-item style="margin-top: 52px;">
               <!-- <a-checkbox
                 v-decorator="[
                   'remember',
