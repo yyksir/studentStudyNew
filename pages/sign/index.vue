@@ -222,7 +222,7 @@ export default {
           text-align center
       .contentRight
         float: left;
-        height: 300px;
+        // height: 300px;
         width: 50%;
         .contentRightBox
           width: 473px;
