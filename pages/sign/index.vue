@@ -10,60 +10,67 @@
       </div>
     </div>
     <div class="content">
-      <div class="contenLeft">
-        <div>
-          <img src="../../assets/img/png_ct2.png" alt />
-        </div>
+      <div class="contentTitle">
+        <img src="../../assets/img/ct_dlzx.png" alt />
       </div>
-      <div class="contentRight">
-        <div class='contentTitle'>
-          我是学生
+      <div class="contentBox">
+         <div class="contenLeft">
+          <div class="contenLeftImg">
+            <img src="../../assets/img/png_ct2.png" alt />
+          </div>
         </div>
-        <a-form
-          id="components-form-demo-normal-login"
-          :form="form"
-          class="login-form"
-          @submit="handleSubmit"
-        >
-          <a-form-item>
-            <a-input placeholder="用户名"
-              v-decorator="[
-                'userName',
-                { rules: [{ required: true, message: '请输入用户名!' }] }
-              ]"
-            >
-              <a-icon slot="prefix" type="user" style="color: rgba(0,0,0,.25)" />
-            </a-input>
-          </a-form-item>
-          <a-form-item>
-            <a-input placeholder="密码" type="password"
-              v-decorator="[
-                'password',
-                { rules: [{ required: true, message: '请输入密码!' }] }
-              ]"
-            >
-              <a-icon slot="prefix" type="lock" style="color: rgba(0,0,0,.25)" />
-            </a-input>
-          </a-form-item>
-          <a-form-item>
-            <!-- <a-checkbox
-              v-decorator="[
-                'remember',
-                {
-                  valuePropName: 'checked',
-                  initialValue: true,
-                }
-              ]"
-            >
-              Remember me
-            </a-checkbox> -->
-            <!-- <a class="login-form-forgot" href="javascript:;">Forgot password</a> -->
-            <a-button class="login-form-button" type="primary" html-type="submit">
-              登录
-            </a-button>
-            <!-- 或者 <a href="javascript:;">现在去注册!</a> -->
-          </a-form-item>
-        </a-form>
+      <div class="contentRight">
+        <div class="contentRightBox">
+          <div class='contentRightBoxTitle'>
+            我是学生
+          </div>
+          <a-form
+            id="components-form-demo-normal-login"
+            :form="form"
+            class="login-form"
+            @submit="handleSubmit"
+          >
+            <a-form-item>
+              <a-input placeholder="用户名"
+                v-decorator="[
+                  'userName',
+                  { rules: [{ required: true, message: '请输入用户名!' }] }
+                ]"
+              >
+                <a-icon slot="prefix" type="user" style="color: rgba(0,0,0,.25)" />
+              </a-input>
+            </a-form-item>
+            <a-form-item>
+              <a-input placeholder="密码" type="password"
+                v-decorator="[
+                  'password',
+                  { rules: [{ required: true, message: '请输入密码!' }] }
+                ]"
+              >
+                <a-icon slot="prefix" type="lock" style="color: rgba(0,0,0,.25)" />
+              </a-input>
+            </a-form-item>
+            <a-form-item>
+              <!-- <a-checkbox
+                v-decorator="[
+                  'remember',
+                  {
+                    valuePropName: 'checked',
+                    initialValue: true,
+                  }
+                ]"
+              >
+                Remember me
+              </a-checkbox> -->
+              <!-- <a class="login-form-forgot" href="javascript:;">Forgot password</a> -->
+              <a-button class="login-form-button" type="primary" html-type="submit">
+                登录
+              </a-button>
+              <!-- 或者 <a href="javascript:;">现在去注册!</a> -->
+            </a-form-item>
+          </a-form>
+        </div>
+        </div>
       </div>
     </div>
   </div>
@@ -156,8 +163,7 @@ export default {
     //     max-width: 300px
     //   .login-form-forgot
     //     float: right
-    //   .login-form-button
-    //     width: 100%
+    
 }
 </script>
 
@@ -182,26 +188,42 @@ export default {
   .content
     height calc(100% - 70px)
     box-sizing  border-box
-    padding 30px 40px 0 40px
+    padding 0px 40px 0 40px
     overflow hidden
     background-image url(../../assets/img/login_bj.png)
-    .contenLeft
-      float left
-
-    .contentRight{
-      float: left;
-      height: 300px;
-      width: 300px;
-      margin-left: 115px;
-      text-align: center;
-      margin-top: 37px;
-      .contentTitle{
-        text-align: left;
-        font-size: 18px;
-        font-weight: 700;
-        margin-bottom: 10px;
-      }
-    }
+    background-color #eeeeee
+    .contentTitle
+      height 60px
+      padding-left 30px
+      margin-top 30px
+    .contentBox
+      height calc(100% - 60px)
+      padding-top 40px
+      .contenLeft
+        float left
+        width 50%
+        .contenLeftImg
+          margin-top 50px
+          text-align center
+      .contentRight
+        float: left;
+        height: 300px;
+        width: 50%;
+        .contentRightBox
+          width: 473px;
+          height: 400px;
+          background-color: #fff;
+          border-radius: 17px;
+          padding: 30px;
+          .contentRightBoxTitle
+            text-align: left;
+            font-size: 21px;
+            font-weight: 700;
+            margin-bottom: 30px;
+           .login-form-button
+            width: 100%
+            background: #5D6BBA
+            height 40px
   
 
 </style>
