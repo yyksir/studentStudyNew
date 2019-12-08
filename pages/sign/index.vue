@@ -9,7 +9,7 @@
         服务热线:400-921-3577
       </div>
     </div>
-    <div class="content">
+    <div class="content clearfix">
       <div class="contentTitle">
         <img src="../../assets/img/ct_dlzx.png" alt />
       </div>
@@ -138,6 +138,17 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+.clearfix:after {
+    content: "";
+    display: block;
+    overflow:hidden;
+    visibility:hidden;
+    height: 0;
+    clear: both;
+}
+.clearfix {
+    zoom: 1;
+}
 .loginContainer
   width 100%
   height 100%
@@ -177,7 +188,7 @@ export default {
     height calc(100% - 70px)
     box-sizing  border-box
     // padding 0px 40px 0 40px
-    overflow hidden
+    overflow-y scroll
     background-color transparent
     .contentTitle
       height 60px
