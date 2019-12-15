@@ -149,7 +149,7 @@ export default {
         query:{
           courseId:item.courseId,
           unitId:0,
-          testType:2,
+          testType:0,
         }
       })
     },
