@@ -349,7 +349,7 @@ export default {
         path:'/test/courseTest/' + item.type,
         query:{
           courseId:item.courseId,
-          united:0,
+          unitId:0,
           testType:0,
         }
       })
@@ -363,21 +363,15 @@ export default {
         this.spinning = false
         if(this.selectItem.type=='1') {
           this.$router.push({path: '/study/recognize/',
-          query: {
-            res: JSON.stringify(this.selectItem) 
-            } 
+          query: this.selectItem || {}
           })
         }else if(this.selectItem.type=='2'){
           this.$router.push({path: '/study/spell/',
-          query: {
-            res:JSON.stringify(this.selectItem) 
-            } 
+          query: this.selectItem || {}
           })
         }else{
           this.$router.push({path: '/study/dialect/',
-          query: {
-            res:JSON.stringify(this.selectItem)
-            } 
+          query: this.selectItem || {}
           })
         }
       }).catch((err) => {
@@ -393,8 +387,8 @@ export default {
         path:'/test/courseTest/' + item.type,
         query:{
           courseId:item.courseId,
-          united:0,
-          testType:3,
+          unitId:0,
+          testType:2,
         }
       })
     },
