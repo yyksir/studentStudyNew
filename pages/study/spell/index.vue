@@ -243,7 +243,7 @@ export default {
                         if(_that.currentIndex == _that.leftgetMyUnit.length) {
                             _that.currentIndex  = 0;
                         }
-                        _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],0)
+                        _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],_that.currentIndex)
                     }
                 });
 
@@ -335,11 +335,11 @@ export default {
                             console.log('章节后测试');
                         },
                         onCancel() {
-                            _that.currentIndex ++;
-                            if(_that.currentIndex == _that.leftgetMyUnit.length) {
-                                _that.currentIndex  = 0;
-                            }
-                            _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],0)
+                            // _that.currentIndex ++;
+                            // if(_that.currentIndex == _that.leftgetMyUnit.length) {
+                            //     _that.currentIndex  = 0;
+                            // }
+                            _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],_that.currentIndex)
                         }
                     })
                 }else{

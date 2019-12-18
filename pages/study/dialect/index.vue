@@ -244,7 +244,7 @@ export default {
                         if(_that.currentIndex == _that.leftgetMyUnit.length) {
                             _that.currentIndex  = 0;
                         }
-                        _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],0)
+                        _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],_that.currentIndex)
                     }
                 });
             }else{
@@ -334,11 +334,11 @@ export default {
                         },
                         onCancel() {
                             
-                            _that.currentIndex ++;
-                            if(_that.currentIndex == _that.leftgetMyUnit.length) {
-                                _that.currentIndex  = 0;
-                            }
-                            _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],0)
+                            // _that.currentIndex ++;
+                            // if(_that.currentIndex == _that.leftgetMyUnit.length) {
+                            //     _that.currentIndex  = 0;
+                            // }
+                            _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],_that.currentIndex )
                             
                         }
                         
