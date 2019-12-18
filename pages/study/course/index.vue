@@ -47,7 +47,14 @@
         </div>
       </div>
       <div class="page">
-        <a-pagination showQuickJumper :defaultCurrent="1" :total="totalPage" @change="onChange" />
+        <a-pagination
+          :total="totalPage"
+          v-model="parames.curPagerNo"
+          :defaultPageSize="parames.pageSize"
+          showQuickJumper
+          @change="onChange"
+        >
+      </a-pagination>
       </div>
       
       <a-modal 
@@ -123,7 +130,7 @@ export default {
           }else{
             this.getMyCourse = [];
           }
-          this.totalPage = res.data.totalPageNumber
+          this.totalPage = res.data.rowsCount
         })
         .catch((err) => {
           this.spinning = false

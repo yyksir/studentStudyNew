@@ -54,11 +54,13 @@
     </div>
     <div class="page">
       <a-pagination
-        :defaultCurrent="1"
-        :total="totalPageNumber"
-        showQuickJumper
-        @change="onChange"
-      />
+          :total="totalPageNumber"
+          v-model="parames.curPagerNo"
+          :defaultPageSize="parames.pageSize"
+          showQuickJumper
+          @change="onChange"
+        >
+      </a-pagination>
     </div>
   </div>
 </template>
@@ -115,7 +117,7 @@ export default {
         curPagerNo:1,
         pageSize:10,
       },
-      totalPageNumber:1,
+      totalPageNumber:0,
       getDownloadCenterList:[],
     }
   },
@@ -131,7 +133,8 @@ export default {
             this.getDownloadCenterList = res.data.list; 
             console.log(res.data)
           }
-          this.totalPageNumber = res.data.totalPageNumber;
+          this.totalPageNumber = res.data.rowsCount;
+          console.log(this.totalPageNumber)
         })
         .catch((err) => {
           this.spinning = false
