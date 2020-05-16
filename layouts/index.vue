@@ -1,4 +1,5 @@
 <template>
+<div>
   <div class="app clearfix">
       <a-spin style="
         width: 100%;height: 100%;position: fixed;left: 0;top: 0;z-index: 999;
@@ -93,8 +94,17 @@
       <a-locale-provider :locale="locale">
         <nuxt />
       </a-locale-provider>
+      
     </div>
   </div>
+  <div class="footer">
+        <p >
+          <img src="../assets/img/footer.png">
+          <a href="http://www.beian.miit.gov.cn" target="_blank">豫ICP备19036666号-3  </a> | © 2019-现在 词唐教育 版权所有</p>
+      </div>
+</div>
+  
+  
 </template>
 
 <script>
@@ -200,10 +210,26 @@ export default {
     } 
 </style>
 <style lang="stylus" scoped>
+.footer{
+    height: 30px;
+    line-height: 30px;
+    background: #fff;
+    text-align: center;
+}
+.footer img {
+    position: relative;
+    width: 14px;
+    vertical-align: middle;
+    top: -2px;
+    margin: 5px;
+}
+.footer p {
+   margin: 0;
+}
   .app{
     
     width 100%
-    height 100%
+    height calc(100% - 30px)
 
     .left-menu{
       width 260px

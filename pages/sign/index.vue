@@ -73,6 +73,11 @@
         </div>
       </div>
     </div>
+    <div class="footer">
+      <p >
+        <img src="../../assets/img/footer.png">
+        <a href="http://www.beian.miit.gov.cn" target="_blank">豫ICP备19036666号-3  </a> | © 2019-现在 词唐教育 版权所有</p>
+    </div>
   </div>
 </template>
 
@@ -138,6 +143,22 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+.footer{
+    height: 30px;
+    line-height: 30px;
+    background: #fff;
+    text-align: center;
+}
+.footer img {
+    position: relative;
+    width: 14px;
+    vertical-align: middle;
+    top: -2px;
+    margin: 5px;
+}
+.footer p {
+   margin: 0;
+}
 .clearfix:after {
     content: "";
     display: block;
@@ -185,7 +206,7 @@ export default {
       float right
     }
   .content
-    height calc(100% - 70px)
+    height calc(100% - 100px)
     box-sizing  border-box
     // padding 0px 40px 0 40px
     overflow-y scroll
