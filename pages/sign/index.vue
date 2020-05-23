@@ -159,6 +159,7 @@ export default {
 .footer p {
   font-family:Avenir,Helvetica,Arial,sans-serif;
    margin: 0;
+   font-size: 12px;
 }
 .footer a {
   margin: 0;
