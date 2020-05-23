@@ -224,7 +224,16 @@ export default {
     margin: 5px;
 }
 .footer p {
+  font-family:Avenir,Helvetica,Arial,sans-serif;
    margin: 0;
+}
+.footer a {
+  margin: 0;
+  font-family:Avenir,Helvetica,Arial,sans-serif;
+   color #2c3e50;
+   &:hover{
+     color #1890ff;
+   }
 }
   .app{
     

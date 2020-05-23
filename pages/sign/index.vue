@@ -6,7 +6,7 @@
         专注于打造智能教育平台
       </div>
       <div class="headerRight">
-        服务热线:400-921-3577
+        服务热线:13137122626
       </div>
     </div>
     <div class="content clearfix">
@@ -157,7 +157,16 @@ export default {
     margin: 5px;
 }
 .footer p {
+  font-family:Avenir,Helvetica,Arial,sans-serif;
    margin: 0;
+}
+.footer a {
+  margin: 0;
+  font-family:Avenir,Helvetica,Arial,sans-serif;
+   color #2c3e50;
+   &:hover{
+     color #1890ff;
+   }
 }
 .clearfix:after {
     content: "";
