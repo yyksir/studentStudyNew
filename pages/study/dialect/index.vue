@@ -68,6 +68,8 @@
                     
                 </div>
                 <div class="content" v-show="step=='2'">
+                     <p>单词:  {{enVoiceSrc.wordName}}</p>
+                    <p>词义:  {{enVoiceSrc.meaning}}</p>
                     <p >
                         {{enVoiceSrc.exampleSentence1}}
                     </p>
@@ -79,9 +81,13 @@
                     </p>
 
                 </div>
+                
             </div>
 
-        
+            <div class="btnErr">
+                <a-input class="input" placeholder="请输入需要报错内容" v-model='inputVal' />
+                <a-button type="primary" class="btn" @click="handSubmitError">报错</a-button>
+            </div>
         </div>
     </div>
 </div>
@@ -130,6 +136,7 @@ export default {
             minitus:0,//分钟
             seconds:0,//秒
             interval: null, // 定时器
+            inputVal:'',//输入框报错的值
         }
     },
     mounted() {
@@ -243,8 +250,10 @@ export default {
                         _that.currentIndex ++;
                         if(_that.currentIndex == _that.leftgetMyUnit.length) {
                             _that.currentIndex  = 0;
+                        }else{
+                           _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],_that.currentIndex) 
                         }
-                        _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],_that.currentIndex)
+                        
                     }
                 });
             }else{
@@ -334,11 +343,13 @@ export default {
                         },
                         onCancel() {
                             
-                            // _that.currentIndex ++;
-                            // if(_that.currentIndex == _that.leftgetMyUnit.length) {
-                            //     _that.currentIndex  = 0;
-                            // }
-                            _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],_that.currentIndex )
+                            _that.currentIndex ++;
+                            if(_that.currentIndex == _that.leftgetMyUnit.length) {
+                                _that.currentIndex  = 0;
+                            }else{
+                                 _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],_that.currentIndex )
+                            }
+                           
                             
                         }
                         
@@ -526,21 +537,39 @@ export default {
         },
          analyzerInitialize() {
             if (context == undefined) {
-            context = new AudioContext();
+                context = new AudioContext();
+            }
+            analyser = context.createAnalyser();
+            canvas = analyserElement;
+            ctx = canvas.getContext('2d');
+            if (MEDIA_ELEMENT_NODES.has(audio)) {
+                source = MEDIA_ELEMENT_NODES.get(audio);
+            } else {
+                source = context.createMediaElementSource(audio);
+                MEDIA_ELEMENT_NODES.set(audio, source);
+            }
+            source.connect(analyser);
+            analyser.connect(context.destination);
+            frameLooper();
+        },
+        handSubmitError() {
+            this.spinning = true
+             this.$API.POST('/census/addErr',{
+                errDesc:this.inputVal,
+                wordId:this.enVoiceSrc.unitId,
+                wordName:this.enVoiceSrc.wordName,
+            }).then((res) => {
+                this.spinning = false;
+                this.$message.success('提交报错成功,谢谢您的配合!');
+                this.inputVal = '';
+                console.log(res.data)
+            }).catch((err) => {
+                this.spinning = false
+                console.log(err, 'err')
+            })
+            console.log(this.inputVal)
         }
-        analyser = context.createAnalyser();
-        canvas = analyserElement;
-        ctx = canvas.getContext('2d');
-        if (MEDIA_ELEMENT_NODES.has(audio)) {
-            source = MEDIA_ELEMENT_NODES.get(audio);
-        } else {
-            source = context.createMediaElementSource(audio);
-            MEDIA_ELEMENT_NODES.set(audio, source);
-        }
-        source.connect(analyser);
-        analyser.connect(context.destination);
-        frameLooper();
-        }
+
 
 
     },
@@ -586,6 +615,21 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.btnErr{
+    position absolute
+    bottom 40px
+    width 300px
+    .input {
+        float left
+        width 200px
+        margin-right 10px
+        margin-left 10px
+    }
+    .btn{
+        float left
+    }
+
+}
 .boxContent{
     height 100%
     width 100%

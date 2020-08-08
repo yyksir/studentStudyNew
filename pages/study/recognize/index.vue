@@ -71,6 +71,7 @@
                             </span>
                         </div>
                         <div class="content" v-show="step!='1'">
+                            <!-- <p>{{enVoiceSrc.wordName}}</p> -->
                             <p>{{enVoiceSrc.meaning}}</p>
                             <p >
                                 {{enVoiceSrc.exampleSentence1}}
@@ -102,7 +103,12 @@
                         <a-button type="danger" @click="handleBtnVoiceClick('1')" >重读</a-button>
                     </div>
                 </div>
+                <div class="btnErr">
+                    <a-input class="input" placeholder="请输入需要报错内容" v-model='inputVal' />
+                    <a-button type="primary" class="btn" @click="handSubmitError">报错</a-button>
+                </div>
             </div>
+            
         </div>
         
     </div>
@@ -151,6 +157,7 @@ export default {
              minitus:0,//分钟
              seconds:0,//秒
              interval: null, // 定时器
+             inputVal:'',//输入框报错的值
         }
     },
     mounted() {
@@ -257,8 +264,10 @@ export default {
                         
                         if(_that.currentIndex == _that.leftgetMyUnit.length) {
                             _that.currentIndex  = 0;
+                        }else{
+                             _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],_that.currentIndex) 
                         }
-                        _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],_that.currentIndex)
+                      
                     }
                 });
             }else{
@@ -349,11 +358,13 @@ export default {
                             console.log('章节测试');
                         },
                         onCancel() {
-                           // _that.currentIndex ++;
-                            _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],_that.currentIndex)
-                            // if(_that.currentIndex == _that.leftgetMyUnit.length) {
-                            //     _that.currentIndex  = 0;
-                            // }
+                           _that.currentIndex ++;
+                            
+                            if(_that.currentIndex == _that.leftgetMyUnit.length) {
+                                _that.currentIndex  = 0;
+                            }else{
+                                _that.handleInitUnit(_that.leftgetMyUnit[_that.currentIndex],_that.currentIndex)
+                            }
                         }
                     })
 
@@ -500,6 +511,24 @@ export default {
             })
              
         },
+        handSubmitError() {
+            this.spinning = true
+             this.$API.POST('/census/addErr',{
+                errDesc:this.inputVal,
+                wordId:this.enVoiceSrc.unitId,
+                wordName:this.enVoiceSrc.wordName,
+            }).then((res) => {
+                this.spinning = false;
+                this.$message.success('提交报错成功,谢谢您的配合!');
+                this.inputVal = '';
+                console.log(res.data)
+            }).catch((err) => {
+                this.spinning = false
+                console.log(err, 'err')
+            })
+            console.log(this.inputVal)
+        }
+
 
     },
       beforeRouteEnter (to, from, next) {
@@ -544,6 +573,21 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.btnErr{
+    position absolute
+    bottom 40px
+    width 300px
+    .input {
+        float left
+        width 200px
+        margin-right 10px
+        margin-left 10px
+    }
+    .btn{
+        float left
+    }
+
+}
 .boxContent{
     height 100%
     width 100%
