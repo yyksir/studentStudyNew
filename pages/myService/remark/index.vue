@@ -88,14 +88,14 @@
             <b style=";min-width: 80px;color: green;font-size: 24px;">{{queryRes.wordName}}</b>
             <span style="margin-right: 15px;">英&nbsp;&nbsp;&nbsp;{{queryRes.englishPronu}}</span>
             <img src="../../../assets/img/voicePause.png" style="margin-right: 30px;" @click="handleBtnVoiceEnClick(index)">
-            <audio class="audioDomEn">
+            <audio class="audioDomEn" crossOrigin="anonymous">
               <source class="tts_source_en" :src="queryRes.enVoiceSrc" type="audio/mpeg">
               <embed class="tts_embed_en" height="0" width="0" src="">
               您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
             </audio>
             <span style="margin-right: 15px;">美&nbsp;&nbsp;&nbsp;{{queryRes.americaPronu}}</span>
             <img src="../../../assets/img/voicePause.png" style="margin-right: 30px;" @click="handleBtnVoiceUSAClick(index)">
-            <audio class="audioDomUsa">
+            <audio class="audioDomUsa" crossOrigin="anonymous">
               <source class="tts_source_usa" :src="queryRes.usaVoiceSrc" type="audio/mpeg">
               <embed class="tts_embed_usa" height="0" width="0" src="">
               您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。

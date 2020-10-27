@@ -57,7 +57,7 @@
                                     {{item.pronu}}
                                 </span>
                                 <img src="../../../assets/img/voicePause.png" style="margin-right: 10px;" @click="handleBtnVoiceClick(index)" >
-                                <audio :id="'audioDomEn'+index" :class="'audioDomEn'+index" :ref="'englishPronu'+index">
+                                <audio :id="'audioDomEn'+index" :class="'audioDomEn'+index" :ref="'englishPronu'+index" crossOrigin="anonymous">
                                     <source class="audioDomEn" :src="item.src" type="audio/mpeg">
                                     <embed class="audioDomEn" height="0" width="0" src="">
                                         您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
@@ -116,6 +116,9 @@
 </template>
 
 <script>
+import {
+  URL_VOICE
+} from '@/assets/config/index.js'
 export default {
     layout: 'index',
       data() {
@@ -386,7 +389,7 @@ export default {
             }
             this.$nextTick(()=>{
                 var audio =document.querySelector('#audioDomEn'+index);
-                audio.src =  this.urlVoice + this.enVoiceSrc.wordName + falg + '.mp3';
+                audio.src =  URL_VOICE + this.enVoiceSrc.wordName + falg + '.mp3';
                 audio.play();
             })
             // if(index=='1') {
@@ -497,16 +500,16 @@ export default {
             _that.workldArr[0]={
                 name:'英',
                 pronu:data.englishPronu||'',
-                src:_that.urlVoice + data.wordName + 0 + '.mp3',
+                src:URL_VOICE + data.wordName + 0 + '.mp3',
             };
             _that.workldArr[1]={
                 name:'美',
                 pronu:data.americaPronu||'',
-                src: _that.urlVoice + data.wordName + 1 + '.mp3',
+                src: URL_VOICE + data.wordName + 1 + '.mp3',
             };
             _that.$nextTick(()=>{
                 var audio =document.querySelector('#audioDomEn'+(_that.check?1:0));
-                audio.src =  _that.urlVoice + data.wordName + (_that.check?1:0) + '.mp3';
+                audio.src =  URL_VOICE + data.wordName + (_that.check?1:0) + '.mp3';
                 audio.play();
             })
              

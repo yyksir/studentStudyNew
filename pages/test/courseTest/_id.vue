@@ -86,7 +86,7 @@
                 <canvas id="myCanvas"></canvas>
                 <audio id="audioDomEn"
                   :style="{ 'opacity': testPaperArr.length > 0 ? 1 : 0 }"
-                  ref="audioDomEn" controls="controls" controlsList="nodownload" preload="auto">
+                  ref="audioDomEn" controls="controls" controlsList="nodownload" preload="auto" crossOrigin="anonymous">
                   <source id="audio"  type="audio/mpeg">
                   您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
                 </audio>

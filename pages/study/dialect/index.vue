@@ -50,7 +50,7 @@
                     <canvas id='canvas' width="400" height="200"></canvas>
                 </div>
                 <div>
-                    <audio id="audioDomEn" ref="audioDomEn" controls="controls" >
+                    <audio id="audioDomEn" ref="audioDomEn" controls="controls" crossOrigin="anonymous">
                         <source id="audio"  type="audio/mpeg">
                         您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
                     </audio>
@@ -95,6 +95,9 @@
 </template>
 
 <script>
+import {
+  URL_VOICE
+} from '@/assets/config/index.js'
 export default {
     layout: 'index',
     data() {
@@ -451,7 +454,7 @@ export default {
                // let audioDomEn = this.$refs.audioDomEn;
             let audioDomEn = document.querySelector('#audioDomEn');
             audioDomEn.crossOrigin = "anonymous";
-            audioDomEn.src = _that.urlVoice + data.wordName + (_that.check?1:0) + '.mp3'; 
+            audioDomEn.src = URL_VOICE + data.wordName + (_that.check?1:0) + '.mp3'; 
             audioDomEn.play()
             //     let MEDIA_ELEMENT_NODES = new WeakMap();
             //     if (ctx == undefined) { 

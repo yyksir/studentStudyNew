@@ -67,7 +67,7 @@
                                         </span> 
                                     </span>
                                 </div>
-                                <audio class="audioDomEn" ref="englishPronu" :src="voice.src">
+                                <audio class="audioDomEn" ref="englishPronu" :src="voice.src" crossOrigin="anonymous">
                                     <source class="audioDomEn"  type="audio/mpeg">
                                     <embed class="audioDomEn" height="0" width="0" src="">
                                         您的浏览器不支持 audio 元素, 建议使用谷歌浏览器等高级浏览器。
@@ -112,6 +112,9 @@
 
 <script>
 import { mapMutations } from 'vuex'
+import {
+  URL_VOICE
+} from '@/assets/config/index.js'
 export default {
     layout: 'index',
     data(){
@@ -367,7 +370,7 @@ export default {
             _that.enVoiceSrc = data;
             _that.getWordChafenFun(data);
             _that.voice={
-                src:_that.urlVoice + data.wordName + (_that.check?1:0) + '.mp3',
+                src:URL_VOICE + data.wordName + (_that.check?1:0) + '.mp3',
             };
             _that.step='1'
         },
